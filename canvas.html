@@ -333,7 +333,25 @@ nav {
   <div class="upload-zone">
     <div class="upload-eyebrow">PlausibleBA Canvas</div>
     <h1 class="upload-title">Drop your bundle.<br><strong>See your operating model.</strong></h1>
-    <p class="upload-subtitle">Upload the <code style="font-family:'DM Mono',monospace;font-size:0.9em;background:var(--surface-3);padding:2px 6px;border-radius:4px">ba-skills-bundle.json</code> exported from any PlausibleBA skill. Your capability map, concept model, and value stream render instantly — no account required.</p>
+    <p class="upload-subtitle">This canvas renders a capability map, concept model, and value stream from a JSON bundle exported by the PlausibleBA skills library — a free plugin for <a href="https://claude.ai/download" target="_blank" style="color:var(--blue)">Claude Cowork</a>.</p>
+
+    <div style="background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;text-align:left;max-width:540px;margin-left:auto;margin-right:auto">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-4);margin-bottom:0.75rem">How to get a bundle</div>
+      <div style="display:flex;flex-direction:column;gap:0.5rem">
+        <div style="display:flex;gap:0.75rem;align-items:flex-start;font-size:13px;color:var(--ink-3)">
+          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">1</span>
+          <span><a href="/install" style="color:var(--blue);font-weight:500">Install PlausibleBA</a> — free, three steps, works in Claude Cowork</span>
+        </div>
+        <div style="display:flex;gap:0.75rem;align-items:flex-start;font-size:13px;color:var(--ink-3)">
+          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</span>
+          <span>Open a <strong>new Cowork task</strong>, paste any business description, and type <code style="font-size:11px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">/value-stream</code></span>
+        </div>
+        <div style="display:flex;gap:0.75rem;align-items:flex-start;font-size:13px;color:var(--ink-3)">
+          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">3</span>
+          <span>When the visualisation renders, ask Claude to <strong>export the JSON bundle</strong> — then upload it here</span>
+        </div>
+      </div>
+    </div>
 
     <div class="drop-target" id="drop-target">
       <div class="drop-icon">⬡</div>
