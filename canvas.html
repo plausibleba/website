@@ -177,62 +177,181 @@ nav {
 
 /* ── CONCEPT GRAPH ── */
 .graph-wrap { position: relative; }
-#concept-svg { width: 100%; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); }
+/* ── CONCEPT MODEL — VCC-style card columns ── */
+.concept-container {
+  position: relative; border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 2rem 1.5rem; overflow: hidden;
+}
+.concept-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; position: relative; z-index: 2; }
+.concept-col-header {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 12px; text-align: center;
+}
+.concept-col { display: flex; flex-direction: column; gap: 10px; }
+.concept-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: var(--radius);
+  border: 1.5px solid var(--border); background: var(--surface);
+  cursor: pointer; transition: all 0.15s; min-height: 48px;
+}
+.concept-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.concept-card.active { border-width: 2px; }
+.concept-card.party { border-left: 4px solid var(--party); }
+.concept-card.party.active { border-color: var(--party); background: var(--party-light); }
+.concept-card.resource { border-left: 4px solid var(--resource); }
+.concept-card.resource.active { border-color: var(--resource); background: var(--resource-light); }
+.concept-card.record { border-left: 4px solid var(--record); }
+.concept-card.record.active { border-color: var(--record); background: var(--record-light); }
+
+.concept-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 14px;
+}
+.concept-icon.party { background: var(--party-light); color: var(--party); }
+.concept-icon.resource { background: var(--resource-light); color: var(--resource); }
+.concept-icon.record { background: var(--record-light); color: var(--record); }
+.concept-card-name { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+
+/* SVG edge overlay */
+.concept-edges-svg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1; pointer-events: none;
+}
+.concept-edge { stroke: var(--border-strong); stroke-width: 1; fill: none; opacity: 0.5; }
+.concept-edge.highlighted { stroke: var(--ink-3); stroke-width: 1.5; opacity: 0.8; }
+.concept-edge-label {
+  font-size: 8px; fill: var(--ink-4); font-family: 'DM Mono', monospace;
+  text-anchor: middle; dominant-baseline: middle;
+}
+
+/* Detail panel */
 .concept-detail {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1rem 1.25rem; margin-top: 1rem;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem; margin-top: 1rem;
   background: var(--surface); font-size: 13px; min-height: 70px;
 }
-.cd-name { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
-.cd-type { font-size: 11px; font-weight: 600; margin-bottom: 6px; }
-.cd-def { color: var(--ink-2); line-height: 1.55; margin-bottom: 5px; }
-.cd-states { font-size: 11px; color: var(--ink-4); font-family: 'DM Mono', monospace; }
+.cd-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cd-name { font-size: 16px; font-weight: 700; color: var(--ink); }
+.cd-type-badge { font-size: 10px; font-weight: 600; padding: 2px 10px; border-radius: 3px; }
+.cd-type-badge.party { background: var(--party-light); color: var(--party-text); }
+.cd-type-badge.resource { background: var(--resource-light); color: var(--resource-text); }
+.cd-type-badge.record { background: var(--record-light); color: var(--record-text); }
+.cd-def { color: var(--ink-2); line-height: 1.6; margin-bottom: 8px; }
+.cd-states { font-size: 11px; color: var(--ink-3); }
+.cd-states-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; }
+.cd-state-pill { font-size: 10px; padding: 2px 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 3px; color: var(--ink-2); }
+.cd-state-arrow { font-size: 10px; color: var(--ink-4); }
+.cd-related { margin-top: 8px; }
+.cd-related-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-4); margin-bottom: 4px; }
+.cd-related-caps { display: flex; flex-wrap: wrap; gap: 4px; }
+.cd-related-cap { font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; color: var(--ink-2); }
 .cd-placeholder { color: var(--ink-4); font-size: 13px; }
 
 /* ── VALUE STREAM ── */
-.vs-header-block { margin-bottom: 1.25rem; }
-.vs-name { font-size: 1.1rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
-.vs-meta { font-size: 12px; color: var(--ink-3); }
+/* ── VALUE STREAM — VCC-style dark card layout ── */
+.vs-header-block { margin-bottom: 1.5rem; }
+.vs-title { font-size: 1.35rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; letter-spacing: -0.01em; }
+.vs-subtitle { font-size: 12px; color: var(--ink-3); line-height: 1.5; margin-bottom: 12px; }
+.vs-meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.vs-meta-tag { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 10px; border-radius: 3px; }
+.vs-meta-tag.vo { background: var(--party-light); color: var(--party-text); }
+.vs-meta-tag.recipient { background: var(--record-light); color: var(--record-text); }
+.vs-meta-tag.stages { background: var(--resource-light); color: var(--resource-text); }
+.vs-meta-tag.caps { background: var(--surface-3); color: var(--ink-2); }
+.vs-trigger-line { font-size: 11px; color: var(--ink-3); margin-top: 6px; }
+.vs-trigger-line strong { color: var(--ink-2); font-weight: 600; }
 
-.state-flow { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 1.25rem; padding-bottom: 4px; }
-.state-pill {
-  font-size: 10px; font-weight: 500; color: var(--ink-3);
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 20px; padding: 4px 10px;
-  white-space: nowrap; flex-shrink: 0;
+/* Stage navigation pills */
+.stage-nav { display: flex; align-items: center; gap: 0; flex-wrap: nowrap; overflow-x: auto; margin-bottom: 1.5rem; padding-bottom: 4px; }
+.stage-nav-pill {
+  font-size: 11px; font-weight: 500; color: #fff;
+  background: #1e293b; border: 1px solid #334155;
+  border-radius: 20px; padding: 5px 14px;
+  white-space: nowrap; flex-shrink: 0; cursor: pointer;
+  transition: all 0.15s;
 }
-.state-pill.terminal { background: var(--resource-light); color: var(--resource-text); border-color: var(--resource); }
-.state-arrow { font-size: 12px; color: var(--ink-4); margin: 0 4px; flex-shrink: 0; }
+.stage-nav-pill:hover { background: #334155; }
+.stage-nav-pill.active { background: var(--resource); border-color: var(--resource); }
+.stage-nav-pill.terminal { background: var(--party); border-color: var(--party); color: #fff; }
+.stage-nav-arrow { font-size: 14px; color: var(--ink-4); margin: 0 3px; flex-shrink: 0; }
 
+/* Dark stage cards */
 .stages-scroll { overflow-x: auto; padding-bottom: 8px; }
-.stages-row { display: flex; gap: 0; min-width: max-content; }
+.stages-row { display: flex; gap: 10px; min-width: max-content; }
 .stage-card {
-  width: 180px; flex-shrink: 0;
-  border: 0.5px solid var(--border); border-right: none;
-  background: var(--surface); padding: 12px 10px;
-  cursor: pointer; transition: background 0.12s;
+  width: 220px; flex-shrink: 0;
+  background: #1e293b; border-radius: var(--radius-lg);
+  padding: 16px 14px; cursor: pointer;
+  transition: all 0.15s; border: 2px solid transparent;
+  color: #e2e8f0;
 }
-.stage-card:first-child { border-radius: var(--radius) 0 0 var(--radius); }
-.stage-card:last-child { border-right: 0.5px solid var(--border); border-radius: 0 var(--radius) var(--radius) 0; }
-.stage-card:hover { background: var(--surface-2); }
-.stage-card.active { background: var(--resource-light); border-color: var(--resource); z-index: 1; }
-.stage-num { font-size: 10px; color: var(--ink-4); font-family: 'DM Mono', monospace; margin-bottom: 4px; }
-.stage-name { font-size: 11px; font-weight: 600; color: var(--ink); line-height: 1.3; margin-bottom: 6px; }
-.stage-actor { font-size: 9px; color: var(--ink-4); margin-bottom: 8px; line-height: 1.3; }
-.stage-caps { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 6px; }
-.stage-cap-tag { font-size: 8px; background: var(--surface-2); border: 0.5px solid var(--border); border-radius: 2px; padding: 1px 4px; color: var(--ink-3); }
-.ppit-row { display: flex; gap: 3px; }
-.ppit-dot { width: 6px; height: 6px; border-radius: 50%; }
+.stage-card:hover { border-color: #475569; }
+.stage-card.active { border-color: var(--resource); box-shadow: 0 0 0 1px var(--resource); }
+.stage-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.stage-label { font-size: 10px; color: #94a3b8; font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.05em; }
+.stage-name { font-size: 13px; font-weight: 600; color: #f1f5f9; line-height: 1.35; margin-bottom: 10px; }
 
+/* Entry/exit states inline on card */
+.stage-states { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+.stage-state-box {
+  font-size: 9px; padding: 5px 7px; border-radius: 4px;
+  background: rgba(255,255,255,0.06); line-height: 1.35;
+}
+.stage-state-label { font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-size: 8px; margin-bottom: 2px; }
+.stage-state-val { color: #cbd5e1; }
+
+/* Stakeholder pills on card */
+.stage-stakeholders { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.stage-role-pill {
+  font-size: 9px; font-weight: 600; padding: 2px 8px;
+  border-radius: 3px; white-space: nowrap;
+}
+.stage-role-pill.exec { background: #312e81; color: #a5b4fc; }
+.stage-role-pill.ops { background: #164e63; color: #67e8f9; }
+.stage-role-pill.staff { background: #713f12; color: #fcd34d; }
+.stage-role-pill.default { background: #1e3a5f; color: #93c5fd; }
+
+/* Capabilities list on card */
+.stage-cap-list { list-style: none; padding: 0; margin: 0 0 8px 0; }
+.stage-cap-item {
+  font-size: 10px; color: #94a3b8; padding: 2px 0;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.stage-cap-num { color: #64748b; font-family: 'DM Mono', monospace; font-size: 9px; min-width: 28px; }
+.stage-cap-name { color: #cbd5e1; }
+.stage-cap-more { font-size: 9px; color: #64748b; padding-top: 2px; }
+
+/* PPIT dots with labels */
+.ppit-row { display: flex; gap: 6px; margin-top: 6px; }
+.ppit-indicator { display: flex; align-items: center; gap: 3px; }
+.ppit-dot { width: 7px; height: 7px; border-radius: 50%; }
+.ppit-dot-label { font-size: 8px; color: #64748b; }
+
+/* Detail panel */
 .stage-detail {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 1.25rem 1.5rem; margin-top: 1rem;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem; margin-top: 1.25rem;
   background: var(--surface);
 }
-.sd-name { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
-.sd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.sd-block .sd-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-4); margin-bottom: 4px; }
-.sd-block .sd-val { font-size: 12px; color: var(--ink-2); line-height: 1.5; }
+.sd-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.sd-name { font-size: 16px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+.sd-num { background: var(--resource); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.sd-close { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 12px; color: var(--ink-3); }
+.sd-close:hover { background: var(--surface-2); }
+.sd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.sd-block .sd-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-4); margin-bottom: 6px; }
+.sd-block .sd-val { font-size: 12px; color: var(--ink-2); line-height: 1.6; }
+.sd-cap-entry { display: flex; align-items: baseline; gap: 6px; padding: 2px 0; }
+.sd-cap-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--ink-4); }
+.sd-obj-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.sd-obj-pill { font-size: 11px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; color: var(--ink-2); }
+.sd-role-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.sd-role-pill { font-size: 11px; padding: 3px 10px; border-radius: 4px; font-weight: 500; }
+.sd-ppit-legend { display: flex; gap: 12px; margin-top: 4px; }
+.sd-ppit-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-3); }
+.sd-ppit-dot { width: 8px; height: 8px; border-radius: 50%; }
 .sd-placeholder { color: var(--ink-4); font-size: 13px; }
 
 /* ── METRICS ── */
@@ -394,13 +513,14 @@ nav {
       <div class="legend-item"><span class="legend-swatch" style="border-radius:50%;background:var(--party)"></span>Party</div>
       <div class="legend-item"><span class="legend-swatch" style="border-radius:50%;background:var(--resource)"></span>Resource</div>
       <div class="legend-item"><span class="legend-swatch" style="background:var(--record)"></span>Record</div>
-      <div class="legend-item" style="color:var(--ink-4);font-size:11px">Click any node for details</div>
+      <div class="legend-item" style="color:var(--ink-4);font-size:11px">Click any card for details</div>
     </div>
-    <div class="graph-wrap">
-      <svg id="concept-svg" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="concept-container" id="concept-container">
+      <svg class="concept-edges-svg" id="concept-edges-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="concept-columns" id="concept-columns"></div>
     </div>
     <div class="concept-detail" id="concept-detail">
-      <p class="cd-placeholder">Select a concept node to see its definition and lifecycle states.</p>
+      <p class="cd-placeholder">Select a concept to see its definition and lifecycle states.</p>
     </div>
   </div>
 
@@ -793,127 +913,186 @@ function buildTreemap(caps) {
   });
 }
 
-function buildConceptGraph(concepts) {
-  const svg = document.getElementById('concept-svg');
-  svg.innerHTML = '';
-  const ns = 'http://www.w3.org/2000/svg';
+function buildConceptGraph(concepts, capabilities) {
+  const container = document.getElementById('concept-container');
+  const columnsEl = document.getElementById('concept-columns');
+  const edgesSvg = document.getElementById('concept-edges-svg');
   const detail = document.getElementById('concept-detail');
+  const ns = 'http://www.w3.org/2000/svg';
+  columnsEl.innerHTML = '';
+  edgesSvg.innerHTML = '';
 
   const parties = Object.values(concepts).filter(c => c.type === 'Party');
   const resources = Object.values(concepts).filter(c => c.type === 'Resource');
   const records = Object.values(concepts).filter(c => c.type === 'Record');
 
-  const totalNodes = Math.max(parties.length, resources.length, records.length);
-  const svgH = Math.max(360, totalNodes * 70 + 80);
-  svg.setAttribute('viewBox', `0 0 760 ${svgH}`);
+  const icons = {
+    Party: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    Resource: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+    Record: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>'
+  };
 
-  const colX = { Party: 120, Resource: 380, Record: 630 };
-  const color = { Party: '#1D9E75', Resource: '#378ADD', Record: '#D4537E' };
-  const lightColor = { Party: '#E1F5EE', Resource: '#E6F1FB', Record: '#FBEAF0' };
-  const textColor = { Party: '#085041', Resource: '#0C447C', Record: '#72243E' };
+  const cardEls = {}; // id → DOM element for edge drawing
 
-  const nodePos = {};
-  [['Party', parties], ['Resource', resources], ['Record', records]].forEach(([type, nodes]) => {
-    const spacing = svgH / (nodes.length + 1);
-    nodes.forEach((n, i) => {
-      nodePos[n.id] = { x: colX[type], y: spacing * (i + 1), type };
+  // Build columns
+  const colTypes = [
+    { type: 'Party', items: parties, color: 'var(--party)' },
+    { type: 'Resource', items: resources, color: 'var(--resource)' },
+    { type: 'Record', items: records, color: 'var(--record)' }
+  ];
+
+  colTypes.forEach(({ type, items, color }) => {
+    const col = document.createElement('div');
+    col.className = 'concept-col';
+    col.innerHTML = `<div class="concept-col-header" style="color:${color}">${type.toUpperCase()}</div>`;
+
+    items.forEach(concept => {
+      const card = document.createElement('div');
+      card.className = `concept-card ${type.toLowerCase()}`;
+      card.dataset.id = concept.id;
+      card.innerHTML = `
+        <div class="concept-icon ${type.toLowerCase()}">${icons[type]}</div>
+        <div class="concept-card-name">${concept.name}</div>`;
+
+      card.addEventListener('click', () => {
+        // Deselect all
+        columnsEl.querySelectorAll('.concept-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Highlight edges
+        edgesSvg.querySelectorAll('.concept-edge').forEach(e => e.classList.remove('highlighted'));
+        edgesSvg.querySelectorAll(`[data-from="${concept.id}"], [data-to="${concept.id}"]`)
+          .forEach(e => e.classList.add('highlighted'));
+
+        // Build detail
+        const states = Array.isArray(concept.lifecycleStates) ? concept.lifecycleStates : [];
+        const relCaps = (concept.relatedCapabilityIds || []).map(id => capabilities ? capabilities[id] : null).filter(Boolean);
+
+        detail.innerHTML = `
+          <div class="cd-header">
+            <div class="cd-name">${concept.name}</div>
+            <span class="cd-type-badge ${type.toLowerCase()}">${type}</span>
+          </div>
+          <div class="cd-def">${concept.definition || 'No definition provided.'}</div>
+          ${states.length > 0 ? `
+            <div class="cd-states">
+              <span style="font-weight:600;color:var(--ink-3)">Lifecycle:</span>
+              <div class="cd-states-flow">
+                ${states.map((s, i) => `<span class="cd-state-pill">${s}</span>${i < states.length - 1 ? '<span class="cd-state-arrow">→</span>' : ''}`).join('')}
+              </div>
+            </div>` : ''}
+          ${relCaps.length > 0 ? `
+            <div class="cd-related">
+              <div class="cd-related-label">Related Capabilities (${relCaps.length})</div>
+              <div class="cd-related-caps">
+                ${relCaps.map(c => `<span class="cd-related-cap">${c.name}</span>`).join('')}
+              </div>
+            </div>` : ''}`;
+      });
+
+      cardEls[concept.id] = card;
+      col.appendChild(card);
     });
+
+    columnsEl.appendChild(col);
   });
 
-  // Draw edges based on relatedCapabilityIds overlaps (simple cross-type connections)
-  const allConcepts = Object.values(concepts);
-  const drawn = new Set();
-  allConcepts.forEach(a => {
-    if (!nodePos[a.id]) return;
-    allConcepts.forEach(b => {
-      if (a.id === b.id) return;
-      if (!nodePos[b.id]) return;
-      const key = [a.id, b.id].sort().join('|');
-      if (drawn.has(key)) return;
-      const aIds = a.relatedCapabilityIds || [];
-      const bIds = b.relatedCapabilityIds || [];
-      const shared = aIds.filter(id => bIds.includes(id)).length;
-      if (shared > 0) {
-        drawn.add(key);
-        const pa = nodePos[a.id], pb = nodePos[b.id];
-        const line = document.createElementNS(ns, 'line');
-        line.setAttribute('x1', pa.x); line.setAttribute('y1', pa.y);
-        line.setAttribute('x2', pb.x); line.setAttribute('y2', pb.y);
-        line.setAttribute('stroke', '#e2e1dc'); line.setAttribute('stroke-width', '1');
-        svg.appendChild(line);
-      }
+  // Draw edges after a tick so cards have layout positions
+  requestAnimationFrame(() => {
+    const containerRect = container.getBoundingClientRect();
+    edgesSvg.setAttribute('width', containerRect.width);
+    edgesSvg.setAttribute('height', containerRect.height);
+    edgesSvg.setAttribute('viewBox', `0 0 ${containerRect.width} ${containerRect.height}`);
+
+    const allConcepts = Object.values(concepts);
+    const drawn = new Set();
+
+    allConcepts.forEach(a => {
+      if (!cardEls[a.id]) return;
+      allConcepts.forEach(b => {
+        if (a.id >= b.id) return;
+        if (!cardEls[b.id]) return;
+        const key = a.id + '|' + b.id;
+        if (drawn.has(key)) return;
+        const aIds = a.relatedCapabilityIds || [];
+        const bIds = b.relatedCapabilityIds || [];
+        const shared = aIds.filter(id => bIds.includes(id));
+        if (shared.length > 0) {
+          drawn.add(key);
+          const rectA = cardEls[a.id].getBoundingClientRect();
+          const rectB = cardEls[b.id].getBoundingClientRect();
+          const ax = rectA.left + rectA.width / 2 - containerRect.left;
+          const ay = rectA.top + rectA.height / 2 - containerRect.top;
+          const bx = rectB.left + rectB.width / 2 - containerRect.left;
+          const by = rectB.top + rectB.height / 2 - containerRect.top;
+
+          // Curved path
+          const mx = (ax + bx) / 2;
+          const my = (ay + by) / 2;
+          const dx = bx - ax;
+          const dy = by - ay;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const curve = Math.min(30, dist * 0.15);
+          const nx = -dy / dist * curve;
+          const ny = dx / dist * curve;
+          const cx = mx + nx;
+          const cy = my + ny;
+
+          const path = document.createElementNS(ns, 'path');
+          path.setAttribute('d', `M ${ax} ${ay} Q ${cx} ${cy} ${bx} ${by}`);
+          path.setAttribute('class', 'concept-edge');
+          path.dataset.from = a.id;
+          path.dataset.to = b.id;
+          edgesSvg.appendChild(path);
+
+          // Shared capability count label
+          if (shared.length > 1) {
+            const label = document.createElementNS(ns, 'text');
+            label.setAttribute('x', cx);
+            label.setAttribute('y', cy - 6);
+            label.setAttribute('class', 'concept-edge-label');
+            label.textContent = shared.length + ' shared';
+            edgesSvg.appendChild(label);
+          }
+        }
+      });
     });
-  });
-
-  allConcepts.forEach(c => {
-    if (!nodePos[c.id]) return;
-    const { x, y, type } = nodePos[c.id];
-    const g = document.createElementNS(ns, 'g');
-    g.style.cursor = 'pointer';
-
-    if (type === 'Record') {
-      const r = document.createElementNS(ns, 'rect');
-      r.setAttribute('x', x - 36); r.setAttribute('y', y - 18);
-      r.setAttribute('width', '72'); r.setAttribute('height', '36');
-      r.setAttribute('rx', '4');
-      r.setAttribute('fill', lightColor[type]);
-      r.setAttribute('stroke', color[type]); r.setAttribute('stroke-width', '1.5');
-      g.appendChild(r);
-    } else {
-      const circle = document.createElementNS(ns, 'circle');
-      circle.setAttribute('cx', x); circle.setAttribute('cy', y); circle.setAttribute('r', '28');
-      circle.setAttribute('fill', lightColor[type]);
-      circle.setAttribute('stroke', color[type]); circle.setAttribute('stroke-width', '1.5');
-      g.appendChild(circle);
-    }
-
-    const words = c.name.split(' ');
-    const lines = [];
-    let cur = '';
-    words.forEach(w => {
-      if ((cur + ' ' + w).trim().length > 10 && cur) { lines.push(cur); cur = w; }
-      else cur = (cur ? cur + ' ' : '') + w;
-    });
-    if (cur) lines.push(cur);
-    lines.slice(0, 2).forEach((line, i) => {
-      const t = document.createElementNS(ns, 'text');
-      t.setAttribute('x', x); t.setAttribute('y', y + (i - (Math.min(lines.length,2)-1)/2) * 12);
-      t.setAttribute('text-anchor', 'middle'); t.setAttribute('dominant-baseline', 'middle');
-      t.setAttribute('font-size', '9'); t.setAttribute('font-weight', '600');
-      t.setAttribute('fill', textColor[type]);
-      t.setAttribute('font-family', 'DM Sans, sans-serif');
-      t.textContent = line;
-      g.appendChild(t);
-    });
-
-    g.addEventListener('click', () => {
-      svg.querySelectorAll('circle, rect').forEach(el => el.setAttribute('stroke-width', '1.5'));
-      const shape = g.querySelector('circle') || g.querySelector('rect');
-      if (shape) shape.setAttribute('stroke-width', '3');
-      const states = Array.isArray(c.lifecycleStates) ? c.lifecycleStates.join(' → ') : (c.lifecycleStates || '');
-      detail.innerHTML = `
-        <div class="cd-name">${c.name}</div>
-        <div class="cd-type" style="color:${color[type]}">${type}</div>
-        <div class="cd-def">${c.definition || ''}</div>
-        ${states ? `<div class="cd-states">Lifecycle: ${states}</div>` : ''}`;
-    });
-    svg.appendChild(g);
-  });
-
-  // Column labels
-  ['Party', 'Resource', 'Record'].forEach(type => {
-    const t = document.createElementNS(ns, 'text');
-    t.setAttribute('x', colX[type]); t.setAttribute('y', 20);
-    t.setAttribute('text-anchor', 'middle');
-    t.setAttribute('font-size', '10'); t.setAttribute('font-weight', '600');
-    t.setAttribute('fill', color[type]); t.setAttribute('font-family', 'DM Sans, sans-serif');
-    t.setAttribute('text-transform', 'uppercase');
-    t.textContent = type.toUpperCase();
-    svg.appendChild(t);
   });
 
   document.getElementById('concept-label').textContent =
     `${parties.length} parties · ${resources.length} resources · ${records.length} records`;
+
+  // Auto-select first concept
+  const first = parties[0] || resources[0] || records[0];
+  if (first && cardEls[first.id]) cardEls[first.id].click();
+}
+
+function getRolePillClass(name) {
+  const n = (name || '').toLowerCase();
+  if (/cto|ceo|cfo|director|head|chief|vp|president/i.test(n)) return 'exec';
+  if (/manager|supervisor|lead|coordinator/i.test(n)) return 'ops';
+  if (/staff|chef|driver|cook|worker|operator/i.test(n)) return 'staff';
+  return 'default';
+}
+
+function getCapNumber(cap, allCaps) {
+  if (!cap || !cap.parentId) return '';
+  const parent = allCaps[cap.parentId];
+  if (!parent) return '';
+  const parentParent = parent.parentId ? allCaps[parent.parentId] : null;
+  // Find sibling index within parent
+  const siblings = Object.values(allCaps).filter(c => c.parentId === cap.parentId && c.level === cap.level);
+  const idx = siblings.indexOf(cap) + 1;
+  if (parentParent) {
+    const parentSiblings = Object.values(allCaps).filter(c => c.parentId === parentParent.id && c.level === parent.level);
+    const pIdx = parentSiblings.indexOf(parent) + 1;
+    const gpSiblings = Object.values(allCaps).filter(c => c.level === parentParent.level);
+    const gpIdx = gpSiblings.indexOf(parentParent) + 1;
+    return `${gpIdx}.${pIdx}.${idx}`;
+  }
+  const gpSiblings = Object.values(allCaps).filter(c => c.level === parent.level);
+  const pIdx = gpSiblings.indexOf(parent) + 1;
+  return `${pIdx}.${idx}`;
 }
 
 function buildValueStreams(elements) {
@@ -929,56 +1108,63 @@ function buildValueStreams(elements) {
     const stages = (vs.stageIds || []).map(id => elements.valueStreamStages[id]).filter(Boolean);
     const outcomes = elements.outcomes || {};
     const caps = elements.capabilities || {};
+    const concepts = elements.concepts || {};
     const infoObjs = elements.informationObjects || {};
     const roles = elements.roles || {};
+
+    // Collect unique accountable roles across all stages
+    const allStageRoles = new Set();
+    stages.forEach(s => (s.performedByRoleIds || []).forEach(id => allStageRoles.add(id)));
+    const accountableNames = [...allStageRoles].map(id => roles[id]).filter(Boolean).map(r => r.name).join(' + ');
+
+    // Count total unique capabilities
+    const allStageCaps = new Set();
+    stages.forEach(s => (s.requiresCapabilityIds || []).forEach(id => allStageCaps.add(id)));
+
+    // Determine the value object from the first concept or first info object
+    const conceptList = Object.values(concepts);
+    const valueObjName = vs.valueObject || (conceptList.length > 0 ? conceptList[0].name : '');
+    const recipientRole = vs.recipient || '';
 
     const div = document.createElement('div');
     div.style.marginBottom = '2.5rem';
 
-    // Header
-    const badge = vs.layoutZone === 'ecosystem' ? 'Ecosystem' : vs.layoutZone === 'knowledge' ? 'Knowledge' : vs.layoutZone || '';
-
+    // ── Header block (VCC-style) ──
     div.innerHTML = `
       <div class="vs-header-block">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-          <div>
-            <div class="vs-name">${vs.name}</div>
-            <div class="vs-meta">Trigger: ${vs.trigger || '—'} &nbsp;·&nbsp; Outcome: ${vs.terminalOutcome || '—'}</div>
-          </div>
-          ${badge ? `<span style="font-size:10px;font-weight:600;background:var(--resource-light);color:var(--resource-text);padding:3px 10px;border-radius:20px;border:1px solid var(--resource);white-space:nowrap">${badge}</span>` : ''}
+        <div class="vs-title">${vs.name}</div>
+        <div class="vs-subtitle">${vs.description || ''}</div>
+        <div class="vs-meta-row">
+          ${valueObjName ? `<span class="vs-meta-tag vo">Value Object: ${valueObjName}</span>` : ''}
+          ${recipientRole ? `<span class="vs-meta-tag recipient">Recipient: ${recipientRole}</span>` : ''}
+          <span class="vs-meta-tag stages">Stages ${stages.length}</span>
+          <span class="vs-meta-tag caps">Capabilities ${allStageCaps.size}</span>
+        </div>
+        ${accountableNames ? `<div style="margin-top:4px"><span style="font-size:10px;color:var(--ink-4)">Accountable:</span> <span style="font-size:11px;color:var(--ink-2);font-weight:500">${accountableNames}</span></div>` : ''}
+        <div class="vs-trigger-line">
+          <strong>Trigger:</strong> ${vs.trigger || '—'} &nbsp;→&nbsp; <strong>Outcome:</strong> ${vs.terminalOutcome || '—'}
         </div>
       </div>`;
 
-    // State flow
-    const stateFlow = document.createElement('div');
-    stateFlow.className = 'state-flow';
+    // ── Stage navigation pills ──
+    const stageNav = document.createElement('div');
+    stageNav.className = 'stage-nav';
     stages.forEach((s, i) => {
-      const preOut = outcomes[s.preOutcomeId];
-      if (i === 0 && preOut) {
-        const pill = document.createElement('div');
-        pill.className = 'state-pill';
-        pill.textContent = preOut.name || preOut.id;
-        stateFlow.appendChild(pill);
+      const pill = document.createElement('div');
+      pill.className = 'stage-nav-pill' + (i === 0 ? ' active' : '') + (i === stages.length - 1 ? ' terminal' : '');
+      pill.textContent = s.name;
+      pill.dataset.idx = i;
+      stageNav.appendChild(pill);
+      if (i < stages.length - 1) {
         const arr = document.createElement('span');
-        arr.className = 'state-arrow'; arr.textContent = '›';
-        stateFlow.appendChild(arr);
-      }
-      const postOut = outcomes[s.postOutcomeId];
-      if (postOut) {
-        const pill = document.createElement('div');
-        pill.className = 'state-pill' + (i === stages.length - 1 ? ' terminal' : '');
-        pill.textContent = postOut.name || postOut.id;
-        stateFlow.appendChild(pill);
-        if (i < stages.length - 1) {
-          const arr = document.createElement('span');
-          arr.className = 'state-arrow'; arr.textContent = '›';
-          stateFlow.appendChild(arr);
-        }
+        arr.className = 'stage-nav-arrow';
+        arr.textContent = '›';
+        stageNav.appendChild(arr);
       }
     });
-    div.appendChild(stateFlow);
+    div.appendChild(stageNav);
 
-    // Stage cards
+    // ── Dark stage cards ──
     const scroll = document.createElement('div');
     scroll.className = 'stages-scroll';
     const row = document.createElement('div');
@@ -986,7 +1172,70 @@ function buildValueStreams(elements) {
 
     const detailPanel = document.createElement('div');
     detailPanel.className = 'stage-detail';
-    detailPanel.innerHTML = '<p class="sd-placeholder">Click a stage to see its full breakdown.</p>';
+    detailPanel.style.display = 'none';
+
+    function showDetail(i) {
+      const s = stages[i];
+      const stageCaps = (s.requiresCapabilityIds || []).map(id => caps[id]).filter(Boolean);
+      const stageRoles = (s.performedByRoleIds || []).map(id => roles[id]).filter(Boolean);
+      const stageInfoObjs = (s.informationObjectIds || []).map(id => {
+        // Look up in informationObjects first, then concepts
+        return infoObjs[id] || concepts[id] || { id, name: snakeToTitle(id) };
+      });
+      const preOut = outcomes[s.preOutcomeId];
+      const postOut = outcomes[s.postOutcomeId];
+      const entryCrit = s.entryCriteria || (preOut ? preOut.name : '—');
+      const exitCrit = s.exitCriteria || (postOut ? postOut.name : '—');
+      const ppit = s.capabilityPPIT || {};
+      const hasPeople = (ppit.roleIds && ppit.roleIds.length > 0) || stageRoles.length > 0;
+      const hasProcess = !!(ppit.processActivities && ppit.processActivities.length > 0);
+      const hasInfo = (ppit.informationObjectIds && ppit.informationObjectIds.length > 0) || stageInfoObjs.length > 0;
+      const hasTech = !!(ppit.technologyAppIds && ppit.technologyAppIds.length > 0);
+
+      detailPanel.style.display = 'block';
+      detailPanel.innerHTML = `
+        <div class="sd-header">
+          <div class="sd-name"><span class="sd-num">${i+1}</span> ${s.name}</div>
+          <button class="sd-close" onclick="this.closest('.stage-detail').style.display='none'">✕</button>
+        </div>
+        <div class="sd-grid">
+          <div class="sd-block">
+            <div class="sd-label">Entry Criteria</div>
+            <div class="sd-val">${entryCrit}</div>
+          </div>
+          <div class="sd-block">
+            <div class="sd-label">Exit Criteria</div>
+            <div class="sd-val">${exitCrit}</div>
+          </div>
+          <div class="sd-block">
+            <div class="sd-label">Participating Capabilities (${stageCaps.length})</div>
+            <div class="sd-val">
+              ${stageCaps.map(c => `<div class="sd-cap-entry"><span class="sd-cap-num">${getCapNumber(c, caps)}</span> ${c.name}</div>`).join('') || '—'}
+            </div>
+          </div>
+          <div class="sd-block">
+            <div class="sd-label">Business Objects</div>
+            <div class="sd-obj-pills">
+              ${stageInfoObjs.map(o => `<span class="sd-obj-pill">${o.name}</span>`).join('') || '<span class="sd-val">—</span>'}
+            </div>
+          </div>
+          <div class="sd-block">
+            <div class="sd-label">Stakeholders</div>
+            <div class="sd-role-pills">
+              ${stageRoles.map(r => `<span class="sd-role-pill stage-role-pill ${getRolePillClass(r.name)}">${r.name}</span>`).join('') || '<span class="sd-val">—</span>'}
+            </div>
+          </div>
+          <div class="sd-block">
+            <div class="sd-label">PPIT</div>
+            <div class="sd-ppit-legend">
+              <span class="sd-ppit-item"><span class="sd-ppit-dot" style="background:${hasPeople ? '#378ADD' : '#d1d5db'}"></span> People</span>
+              <span class="sd-ppit-item"><span class="sd-ppit-dot" style="background:${hasProcess ? '#1D9E75' : '#d1d5db'}"></span> Process</span>
+              <span class="sd-ppit-item"><span class="sd-ppit-dot" style="background:${hasInfo ? '#D4537E' : '#d1d5db'}"></span> Information</span>
+              <span class="sd-ppit-item"><span class="sd-ppit-dot" style="background:${hasTech ? '#BA7517' : '#d1d5db'}"></span> Technology</span>
+            </div>
+          </div>
+        </div>`;
+    }
 
     stages.forEach((s, i) => {
       const card = document.createElement('div');
@@ -994,73 +1243,91 @@ function buildValueStreams(elements) {
 
       const stageCaps = (s.requiresCapabilityIds || []).map(id => caps[id]).filter(Boolean);
       const stageRoles = (s.performedByRoleIds || []).map(id => roles[id]).filter(Boolean);
-      const stageInfo = (s.informationObjectIds || []).map(id => infoObjs[id]).filter(Boolean);
+      const stageInfoObjs = (s.informationObjectIds || []).map(id => infoObjs[id] || concepts[id]).filter(Boolean);
       const ppit = s.capabilityPPIT || {};
-      const hasPeople = ppit.roleIds && ppit.roleIds.length > 0 || stageRoles.length > 0;
+      const hasPeople = (ppit.roleIds && ppit.roleIds.length > 0) || stageRoles.length > 0;
       const hasProcess = !!(ppit.processActivities && ppit.processActivities.length > 0);
-      const hasInfo = ppit.informationObjectIds && ppit.informationObjectIds.length > 0 || stageInfo.length > 0;
+      const hasInfo = (ppit.informationObjectIds && ppit.informationObjectIds.length > 0) || stageInfoObjs.length > 0;
       const hasTech = !!(ppit.technologyAppIds && ppit.technologyAppIds.length > 0);
 
       const preOut = outcomes[s.preOutcomeId];
       const postOut = outcomes[s.postOutcomeId];
-      const actorNames = stageRoles.map(r => r.name).join(' · ') || '—';
-      const topCaps = stageCaps.slice(0, 3);
-      const moreCaps = stageCaps.length - 3;
+      const entryCrit = s.entryCriteria || (preOut ? preOut.name : '');
+      const exitCrit = s.exitCriteria || (postOut ? postOut.name : '');
+
+      const capItems = stageCaps.slice(0, 5).map(c =>
+        `<li class="stage-cap-item"><span class="stage-cap-num">${getCapNumber(c, caps)}</span><span class="stage-cap-name">${c.name}</span></li>`
+      ).join('');
+      const moreCount = stageCaps.length - 5;
 
       card.innerHTML = `
-        <div class="stage-num">S${i+1}</div>
-        <div class="stage-name">${s.name}</div>
-        <div class="stage-actor">${actorNames}</div>
-        <div class="stage-caps">
-          ${topCaps.map(c => `<span class="stage-cap-tag">${c.name}</span>`).join('')}
-          ${moreCaps > 0 ? `<span class="stage-cap-tag">+${moreCaps}</span>` : ''}
+        <div class="stage-header">
+          <span class="stage-label">Stage ${i+1} of ${stages.length}</span>
         </div>
+        <div class="stage-name">${s.name}</div>
+        <div class="stage-states">
+          <div class="stage-state-box">
+            <div class="stage-state-label">Entry State</div>
+            <div class="stage-state-val">${entryCrit || '—'}</div>
+          </div>
+          <div class="stage-state-box">
+            <div class="stage-state-label">Exit State</div>
+            <div class="stage-state-val">${exitCrit || '—'}</div>
+          </div>
+        </div>
+        ${stageRoles.length > 0 ? `
+        <div class="stage-stakeholders">
+          ${stageRoles.map(r => `<span class="stage-role-pill ${getRolePillClass(r.name)}">${r.name}</span>`).join('')}
+        </div>` : ''}
+        <ul class="stage-cap-list">
+          ${capItems}
+          ${moreCount > 0 ? `<li class="stage-cap-more">+${moreCount} more</li>` : ''}
+        </ul>
         <div class="ppit-row">
-          <span class="ppit-dot" style="background:${hasPeople ? '#378ADD' : '#e2e1dc'}" title="People"></span>
-          <span class="ppit-dot" style="background:${hasProcess ? '#1D9E75' : '#e2e1dc'}" title="Process"></span>
-          <span class="ppit-dot" style="background:${hasInfo ? '#D4537E' : '#e2e1dc'}" title="Information"></span>
-          <span class="ppit-dot" style="background:${hasTech ? '#BA7517' : '#e2e1dc'}" title="Technology"></span>
+          <span class="ppit-indicator"><span class="ppit-dot" style="background:${hasPeople ? '#378ADD' : '#475569'}"></span></span>
+          <span class="ppit-indicator"><span class="ppit-dot" style="background:${hasProcess ? '#1D9E75' : '#475569'}"></span></span>
+          <span class="ppit-indicator"><span class="ppit-dot" style="background:${hasInfo ? '#D4537E' : '#475569'}"></span></span>
+          <span class="ppit-indicator"><span class="ppit-dot" style="background:${hasTech ? '#BA7517' : '#475569'}"></span></span>
         </div>`;
 
       card.addEventListener('click', () => {
         row.querySelectorAll('.stage-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-        const entryCrit = s.entryCriteria || (preOut ? (preOut.name || preOut.id) : '—');
-        const exitCrit = s.exitCriteria || (postOut ? (postOut.name || postOut.id) : '—');
-        const voState = s.valueObjectState ? `<div class="sd-block"><div class="sd-label">Value Object State</div><div class="sd-val">${s.valueObjectState}</div></div>` : '';
-        detailPanel.innerHTML = `
-          <div class="sd-name">S${i+1} — ${s.name}</div>
-          <div class="sd-grid">
-            <div class="sd-block">
-              <div class="sd-label">Entry criteria</div>
-              <div class="sd-val">${entryCrit}</div>
-            </div>
-            <div class="sd-block">
-              <div class="sd-label">Exit criteria</div>
-              <div class="sd-val">${exitCrit}</div>
-            </div>
-            <div class="sd-block">
-              <div class="sd-label">Capabilities (${stageCaps.length})</div>
-              <div class="sd-val">${stageCaps.map(c=>c.name).join(' · ') || '—'}</div>
-            </div>
-            <div class="sd-block">
-              <div class="sd-label">Information objects</div>
-              <div class="sd-val">${stageInfo.map(o=>o.name).join(' · ') || '—'}</div>
-            </div>
-            ${voState}
-          </div>`;
+        // Sync nav pills
+        stageNav.querySelectorAll('.stage-nav-pill').forEach(p => p.classList.remove('active'));
+        stageNav.querySelector(`[data-idx="${i}"]`).classList.add('active');
+        showDetail(i);
       });
 
       row.appendChild(card);
     });
+
+    // Nav pill click → scroll to card + show detail
+    stageNav.querySelectorAll('.stage-nav-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        const idx = parseInt(pill.dataset.idx, 10);
+        stageNav.querySelectorAll('.stage-nav-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        row.querySelectorAll('.stage-card').forEach(c => c.classList.remove('active'));
+        row.children[idx].classList.add('active');
+        row.children[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        showDetail(idx);
+      });
+    });
+
     scroll.appendChild(row);
     div.appendChild(scroll);
     div.appendChild(detailPanel);
     vsEl.appendChild(div);
+
+    // Auto-open first stage
+    if (stages.length > 0) {
+      row.children[0].classList.add('active');
+      showDetail(0);
+    }
   });
 
   const vsCount = vsList.length;
-  const stageCount = Object.keys(elements.valueStreamStages || {}).length;
   document.querySelector('[data-tab="valuestreams"]').textContent = `Value streams (${vsCount})`;
 }
 
@@ -1104,7 +1371,7 @@ function renderBundle(raw) {
     </div>`;
 
   buildTreemap(elements.capabilities || {});
-  buildConceptGraph(elements.concepts || {});
+  buildConceptGraph(elements.concepts || {}, elements.capabilities || {});
   buildValueStreams(elements);
   buildMetrics(elements);
 
