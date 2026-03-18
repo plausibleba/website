@@ -564,11 +564,16 @@ nav {
 <div id="canvas">
   <div class="canvas-header" id="canvas-header"></div>
 
-  <div class="canvas-tabs">
-    <button class="tab-btn active" data-tab="capabilities">Capability map</button>
-    <button class="tab-btn" data-tab="concepts">Concept model</button>
-    <button class="tab-btn" data-tab="valuestreams">Value streams</button>
-    <button class="tab-btn" data-tab="metrics">Metrics</button>
+  <div class="canvas-tabs" style="justify-content:space-between">
+    <div style="display:flex;gap:0">
+      <button class="tab-btn active" data-tab="capabilities">Capability map</button>
+      <button class="tab-btn" data-tab="concepts">Concept model</button>
+      <button class="tab-btn" data-tab="valuestreams">Value streams</button>
+      <button class="tab-btn" data-tab="metrics">Metrics</button>
+    </div>
+    <button id="download-bundle-btn" style="display:none;font-family:inherit;font-size:12px;font-weight:500;color:var(--ink-3);background:none;border:1px solid var(--border);border-radius:6px;padding:6px 14px;cursor:pointer;margin:8px 12px;transition:all 0.15s;white-space:nowrap" onclick="downloadBundle()">
+      ↓ Download JSON
+    </button>
   </div>
 
   <div id="tab-capabilities" class="tab-panel active">
@@ -1179,7 +1184,53 @@ function buildValueStreams(elements) {
   }
 
   vsList.forEach(vs => {
-    const stages = (vs.stageIds || []).map(id => elements.valueStreamStages[id]).filter(Boolean);
+    // Support both ba-skills-bundle format (stageIds → valueStreamStages) and
+    // VCC scaffold format (activityIds → activities with pre/postOutcomeId)
+    let stages;
+    if (vs.stageIds && elements.valueStreamStages) {
+      stages = (vs.stageIds || []).map(id => elements.valueStreamStages[id]).filter(Boolean);
+    } else if (vs.activityIds && elements.activities) {
+      // Convert VCC activities to stage-like objects for rendering
+      stages = (vs.activityIds || []).map(actId => {
+        const act = elements.activities[actId];
+        if (!act) return null;
+        return {
+          id: actId,
+          name: act.name,
+          preOutcomeId: act.preOutcomeId,
+          postOutcomeId: act.postOutcomeId,
+          requiresCapabilityIds: act.requiresCapabilityIds || act.enabledByCapabilityIds || [],
+          performedByRoleIds: act.performedByRoleIds || [],
+          informationObjectIds: act.informationObjectIds || [],
+          metricIds: act.metricIds || [],
+          capabilityPPIT: act.capabilityPPIT || {},
+        };
+      }).filter(Boolean);
+    } else {
+      // Walk nextActivityId chain from activityChainHead
+      stages = [];
+      const activities = elements.activities || {};
+      let current = vs.activityChainHead;
+      const seen = new Set();
+      while (current && !seen.has(current)) {
+        seen.add(current);
+        const act = activities[current];
+        if (act) {
+          stages.push({
+            id: current,
+            name: act.name,
+            preOutcomeId: act.preOutcomeId,
+            postOutcomeId: act.postOutcomeId,
+            requiresCapabilityIds: act.requiresCapabilityIds || act.enabledByCapabilityIds || [],
+            performedByRoleIds: act.performedByRoleIds || [],
+            informationObjectIds: act.informationObjectIds || [],
+            metricIds: act.metricIds || [],
+            capabilityPPIT: act.capabilityPPIT || {},
+          });
+        }
+        current = act?.nextActivityId;
+      }
+    }
     const outcomes = elements.outcomes || {};
     const caps = elements.capabilities || {};
     const concepts = elements.concepts || {};
@@ -1426,8 +1477,22 @@ function buildMetrics(elements) {
   });
 }
 
+let _lastRenderedBundle = null;
+
+function downloadBundle() {
+  if (!_lastRenderedBundle) return;
+  const name = (_lastRenderedBundle.name || 'operating-model').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const blob = new Blob([JSON.stringify(_lastRenderedBundle, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name + '-bundle.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 function renderBundle(raw) {
   const bundle = normalizeBundle(raw);
+  _lastRenderedBundle = bundle;
   const meta = bundle.meta || {};
   const elements = bundle.elements || {};
 
@@ -1452,6 +1517,7 @@ function renderBundle(raw) {
   document.getElementById('upload-state').style.display = 'none';
   document.getElementById('generating-state').style.display = 'none';
   document.getElementById('canvas').style.display = 'block';
+  document.getElementById('download-bundle-btn').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
