@@ -3,39 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Page not found — PlausibleBA</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
-    <link rel="stylesheet" href="/site.css">
-    <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-fQD2wVJrTO7vhKcNfQW4P.js"></script>
-    <script>
-      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-      plausible.init()
-    </script>
+<title>Not found — PlausibleBA</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+  <link rel="stylesheet" href="/site.css">
+  <script async src="https://plausible.io/js/pa-fQD2wVJrTO7vhKcNfQW4P.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+  <style>
+    .architect-wrap {
+      margin: 0 auto 2.5rem;
+      width: 200px;
+      height: 200px;
+    }
+    .architect-wrap svg {
+      width: 100%;
+      height: 100%;
+    }
+    .four-oh-four {
+      font-family: var(--serif);
+      font-size: clamp(5rem, 15vw, 9rem);
+      color: rgba(255,255,255,0.06);
+      line-height: 1;
+      position: absolute;
+      top: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
 </head>
 <body>
+
 <nav class="site-nav">
   <div class="nav-inner">
     <a class="nav-brand" href="/">PlausibleBA</a>
     <div class="nav-links">
+      <a href="/skills">Skills</a>
+      <a href="/methodology">Methodology</a>
       <a href="/install">Install</a>
-      <a class="nav-cta" href="/install">Install free →</a>
+      <a href="/canvas">Canvas</a>
+      <a href="/case-study">Case study</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a class="nav-cta" href="/canvas">Try it free →</a>
     </div>
   </div>
 </nav>
-<section class="hero" style="padding:6rem 2rem;text-align:center">
-  <div class="hero-inner" style="max-width:480px;margin:0 auto">
-    <div class="hero-eyebrow">404</div>
-    <h1 style="font-size:2rem;margin-bottom:1rem">Page not found</h1>
-    <p class="hero-sub">This page doesn't exist yet — or may have moved.</p>
-    <div class="hero-actions" style="justify-content:center;margin-top:2rem">
-      <a class="btn-primary" href="/">Go home →</a>
-      <a class="btn-ghost" href="/install">Install the skills</a>
+
+<section class="hero" style="padding:5rem 2rem 5rem;text-align:center;position:relative;min-height:520px;display:flex;align-items:center;">
+  <div class="four-oh-four">404</div>
+  <div class="hero-inner" style="max-width:520px;margin:0 auto;position:relative;z-index:1;">
+
+    <!-- Architect SVG illustration -->
+    <div class="architect-wrap">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <!-- Blueprint/plans roll -->
+        <rect x="30" y="110" width="80" height="52" rx="4" fill="rgba(74,158,218,0.12)" stroke="rgba(74,158,218,0.35)" stroke-width="1.5"/>
+        <!-- Blueprint grid lines -->
+        <line x1="44" y1="110" x2="44" y2="162" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="58" y1="110" x2="58" y2="162" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="72" y1="110" x2="72" y2="162" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="86" y1="110" x2="86" y2="162" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="100" y1="110" x2="100" y2="162" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="30" y1="124" x2="110" y2="124" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="30" y1="138" x2="110" y2="138" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <line x1="30" y1="152" x2="110" y2="152" stroke="rgba(74,158,218,0.2)" stroke-width="0.75"/>
+        <!-- Blueprint doodle — question mark floor plan -->
+        <path d="M52 120 Q52 116 56 116 Q60 116 60 120 Q60 124 56 126 L56 130" stroke="rgba(74,158,218,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="56" cy="133" r="1.2" fill="rgba(74,158,218,0.6)"/>
+        <!-- Roll curl at top -->
+        <path d="M30 110 Q70 104 110 110" stroke="rgba(74,158,218,0.4)" stroke-width="1.5" fill="none"/>
+
+        <!-- Architect figure — body -->
+        <rect x="82" y="88" width="24" height="30" rx="4" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2"/>
+        <!-- Hard hat -->
+        <ellipse cx="94" cy="72" rx="14" ry="9" fill="rgba(74,158,218,0.25)" stroke="rgba(74,158,218,0.5)" stroke-width="1.5"/>
+        <rect x="80" y="79" width="28" height="4" rx="2" fill="rgba(74,158,218,0.35)" stroke="rgba(74,158,218,0.4)" stroke-width="1"/>
+        <!-- Head -->
+        <circle cx="94" cy="82" r="10" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
+        <!-- Eyes -->
+        <circle cx="90" cy="81" r="1.5" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="98" cy="81" r="1.5" fill="rgba(255,255,255,0.5)"/>
+        <!-- Smile -->
+        <path d="M90 86 Q94 89 98 86" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+        <!-- Left arm holding plans -->
+        <line x1="82" y1="96" x2="68" y2="108" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/>
+        <!-- Right arm up with pencil -->
+        <line x1="106" y1="96" x2="120" y2="82" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round"/>
+        <!-- Pencil -->
+        <line x1="118" y1="84" x2="128" y2="70" stroke="rgba(255,220,100,0.7)" stroke-width="2" stroke-linecap="round"/>
+        <polygon points="128,70 124,68 126,74" fill="rgba(255,220,100,0.9)"/>
+        <!-- Legs -->
+        <line x1="88" y1="118" x2="84" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="100" y1="118" x2="104" y2="140" stroke="rgba(255,255,255,0.2)" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- Feet -->
+        <ellipse cx="83" cy="141" rx="5" ry="2.5" fill="rgba(255,255,255,0.15)"/>
+        <ellipse cx="105" cy="141" rx="5" ry="2.5" fill="rgba(255,255,255,0.15)"/>
+
+        <!-- Scattered small nodes suggesting an unfinished capability map -->
+        <circle cx="150" cy="50" r="5" fill="none" stroke="rgba(74,158,218,0.3)" stroke-width="1"/>
+        <circle cx="168" cy="65" r="5" fill="none" stroke="rgba(74,158,218,0.3)" stroke-width="1"/>
+        <circle cx="158" cy="82" r="5" fill="none" stroke="rgba(74,158,218,0.3)" stroke-width="1"/>
+        <line x1="150" y1="55" x2="163" y2="60" stroke="rgba(74,158,218,0.2)" stroke-width="0.75" stroke-dasharray="3 3"/>
+        <line x1="168" y1="70" x2="163" y2="77" stroke="rgba(74,158,218,0.2)" stroke-width="0.75" stroke-dasharray="3 3"/>
+        <!-- Faint question mark near nodes -->
+        <text x="145" y="48" font-family="Georgia, serif" font-size="10" fill="rgba(74,158,218,0.25)" text-anchor="middle">?</text>
+      </svg>
+    </div>
+
+    <div class="hero-eyebrow" style="margin-bottom:1rem">404</div>
+    <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:1rem;color:#fff;">You've found something<br>that isn't quite ready.</h1>
+    <p class="hero-sub" style="margin-bottom:2.5rem">Our architect has the plans — this page is still on the drawing board. Let us point you somewhere useful.</p>
+
+    <div class="hero-actions" style="justify-content:center;flex-wrap:wrap;gap:12px;">
+      <a class="btn-primary" href="/canvas">Generate your operating model →</a>
+      <a class="btn-ghost" href="/">Go home</a>
+    </div>
+
+    <div style="margin-top:3rem;display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
+      <a href="/skills" style="font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;">Skills</a>
+      <a href="/methodology" style="font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
+      <a href="/install" style="font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;">Install</a>
+      <a href="/case-study" style="font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;">Case study</a>
+      <a href="/contact" style="font-size:13px;color:rgba(255,255,255,0.4);text-decoration:none;">Contact</a>
     </div>
   </div>
 </section>
+
+<footer class="site-footer">
+  <div class="footer-bottom" style="max-width:var(--max);margin:0 auto;">
+    <p>© 2026 PlausibleBA · <a href="/privacy">Privacy policy</a></p>
+    <p>Built with <a href="https://claude.ai/download" target="_blank">Claude</a> by Anthropic</p>
+  </div>
+</footer>
+
 </body>
 </html>
