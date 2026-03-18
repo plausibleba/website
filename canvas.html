@@ -1790,34 +1790,65 @@ async function callCanvasLLM(messages, maxTokens, onStatus) {
 
 // ── Pass A1: Value Stream Extraction ──
 function buildPassA1Prompt(transcript) {
+  // Exact match of VCC pass-a1-value-streams.ts
   return `You are a business architect defining Value Streams for a governance diagnostic.
 A ValueStream is the end-to-end flow that delivers measurable stakeholder value — triggered by a defined need, ending at a verifiable outcome. Work at board level: structural flow of value, not process detail.
 
 ## Your Task
 From the source material below, identify ALL Value Streams present. Do not cap the number — extract every distinct end-to-end flow the source describes.
 
+## What a Value Stream Is (and Isn't)
+- A Value Stream is triggered by a stakeholder need and ends with a delivered outcome to a recipient
+- It is decomposed into stages (not steps), each with entry/exit criteria
+- It is NOT an internal process, a capability, a technology workflow, or a task list
+
 ## Rules
-- Each VS is a RECURRING operational flow that delivers value repeatedly — not a one-time project or strategic initiative.
-- Each VS is outcome-driven, not function-driven
+- Each VS is a RECURRING operational flow that delivers value repeatedly — not a one-time project or strategic initiative. "Lead to Customer" and "Order to Delivery" are VS. "Technology Integration" and "Digital Transformation" are projects/initiatives — do NOT include them as VS.
+- Each VS is outcome-driven, not function-driven ("Member Certification Lifecycle" not "Certification Team Activities")
 - Each VS has a clear trigger event and a clear terminal outcome
-- VS names are concise, 2-5 words, title case. Use "<Trigger> to <Outcome>" pattern where natural.
-- zone: "ecosystem" = externally-facing; "knowledge" = internally-facing
-- valueObject: the primary business object that flows through the stream
-- recipient: who receives the value at the end
-- Stages: 4-8 per VS. Each stage = a governance phase or progression milestone, not a task. MECE.
-- Stage names describe the state the Value Object reaches, not activities performed.
-- Each stage must have entryCriteria and exitCriteria.
+- VS names are concise, 2-5 words, title case. Use "<Trigger> to <Outcome>" pattern where natural (e.g. "Lead to Customer", "Order to Delivery", "Issue to Resolution", "Hire to Productive"). Name from the recipient's perspective where possible.
+- zone: "ecosystem" = externally-facing (customer, member, partner, market); "knowledge" = internally-facing (operations, reporting, governance)
+- valueObject: the primary business object that flows through the stream and changes state at each stage (e.g. "Booking", "Order", "Claim", "Tenancy")
+- recipient: who receives the value at the end (e.g. "Guest", "Customer", "Member")
+- Stages: 4-8 per VS. Each stage = a governance phase or progression milestone, not a task. MECE — no gaps, no overlaps.
+- Stage names describe the state the Value Object reaches, not activities performed. E.g. "Booking Confirmed", "Property Prepared", "Stay Completed" — NOT "Manage Booking" or "Send Confirmation Email".
+- Each stage must have entryCriteria (what must be true to enter) and exitCriteria (what must be true to leave — the value created).
+- If the source contains tab names, sheet names, section headings, or column groupings that map to distinct end-to-end flows — each one is likely a separate VS. Extract them all.
 
 Return ONLY valid JSON, no markdown fences:
 {
-  "org": { "name": "", "industry": "", "companySize": "", "description": "", "stakeholder": "" },
+  "org": {
+    "name": "",
+    "industry": "",
+    "companySize": "",
+    "description": "",
+    "stakeholder": "",
+    "confidence": "high|medium|low"
+  },
   "valueStreams": [
     {
-      "name": "", "description": "", "zone": "ecosystem", "valueObject": "", "recipient": "",
-      "trigger": "", "terminalOutcome": "", "stakeholder": "",
+      "id": 1,
+      "name": "Member Certification Lifecycle",
+      "description": "End-to-end flow from application through credential maintenance",
+      "zone": "ecosystem",
+      "valueObject": "Certification",
+      "recipient": "Candidate",
+      "trigger": "Candidate submits certification application",
+      "terminalOutcome": "Credential issued and maintained in good standing",
+      "stakeholder": "Candidate, Employer",
+      "confidence": "high|medium|low",
       "stages": [
-        { "name": "", "entryCriteria": "", "exitCriteria": "", "stakeholders": [], "valueItem": "",
-          "metrics": [{ "name": "", "current": "", "target": "", "evidenced": false }] }
+        {
+          "name": "Application Received",
+          "entryCriteria": "Candidate submits complete application",
+          "exitCriteria": "Application validated and registered in system",
+          "stakeholders": ["Candidate", "Registrar"],
+          "valueItem": "Validated application",
+          "metrics": [
+            { "name": "Application Processing Time", "current": "", "target": "", "evidenced": false }
+          ],
+          "confidence": "high"
+        }
       ]
     }
   ]
@@ -1827,7 +1858,7 @@ Source material:
 ${transcript}`;
 }
 
-// ── Pass A2: Capability Mapping ──
+// ── Pass A2: Capability Mapping — exact match of VCC pass-a2-capability-mapping.ts ──
 function buildPassA2Prompt(transcript, confirmedVS) {
   const vsRef = confirmedVS.map(vs =>
     `VS: "${vs.name}"\n  Stages: ${(vs.stages||[]).map(s => `"${typeof s==='string'?s:s.name}"`).join(', ')}`
@@ -1838,38 +1869,96 @@ function buildPassA2Prompt(transcript, confirmedVS) {
 The following Value Streams and their stages are CONFIRMED. Do not rename, add, or remove them:
 ${vsRef}
 
-## Roles
-Identify all roles (4-10 total). Roles are responsibility-bearing positions, not people or departments.
+## Roles (Step 03)
+Identify all roles that participate in these value streams. Roles are responsibility-bearing positions, not people or departments.
+- Include both execution roles (doing work) and governing roles (approving, overseeing)
+- 4-10 roles total across all value streams
+- Names are title-case position names
 
-## Capability Map
-Produce a structured L1 → L2 → L3 capability hierarchy.
-- L1 = Business Area (5-8), L2 = Business Domain (3-7 per L1), L3 = Business Capability (3-8 per L2)
-- Every L3 grounded in a named business object
-- Classify each L1 as "Execution" or "Governance"
-- MECE: siblings must not overlap
-- Number each node: L1=1, L2=1.1, L3=1.1.1
-- Capabilities are SHARED across activities and value streams
+## Capability Map (Step 04)
+Produce a structured L1 → L2 → L3 capability hierarchy covering the business domain.
+
+### Hierarchy
+- L1 = Business Area: broad accountability domain (5-8 for an enterprise)
+- L2 = Business Domain: logical grouping within an area (3-7 per L1)
+- L3 = Business Capability: operational ability (3-8 per L2)
+
+### Rules
+- A Business Capability is the stable ability of the organisation to perform a business function, grounded in a core business object, independent of organisational structure.
+- CRITICAL: If the source material contains a capability map, capability register, named capabilities, or column headers that describe organisational abilities — extract those names VERBATIM. Do not rename, generalise, or replace them with generic alternatives.
+- If no explicit capabilities exist in the source, derive them using Verb-Noun convention (e.g. "Manage Member Credentials", not "Credential Management Execution")
+- Every L3 must be grounded in a named business object (the thing it manages)
+- Classify each L1 as "Execution" (directly enabling value delivery) or "Governance" (oversight, compliance, risk)
+- MECE: siblings must not overlap and must collectively cover the parent's scope
+- Number each node positionally: L1=1, L2=1.1, L3=1.1.1 — dot-separated integers
+- IMPORTANT: Capabilities are SHARED across activities and value streams. The same capability should appear in multiple VS where relevant. Do not create one capability per activity.
 
 ## Stage-Capability Assignments
-For each VS, map which L3 capabilities participate in each stage (2-5 per stage).
+For each VS, map which L3 capabilities participate in each stage.
+- Each stage should have 2-5 participating capabilities
+- Use the L3 capability names exactly as defined in the map
+- Flag any stage with zero capabilities (gap) or any L3 that participates in no stage (unused)
 
 Return ONLY valid JSON, no markdown fences:
 {
-  "roles": [{ "id": "role_x", "name": "", "type": "Internal", "description": "" }],
+  "roles": [
+    { "id": "role_credit_analyst", "name": "Credit Analyst", "type": "Internal", "description": "Responsible for quantitative credit assessment" }
+  ],
   "capabilityMap": {
-    "l1Areas": [{
-      "name": "", "number": "1", "type": "Execution",
-      "domains": [{
-        "name": "", "number": "1.1",
-        "capabilities": [{ "name": "", "number": "1.1.1", "businessObject": "", "description": "" }]
-      }]
-    }]
+    "l1Areas": [
+      {
+        "name": "Customer Management",
+        "number": "1",
+        "type": "Execution",
+        "domains": [
+          {
+            "name": "Customer Acquisition",
+            "number": "1.1",
+            "capabilities": [
+              {
+                "name": "Manage Lead Qualification",
+                "number": "1.1.1",
+                "businessObject": "Lead",
+                "description": "Ability to assess and qualify inbound leads for sales readiness"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
-  "stageCapabilities": [{ "vsName": "", "stages": [{ "stageName": "", "capabilityNames": [] }] }],
-  "tech": [{ "id": 1, "name": "", "type": "", "friction": false, "notes": "" }],
-  "painPoints": [{ "id": 1, "description": "", "category": "", "intensity": 7, "affectedVsName": "", "affectedStage": "", "binding": false }],
-  "metrics": [{ "id": 1, "name": "", "current": "", "target": "", "affectedVsName": "", "stage": "" }],
-  "gaps": [{ "severity": "required", "prompt": "" }]
+  "stageCapabilities": [
+    {
+      "vsName": "MUST MATCH confirmed VS name exactly",
+      "stages": [
+        {
+          "stageName": "MUST MATCH confirmed stage name exactly",
+          "capabilityNames": ["Manage Lead Qualification", "Manage Pipeline Tracking"]
+        }
+      ]
+    }
+  ],
+  "tech": [
+    { "id": 1, "name": "", "type": "CRM|ERP|Comms|Analytics|Custom|Other", "friction": true, "notes": "" }
+  ],
+  "painPoints": [
+    {
+      "id": 1,
+      "description": "",
+      "category": "DataSignalFriction|ProcessHandoffFriction|GovernanceRiskFriction|IncentiveCapacityFriction|TechnologyIntegrationFriction",
+      "intensity": 7,
+      "affectedVsName": "MUST be one of the confirmed VS names above",
+      "affectedStage": "Stage name only",
+      "binding": false,
+      "confidence": "high|medium|low"
+    }
+  ],
+  "metrics": [
+    { "id": 1, "name": "", "current": "", "target": "", "affectedVsName": "confirmed VS name", "stage": "stage name only" }
+  ],
+  "gaps": [
+    { "severity": "required|recommended", "prompt": "Specific question to fill this gap" }
+  ]
 }
 
 Source material:
@@ -1951,54 +2040,138 @@ function buildPassBPrompt(ir) {
   const metricContext = (ir.metrics || []).filter(m => m.name).map(m => ({ id: m.id, name: m.name, current: m.current, target: m.target }));
   const techContext = (ir.tech || []).filter(t => t.name).map(t => ({ id: t.id, name: t.name, type: t.type }));
 
+  // Exact match of VCC pass-b-scaffold-formalisation.ts buildScaffoldPrompt
   return `You are a business architect formalising a value stream model into a VCC ScaffoldModel.
 
 ## Determinism Requirement
-This is a structural formalisation step. Given these inputs, produce the same output every time. IDs derived mechanically from element names (snake_case with type prefix). No creative variation.
+This is a structural formalisation step — a pure function. Given these inputs, produce the same output every time. IDs are derived mechanically from element names (snake_case with type prefix). No creative variation.
 
 ## ID Convention
-- vs_<snake_case>, outcome_<snake_case>, act_<snake_case>, cap_<snake_case>, role_<snake_case>, metric_<snake_case>, io_<snake_case>, tech_<snake_case>
+- vs_<snake_case_name>     e.g. vs_lead_to_customer
+- outcome_<snake_case>     e.g. outcome_lead_qualified
+- act_<snake_case_name>    e.g. act_qualify_lead  (SHORT — 2-4 words max)
+- cap_<snake_case_name>    e.g. cap_lead_qualification
+- role_<snake_case_name>   e.g. role_credit_analyst
+- metric_<snake_case_name>
+- io_<snake_case_name>     e.g. io_customer_order
+- tech_<snake_case_name>   e.g. tech_salesforce
 
-## FSM Chain Rules (CRITICAL)
+## Naming Rules (CRITICAL)
+- Activity names: SHORT verb phrases, 2-5 words max. E.g. "Qualify Lead", "Conduct Discovery Call", "Prepare Proposal". Do NOT repeat the full stage description. Activity names must be DIFFERENT from capability names — activities are actions performed at a stage, capabilities are enduring abilities.
+- VS names: Use EXACTLY the names provided in the inputs. Do not embellish or reword them.
+- Outcome names: Short noun phrases derived from stage entry/exit criteria. E.g. "Lead Qualified", "Requirements Understood".
+
+## FSM Chain Rules (CRITICAL — violations fail validation)
 Each Value Stream is a single linear activity chain:
-1. Each activity has preOutcomeId !== postOutcomeId
-2. activity[i].postOutcomeId === activity[i+1].preOutcomeId
-3. nextActivityId chain: no breaks, no cycles. Last activity has nextActivityId: null
-4. One Activity per stage. Chain length = number of stages.
-5. performedByRoleIds: at least one role per activity
+1. Each activity has preOutcomeId !== postOutcomeId (no no-ops)
+2. activity[i].postOutcomeId === activity[i+1].preOutcomeId (adjacent consistency)
+3. nextActivityId chain has no breaks, no cycles — last activity has nextActivityId: null
+4. All activities reachable from chain head
+5. One Activity per stage. Chain length = number of stages.
+6. performedByRoleIds: at least one role per activity
 
-## Registry Population (CRITICAL)
-Populate elements registries for EVERY ID referenced in activities.
+## Registry Population (CRITICAL — empty registries fail validation)
+You MUST populate the elements registries for EVERY ID referenced in activities:
+- For each unique role ID → create entry in elements.roles with { name, description, elementType: "Role" }
+- For each unique capability ID → create entry in elements.capabilities with { name, description, elementType: "Capability" }
+- For each unique control ID → create entry in elements.controls with { name, description, elementType: "Control" }
+- For each metric → create entry in elements.metrics with { name, elementType: "Metric" }
+- For each outcome → create entry in elements.outcomes with { name, elementType: "Outcome" }
+- For each information object → create entry in elements.informationObjects with { name, elementType: "InformationObject" }
+DO NOT leave any registry as empty when IDs reference it.
 
-## Capability Assignment
-Each activity MUST have 2-4 capabilities in requiresCapabilityIds. Capabilities are SHARED across activities.
+## Value Stream Fields (CRITICAL)
+Each VS must include: name, description, activityIds, layoutZone (use zone from inputs), accountableStakeholder (from inputs).
 
-## capabilityPPIT — People, Process, Information, Technology
-For EACH capability on each activity, create: roleIds, activities (3 sub-activity descriptions), informationObjectIds, technologyAppIds.
+## Capability Assignment (CRITICAL — capabilities must be SHARED across activities)
+Each activity MUST have 2-4 capabilities in requiresCapabilityIds. Capabilities are enduring business
+abilities (e.g. "Customer Relationship Management", "Order Fulfilment", "Data Management") that are
+SHARED across multiple activities and value streams. Do NOT create 1:1 capability-to-activity mappings.
+Use the provided capabilities as a starting point. If fewer than 2 caps are available per activity,
+derive additional shared capabilities from the domain context (e.g. "Data Management", "Compliance Management",
+"Stakeholder Communication", "Performance Monitoring").
+Capabilities that appear in multiple activities create structural coupling — this is essential for the model.
 
-## Information Objects
-For each activity, create 2-3 informationObjects (business documents, data records, reports).
+## capabilityPPIT — People, Process, Information, Technology (CRITICAL)
+For EACH capability referenced by an activity, create a PPIT decomposition in the activity's
+capabilityPPIT object. This breaks down HOW each capability is exercised at this specific stage.
+
+capabilityPPIT is an object keyed by capability ID. For each capability:
+- roleIds: which roles from performedByRoleIds exercise this capability here
+- activities: exactly 3 specific sub-activity descriptions (short verb phrases describing what is done)
+- informationObjectIds: which information objects this capability uses or produces at this stage
+- technologyAppIds: which technology systems support this capability (use tech_ prefixed IDs)
+
+Example:
+"capabilityPPIT": {
+  "cap_customer_relationship_management": {
+    "roleIds": ["role_sales_rep", "role_channel_partner"],
+    "activities": ["Review customer history and preferences", "Assess relationship health score", "Plan engagement approach"],
+    "informationObjectIds": ["io_customer_profile", "io_territory_plan"],
+    "technologyAppIds": ["tech_salesforce"]
+  },
+  "cap_data_management": {
+    "roleIds": ["role_sales_rep"],
+    "activities": ["Consolidate data from multiple sources", "Validate data accuracy", "Update central records"],
+    "informationObjectIds": ["io_market_data", "io_customer_profile"],
+    "technologyAppIds": ["tech_salesforce", "tech_netsuite"]
+  }
+}
+
+The sub-activities in PPIT should be specific to the stage context — not generic.
+
+## Information Objects (CRITICAL)
+For each activity, create 2-3 informationObjects (business documents, data records, reports) that the
+activity produces or consumes. Put entries in elements.informationObjects with { name, elementType: "InformationObject" }.
+Reference them in the activity via informationObjectIds: [...] AND in capabilityPPIT entries.
+
+## Metrics (CRITICAL — wire to activities)
+Each activity should reference 0-2 relevant metricIds. Metrics from the discovery inputs MUST appear
+in elements.metrics AND be referenced by at least one activity's metricIds array.
 
 ## Your Task
-Given the confirmed inputs below, produce a complete ScaffoldModel.json.
+Given the confirmed VS definitions, stages, roles, and capabilities below, produce a complete ScaffoldModel.json.
+
+For each VS:
+- Create one Outcome per stage boundary (n stages → n+1 outcomes)
+- Create one Activity per stage with pre/post outcomes, 2-4 capabilities, 1-2 roles, 2-3 information objects
+- For EACH capability on each activity, create a capabilityPPIT entry with roleIds, 3 sub-activities, informationObjectIds, technologyAppIds
+- Ensure capabilities are SHARED — the same capability should appear in multiple activities across VS
+- Distribute roles across activities sensibly based on stage content
+- Wire metrics to the activities they measure
 
 Confirmed inputs:
 ${JSON.stringify({ valueStreams: vsContext, roles: roleContext, tech: techContext, metrics: metricContext }, null, 2)}
 
 Return ONLY valid JSON — the complete ScaffoldModel — no markdown fences:
 {
-  "schemaVersion": "1.0.0", "scaffoldId": "scaffold_<org>", "name": "<Org> — Operating Model",
-  "description": "", "createdAt": "${new Date().toISOString()}",
+  "schemaVersion": "1.0.0",
+  "scaffoldId": "scaffold_<org_name_snake>",
+  "name": "<Org Name> — Operating Model",
+  "description": "<brief>",
+  "createdAt": "${new Date().toISOString()}",
   "modelIntegrityHash": "0000000000000000000000000000000000000000000000000000000000000000",
   "elements": {
-    "valueStreams": {}, "activities": {}, "outcomes": {}, "roles": {},
-    "capabilities": {}, "informationObjects": {}, "controls": {}, "constraints": {},
-    "directives": {}, "deonticLogic": {}, "flowLogic": {}, "concepts": {},
-    "properties": {}, "metrics": {}, "measures": {}, "conditions": {}
+    "valueStreams": { "<vs_id>": { "name": "...", "description": "...", "activityIds": [], "layoutZone": "ecosystem|knowledge", "accountableStakeholder": "role_...", "elementType": "ValueStream" } },
+    "activities": { "<act_id>": { "name": "...", "preOutcomeId": "...", "postOutcomeId": "...", "nextActivityId": "...|null", "requiresCapabilityIds": ["cap_a", "cap_b", "cap_c"], "performedByRoleIds": ["role_x"], "informationObjectIds": ["io_a", "io_b"], "metricIds": [], "controlIds": [], "capabilityPPIT": { "cap_a": { "roleIds": ["role_x"], "activities": ["sub-act 1", "sub-act 2", "sub-act 3"], "informationObjectIds": ["io_a"], "technologyAppIds": ["tech_x"] } }, "elementType": "Activity" } },
+    "outcomes": { "<outcome_id>": { "name": "...", "elementType": "Outcome" } },
+    "roles": { "<role_id>": { "name": "...", "description": "...", "elementType": "Role" } },
+    "capabilities": { "<cap_id>": { "name": "...", "description": "...", "elementType": "Capability" } },
+    "informationObjects": { "<io_id>": { "name": "...", "elementType": "InformationObject" } },
+    "controls": {},
+    "constraints": {},
+    "directives": {},
+    "deonticLogic": {},
+    "flowLogic": {},
+    "concepts": {},
+    "properties": {},
+    "metrics": {},
+    "measures": {},
+    "conditions": {}
   }
 }
 
-CRITICAL: All element maps must be present, even if empty. Every ID referenced MUST have a registry entry. Every activity MUST have capabilityPPIT for each requiresCapabilityIds.`;
+CRITICAL: All element maps must be present, even if empty. Every ID referenced in activities MUST have a corresponding registry entry. Every activity MUST have a capabilityPPIT entry for each of its requiresCapabilityIds.`;
 }
 
 // ── Inject L1/L2/L3 hierarchy into scaffold capabilities ──
