@@ -2175,47 +2175,145 @@ CRITICAL: All element maps must be present, even if empty. Every ID referenced i
 }
 
 // ── Inject L1/L2/L3 hierarchy into scaffold capabilities ──
+// ── Inject L1/L2/L3 hierarchy — matches VCC pipeline-orchestrator.ts ──
+// Pass B often renames capabilities from Pass A2. Exact name match fails.
+// Phase 1: Add L1/L2 + try exact match. Phase 2: Assign unmatched caps to best-fit L2.
 function injectCapabilityHierarchy(scaffold, ir) {
   if (!scaffold?.elements?.capabilities || !ir.capabilityMap?.l1Areas?.length) return;
   function makeId(prefix, name) { return prefix + '_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
   const caps = scaffold.elements.capabilities;
   const nameToId = {};
-  for (const [id, cap] of Object.entries(caps)) nameToId[(cap.name || '').toLowerCase()] = id;
+  for (const [id, cap] of Object.entries(caps)) {
+    if (cap.name) nameToId[cap.name.toLowerCase()] = id;
+  }
 
+  const matched = new Set();
+  const l2Ids = [];
+
+  // Phase 1: Add L1/L2 nodes, try exact name match for L3s
   for (const l1 of ir.capabilityMap.l1Areas) {
     const l1Id = makeId('cap_l1', l1.name);
     caps[l1Id] = { id: l1Id, name: l1.name, elementType: 'Capability', level: 1, type: l1.type || 'Execution' };
+
     for (const l2 of (l1.domains || [])) {
       const l2Id = makeId('cap_l2', l2.name);
       caps[l2Id] = { id: l2Id, name: l2.name, elementType: 'Capability', level: 2, parentId: l1Id };
+      l2Ids.push(l2Id);
+
       for (const l3 of (l2.capabilities || [])) {
         const existingId = nameToId[(l3.name || '').toLowerCase()];
         if (existingId && caps[existingId]) {
           caps[existingId].level = 3;
           caps[existingId].parentId = l2Id;
           caps[existingId].businessObject = caps[existingId].businessObject || l3.businessObject;
+          matched.add(existingId);
+        } else {
+          // L3 from IR doesn't exist in scaffold — add it
+          const l3Id = makeId('cap', l3.name);
+          if (!caps[l3Id]) {
+            caps[l3Id] = { id: l3Id, name: l3.name, elementType: 'Capability', level: 3, parentId: l2Id, businessObject: l3.businessObject || '', description: l3.description || '' };
+          } else {
+            caps[l3Id].level = 3;
+            caps[l3Id].parentId = l2Id;
+          }
+          matched.add(l3Id);
         }
       }
     }
   }
+
+  // Phase 2: Assign unmatched scaffold capabilities to best-fit L2 by keyword overlap
+  const unmatchedIds = Object.keys(caps).filter(id => {
+    const c = caps[id];
+    return !matched.has(id) && !id.startsWith('cap_l1_') && !id.startsWith('cap_l2_') && c.level !== 1 && c.level !== 2;
+  });
+
+  if (unmatchedIds.length > 0 && l2Ids.length > 0) {
+    for (const capId of unmatchedIds) {
+      const cap = caps[capId];
+      const capWords = (cap.name || '').toLowerCase().split(/\s+/);
+      let bestL2 = l2Ids[0], bestScore = 0;
+      for (const l2Id of l2Ids) {
+        const l2Name = (caps[l2Id]?.name || '').toLowerCase();
+        const score = capWords.filter(w => w.length > 3 && l2Name.includes(w)).length;
+        if (score > bestScore) { bestScore = score; bestL2 = l2Id; }
+      }
+      cap.level = 3;
+      cap.parentId = bestL2;
+    }
+  }
 }
 
-// ── Derive concepts from scaffold registries ──
-function deriveConcepts(scaffold) {
+// ── Derive concepts — matches VCC pipeline-orchestrator.ts ──
+// Selective Records (only key business objects), Resources from IR tech.
+function deriveConcepts(scaffold, ir) {
   if (!scaffold?.elements) return;
+  function makeId(prefix, name) { return prefix + '_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
   const concepts = scaffold.elements.concepts || {};
+
+  // Party from roles
   for (const [id, r] of Object.entries(scaffold.elements.roles || {})) {
     const cId = 'concept_party_' + id;
     if (!concepts[cId]) concepts[cId] = { id: cId, name: r.name, type: 'Party', definition: r.description || 'Stakeholder role: ' + r.name, elementType: 'Concept', relationships: [] };
   }
+
+  // Record — SELECTIVE: only IOs referenced by 2+ activities or matching key business object names
+  const activities = scaffold.elements.activities || {};
+  const ioRefCount = {};
+  for (const act of Object.values(activities)) {
+    for (const ioId of (act.informationObjectIds || [])) {
+      ioRefCount[ioId] = (ioRefCount[ioId] || 0) + 1;
+    }
+  }
+  const RECORD_RE = /order|invoice|contract|application|request|record|report|plan|schedule|profile|account|claim|ticket|brief|quote|specification|model/i;
   for (const [id, o] of Object.entries(scaffold.elements.informationObjects || {})) {
+    const isKey = (ioRefCount[id] || 0) >= 2 || RECORD_RE.test(o.name || '');
+    if (!isKey) continue;
     const cId = 'concept_record_' + id;
-    if (!concepts[cId]) concepts[cId] = { id: cId, name: o.name, type: 'Record', definition: o.description || 'Information object: ' + o.name, elementType: 'Concept', relationships: [] };
+    if (!concepts[cId]) concepts[cId] = { id: cId, name: o.name, type: 'Record', definition: 'Business record: ' + o.name, elementType: 'Concept', relationships: [] };
   }
-  for (const [id, a] of Object.entries(scaffold.elements.technologyApplications || {})) {
-    const cId = 'concept_resource_' + id;
-    if (!concepts[cId]) concepts[cId] = { id: cId, name: a.name, type: 'Resource', definition: a.description || 'Technology: ' + a.name, elementType: 'Concept', relationships: [] };
+
+  // Resource from DiscoveryIR tech
+  if (ir?.tech?.length) {
+    for (const t of ir.tech) {
+      if (!t.name) continue;
+      const tId = makeId('tech', t.name);
+      const cId = 'concept_resource_' + tId;
+      if (!concepts[cId]) concepts[cId] = { id: cId, name: t.name, type: 'Resource', definition: 'Technology: ' + t.name + ' (' + (t.type || 'System') + ')', elementType: 'Concept', relationships: [] };
+    }
   }
+  // Also check scaffold tech registries
+  for (const key of ['technologyApplications', 'technologyApps']) {
+    for (const [id, a] of Object.entries(scaffold.elements[key] || {})) {
+      const cId = 'concept_resource_' + id;
+      if (!concepts[cId]) concepts[cId] = { id: cId, name: a.name, type: 'Resource', definition: 'Technology: ' + a.name, elementType: 'Concept', relationships: [] };
+    }
+  }
+
+  // Relationships from PPIT: Party → Record (produces), Party → Resource (uses)
+  for (const act of Object.values(activities)) {
+    const ppit = act.capabilityPPIT;
+    if (!ppit) continue;
+    for (const decomp of Object.values(ppit)) {
+      const roleIds = decomp?.roleIds || [];
+      const infoIds = decomp?.informationObjectIds || [];
+      const techIds = decomp?.technologyAppIds || [];
+      for (const rId of roleIds) {
+        const partyCId = 'concept_party_' + rId;
+        if (!concepts[partyCId]) continue;
+        const rels = concepts[partyCId].relationships;
+        for (const iId of infoIds) {
+          const recCId = 'concept_record_' + iId;
+          if (concepts[recCId] && !rels.some(r => r.targetId === recCId)) rels.push({ targetId: recCId, type: 'produces', label: 'produces' });
+        }
+        for (const tId of techIds) {
+          const resCId = 'concept_resource_' + tId;
+          if (concepts[resCId] && !rels.some(r => r.targetId === resCId)) rels.push({ targetId: resCId, type: 'uses', label: 'uses' });
+        }
+      }
+    }
+  }
+
   scaffold.elements.concepts = concepts;
 }
 
@@ -2295,7 +2393,7 @@ async function runPipeline(transcript) {
     progressEl.style.width = '90%';
 
     injectCapabilityHierarchy(scaffold, ir);
-    deriveConcepts(scaffold);
+    deriveConcepts(scaffold, ir);
 
     // ── Render ──
     progressEl.style.width = '100%';
