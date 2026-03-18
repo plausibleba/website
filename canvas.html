@@ -462,6 +462,11 @@ nav {
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
     <link rel="stylesheet" href="/site.css">
+    <!-- Binary file parsers (docx, xlsx, pdf) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
     <!-- Privacy-friendly analytics by Plausible -->
     <script async src="https://plausible.io/js/pa-fQD2wVJrTO7vhKcNfQW4P.js"></script>
     <script>
@@ -501,8 +506,8 @@ nav {
         <textarea id="intake-transcript" class="intake-textarea" placeholder="Meeting notes, business description, process documentation, strategy deck content, email thread — anything that describes how the organisation operates..."></textarea>
         <div class="intake-file-row">
           <label class="intake-file-label" id="file-upload-label">
-            📎 Upload files
-            <input type="file" id="intake-file-input" accept=".txt,.md,.csv" multiple style="display:none">
+            📎 Upload files (.docx, .xlsx, .pdf, .md, .txt)
+            <input type="file" id="intake-file-input" accept=".txt,.md,.csv,.xlsx,.xls,.docx,.pdf,.tsv,.json,.log" multiple style="display:none">
           </label>
           <span class="intake-file-names" id="intake-file-names"></span>
         </div>
@@ -1553,7 +1558,45 @@ if (intakeTextarea && generateBtn) {
   });
 }
 
-// ── File upload: append text files to textarea ──
+// ── File reading helpers for binary formats ──
+async function readFileAsText(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  // XLSX / XLS
+  if (['xlsx', 'xls', 'xlsm'].includes(ext) && window.XLSX) {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    return wb.SheetNames.map(name => {
+      const ws = wb.Sheets[name];
+      return '--- Sheet: ' + name + ' ---\n' + XLSX.utils.sheet_to_csv(ws);
+    }).join('\n\n');
+  }
+
+  // DOCX
+  if (ext === 'docx' && window.mammoth) {
+    const buf = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+    return result.value;
+  }
+
+  // PDF
+  if (ext === 'pdf' && window.pdfjsLib) {
+    const buf = await file.arrayBuffer();
+    const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
+    const pages = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const content = await page.getTextContent();
+      pages.push(content.items.map(item => item.str).join(' '));
+    }
+    return pages.join('\n\n');
+  }
+
+  // Plain text fallback
+  return file.text();
+}
+
+// ── File upload: append files to textarea ──
 const intakeFileInput = document.getElementById('intake-file-input');
 if (intakeFileInput) {
   intakeFileInput.addEventListener('change', async (e) => {
@@ -1562,10 +1605,12 @@ if (intakeFileInput) {
     document.getElementById('intake-file-names').textContent = names.join(', ');
     for (const file of files) {
       try {
-        const text = await file.text();
+        const text = await readFileAsText(file);
         intakeTextarea.value += (intakeTextarea.value ? '\n\n--- ' + file.name + ' ---\n' : '') + text;
         intakeTextarea.dispatchEvent(new Event('input'));
-      } catch { /* skip unreadable files */ }
+      } catch (err) {
+        console.warn('Could not read file:', file.name, err);
+      }
     }
     e.target.value = '';
   });
