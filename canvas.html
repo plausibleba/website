@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PlausibleBA Canvas — Visualise Your Business Architecture Bundle</title>
+<title>PlausibleBA Canvas — Generate Your Operating Model Instantly</title>
+<meta name="description" content="Paste meeting notes or a business description and instantly generate a BIZBOK-grounded capability map, concept model, and value streams. Free, no install required.">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
@@ -63,7 +64,7 @@ nav {
 
 /* ── UPLOAD ZONE ── */
 .upload-zone {
-  max-width: 720px; margin: 4rem auto; padding: 0 1.5rem;
+  max-width: 820px; margin: 3rem auto; padding: 0 1.5rem;
   text-align: center;
 }
 .upload-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 1rem; }
@@ -409,6 +410,42 @@ nav {
 .footer-convert a { color: var(--ink-2); font-weight: 500; text-decoration: none; }
 .footer-convert a:hover { color: var(--ink); text-decoration: underline; }
 
+/* ── INTAKE CARDS ── */
+.intake-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 820px; margin: 0 auto 1.5rem; text-align: left; }
+.intake-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; display: flex; flex-direction: column; transition: border-color 0.15s; }
+.intake-card.primary { border-color: var(--ink); }
+.intake-card-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-4); margin-bottom: 0.75rem; }
+.intake-textarea { flex: 1; min-height: 160px; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.75rem; font-family: inherit; font-size: 13px; color: var(--ink-2); resize: vertical; background: var(--surface-2); transition: border-color 0.15s; }
+.intake-textarea:focus { outline: none; border-color: var(--ink); }
+.intake-textarea::placeholder { color: var(--ink-4); }
+.intake-file-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+.intake-file-label { font-size: 12px; color: var(--ink-4); cursor: pointer; display: flex; align-items: center; gap: 4px; border: 1px solid var(--border); border-radius: var(--radius); padding: 5px 10px; background: var(--surface-2); transition: border-color 0.15s; }
+.intake-file-label:hover { border-color: var(--ink-3); }
+.intake-file-names { font-size: 11px; color: var(--ink-4); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.intake-btn { margin-top: 0.75rem; width: 100%; padding: 11px; border-radius: var(--radius); border: none; background: var(--ink); color: #fff; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+.intake-btn:disabled { opacity: 0.35; cursor: default; }
+.intake-btn:not(:disabled):hover { opacity: 0.85; }
+
+/* ── EMAIL GATE ── */
+.gate-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; }
+.gate-box { background: var(--surface); border-radius: var(--radius-lg); padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+.gate-box h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+.gate-box p { font-size: 13px; color: var(--ink-3); margin-bottom: 1.25rem; line-height: 1.5; }
+.gate-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem; }
+.gate-input { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 13px; }
+.gate-input:focus { outline: none; border-color: var(--ink); }
+.gate-input.full { width: 100%; margin-bottom: 1rem; }
+.gate-error { display: none; margin-top: 0.75rem; font-size: 12px; color: #c53030; text-align: center; }
+.gate-fine { font-size: 10px; color: var(--ink-4); margin-top: 0.75rem; text-align: center; line-height: 1.4; }
+
+/* ── GENERATING STATE ── */
+#generating-state { display: none; }
+.gen-wrap { max-width: 520px; margin: 6rem auto; text-align: center; padding: 0 1.5rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.gen-spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--ink); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 1.5rem; }
+.gen-progress-bar { margin-top: 1.5rem; background: var(--surface-3); border-radius: var(--radius); height: 6px; overflow: hidden; }
+.gen-progress-fill { height: 100%; background: var(--ink); border-radius: var(--radius); transition: width 0.5s; width: 10%; }
+
 @media (max-width: 600px) {
   .canvas-header { padding: 1.5rem; }
   .tab-panel { padding: 1.25rem 1rem; }
@@ -416,6 +453,8 @@ nav {
   .cta-banner { padding: 2rem 1.5rem; }
   nav { padding: 0 1rem; }
   .nav-links { display: none; }
+  .intake-grid { grid-template-columns: 1fr; }
+  .gate-row { grid-template-columns: 1fr; }
 }
 </style>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -452,37 +491,67 @@ nav {
 <div id="upload-state">
   <div class="upload-zone">
     <div class="upload-eyebrow">PlausibleBA Canvas</div>
-    <h1 class="upload-title">Drop your bundle.<br><strong>See your operating model.</strong></h1>
-    <p class="upload-subtitle">This canvas renders a capability map, concept model, and value stream from a JSON bundle exported by the PlausibleBA skills library — a free plugin for <a href="https://claude.ai/download" target="_blank" style="color:var(--blue)">Claude Cowork</a>.</p>
+    <h1 class="upload-title">Describe your business.<br><strong>See your operating model.</strong></h1>
+    <p class="upload-subtitle">Paste meeting notes, a business description, or any discovery content. We'll generate a BIZBOK-grounded capability map, concept model, and value streams — instantly. Three free generations, no install required.</p>
 
-    <div style="background:var(--surface-3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;text-align:left;max-width:540px;margin-left:auto;margin-right:auto">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-4);margin-bottom:0.75rem">How to get a bundle</div>
-      <div style="display:flex;flex-direction:column;gap:0.5rem">
-        <div style="display:flex;gap:0.75rem;align-items:flex-start;font-size:13px;color:var(--ink-3)">
-          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">1</span>
-          <span><a href="/install" style="color:var(--blue);font-weight:500">Install PlausibleBA</a> — free, three steps, works in Claude Cowork</span>
+    <div class="intake-grid">
+      <!-- Path 1: Paste notes -->
+      <div class="intake-card primary">
+        <div class="intake-card-label">Paste your discovery notes</div>
+        <textarea id="intake-transcript" class="intake-textarea" placeholder="Meeting notes, business description, process documentation, strategy deck content, email thread — anything that describes how the organisation operates..."></textarea>
+        <div class="intake-file-row">
+          <label class="intake-file-label" id="file-upload-label">
+            📎 Upload files
+            <input type="file" id="intake-file-input" accept=".txt,.md,.csv" multiple style="display:none">
+          </label>
+          <span class="intake-file-names" id="intake-file-names"></span>
         </div>
-        <div style="display:flex;gap:0.75rem;align-items:flex-start;font-size:13px;color:var(--ink-3)">
-          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">2</span>
-          <span>Open a <strong>new Cowork task</strong>, paste any business description, and type <code style="font-size:11px;background:var(--surface);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">/value-stream</code></span>
+        <button id="generate-btn" class="intake-btn" disabled>Generate operating model →</button>
+      </div>
+
+      <!-- Path 2: Drop bundle -->
+      <div style="display:flex;flex-direction:column;gap:0.75rem">
+        <div class="intake-card" style="flex:1;align-items:center;justify-content:center;text-align:center">
+          <div class="intake-card-label" style="text-align:center">Already have a bundle?</div>
+          <div class="drop-target" id="drop-target" style="border:none;padding:1.5rem 1rem;background:transparent">
+            <div class="drop-icon">⬡</div>
+            <div class="drop-label">Drop JSON bundle here</div>
+            <div class="drop-sub">ba-skills-bundle or VCC bundle<br><span style="font-size:11px">or click to browse</span></div>
+            <input type="file" id="file-input" accept=".json">
+          </div>
         </div>
-        <div style="display:flex;gap:0.75rem;align-items:flex-start;font-size:13px;color:var(--ink-3)">
-          <span style="flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center">3</span>
-          <span>When the visualisation renders, ask Claude to <strong>export the JSON bundle</strong> — then upload it here</span>
+        <div style="text-align:center">
+          <button id="demo-btn" style="background:none;border:none;font-family:inherit;font-size:12px;color:var(--ink-4);text-decoration:underline;cursor:pointer">Load the PortfolioProp demo</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="drop-target" id="drop-target">
-      <div class="drop-icon">⬡</div>
-      <div class="drop-label">Drop ba-skills-bundle.json here</div>
-      <div class="drop-sub">or click to browse</div>
-      <input type="file" id="file-input" accept=".json">
+<!-- EMAIL GATE MODAL -->
+<div id="email-gate" class="gate-overlay" style="display:none">
+  <div class="gate-box">
+    <div class="intake-card-label">Free generation</div>
+    <h3>Enter your details to generate</h3>
+    <p>We'll generate a complete operating model from your notes — capability map, concept model, and value streams. <strong>3 free generations</strong>, no credit card required.</p>
+    <div class="gate-row">
+      <input type="text" id="gate-first-name" class="gate-input" placeholder="First name">
+      <input type="text" id="gate-last-name" class="gate-input" placeholder="Last name">
     </div>
+    <input type="email" id="gate-email" class="gate-input full" placeholder="Work email">
+    <button id="gate-submit-btn" class="intake-btn">Generate free →</button>
+    <div id="gate-error" class="gate-error"></div>
+    <p class="gate-fine">By generating, you agree to receive product updates from PlausibleBA. Unsubscribe any time.</p>
+  </div>
+</div>
 
-    <div class="try-demo">
-      Don't have a bundle yet? <button id="demo-btn">Load the PortfolioProp demo</button>
-    </div>
+<!-- GENERATING STATE -->
+<div id="generating-state">
+  <div class="gen-wrap">
+    <div class="gen-spinner"></div>
+    <h2 style="font-size:1.3rem;font-weight:600;margin-bottom:0.5rem" id="gen-status">Extracting value streams...</h2>
+    <p style="font-size:13px;color:var(--ink-3)" id="gen-detail">Pass 1 of 3 — analysing your content</p>
+    <div class="gen-progress-bar"><div class="gen-progress-fill" id="gen-progress"></div></div>
   </div>
 </div>
 
@@ -1376,6 +1445,7 @@ function renderBundle(raw) {
   buildMetrics(elements);
 
   document.getElementById('upload-state').style.display = 'none';
+  document.getElementById('generating-state').style.display = 'none';
   document.getElementById('canvas').style.display = 'block';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1465,6 +1535,514 @@ document.getElementById('demo-btn').addEventListener('click', async () => {
     }
   }
 })();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ── DISCOVERY INTAKE — Paste notes → email gate → LLM pipeline → canvas ─────
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── State ──
+let _userData = JSON.parse(localStorage.getItem('pba_user') || 'null');
+let _pendingTranscript = '';
+
+// ── Textarea enable/disable generate button ──
+const intakeTextarea = document.getElementById('intake-transcript');
+const generateBtn = document.getElementById('generate-btn');
+if (intakeTextarea && generateBtn) {
+  intakeTextarea.addEventListener('input', () => {
+    generateBtn.disabled = intakeTextarea.value.trim().length < 20;
+  });
+}
+
+// ── File upload: append text files to textarea ──
+const intakeFileInput = document.getElementById('intake-file-input');
+if (intakeFileInput) {
+  intakeFileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    const names = files.map(f => f.name);
+    document.getElementById('intake-file-names').textContent = names.join(', ');
+    for (const file of files) {
+      try {
+        const text = await file.text();
+        intakeTextarea.value += (intakeTextarea.value ? '\n\n--- ' + file.name + ' ---\n' : '') + text;
+        intakeTextarea.dispatchEvent(new Event('input'));
+      } catch { /* skip unreadable files */ }
+    }
+    e.target.value = '';
+  });
+}
+
+// ── Generate button → email gate or direct generation ──
+if (generateBtn) {
+  generateBtn.addEventListener('click', () => {
+    const text = intakeTextarea.value.trim();
+    if (text.length < 20) return;
+    _pendingTranscript = text;
+    if (_userData && _userData.email) {
+      // Already registered — skip gate, go straight to pipeline
+      runPipeline(_pendingTranscript);
+    } else {
+      document.getElementById('email-gate').style.display = 'flex';
+      document.getElementById('gate-first-name').focus();
+    }
+  });
+}
+
+// ── Email gate submit ──
+const gateSubmitBtn = document.getElementById('gate-submit-btn');
+if (gateSubmitBtn) {
+  gateSubmitBtn.addEventListener('click', () => {
+    const fn = document.getElementById('gate-first-name').value.trim();
+    const ln = document.getElementById('gate-last-name').value.trim();
+    const email = document.getElementById('gate-email').value.trim();
+    const errEl = document.getElementById('gate-error');
+
+    if (!fn || !ln) { errEl.textContent = 'Please enter your name.'; errEl.style.display = 'block'; return; }
+    if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; errEl.style.display = 'block'; return; }
+
+    errEl.style.display = 'none';
+    _userData = { firstName: fn, lastName: ln, email: email };
+    localStorage.setItem('pba_user', JSON.stringify(_userData));
+    document.getElementById('email-gate').style.display = 'none';
+    runPipeline(_pendingTranscript);
+  });
+
+  // Close gate on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.getElementById('email-gate').style.display = 'none';
+  });
+
+  // Enter key in email field submits
+  document.getElementById('gate-email').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') gateSubmitBtn.click();
+  });
+}
+
+// ── LLM API caller (SSE stream collector) ──
+async function callCanvasLLM(messages, maxTokens, onStatus) {
+  const body = {
+    email: _userData.email,
+    firstName: _userData.firstName,
+    lastName: _userData.lastName,
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: maxTokens,
+    temperature: 0,
+    messages: messages
+  };
+
+  const res = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'API call failed' }));
+    if (err.error === 'limit_reached') {
+      throw new Error('LIMIT_REACHED');
+    }
+    throw new Error(err.error || err.message || `API ${res.status}`);
+  }
+
+  // Update generation count from headers
+  const count = res.headers.get('X-Generation-Count');
+  const limit = res.headers.get('X-Generation-Limit');
+  if (count && limit && onStatus) onStatus(`Generation ${count} of ${limit}`);
+
+  const ct = res.headers.get('content-type') || '';
+  if (ct.includes('text/event-stream')) {
+    // SSE stream
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '', fullText = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]') continue;
+        try {
+          const ev = JSON.parse(data);
+          if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') fullText += ev.delta.text;
+        } catch {}
+      }
+    }
+    return fullText;
+  } else {
+    const data = await res.json();
+    return data.content?.find(b => b.type === 'text')?.text || '';
+  }
+}
+
+// ── Pass A1: Value Stream Extraction ──
+function buildPassA1Prompt(transcript) {
+  return `You are a business architect defining Value Streams for a governance diagnostic.
+A ValueStream is the end-to-end flow that delivers measurable stakeholder value — triggered by a defined need, ending at a verifiable outcome. Work at board level: structural flow of value, not process detail.
+
+## Your Task
+From the source material below, identify ALL Value Streams present. Do not cap the number — extract every distinct end-to-end flow the source describes.
+
+## Rules
+- Each VS is a RECURRING operational flow that delivers value repeatedly — not a one-time project or strategic initiative.
+- Each VS is outcome-driven, not function-driven
+- Each VS has a clear trigger event and a clear terminal outcome
+- VS names are concise, 2-5 words, title case. Use "<Trigger> to <Outcome>" pattern where natural.
+- zone: "ecosystem" = externally-facing; "knowledge" = internally-facing
+- valueObject: the primary business object that flows through the stream
+- recipient: who receives the value at the end
+- Stages: 4-8 per VS. Each stage = a governance phase or progression milestone, not a task. MECE.
+- Stage names describe the state the Value Object reaches, not activities performed.
+- Each stage must have entryCriteria and exitCriteria.
+
+Return ONLY valid JSON, no markdown fences:
+{
+  "org": { "name": "", "industry": "", "companySize": "", "description": "", "stakeholder": "" },
+  "valueStreams": [
+    {
+      "name": "", "description": "", "zone": "ecosystem", "valueObject": "", "recipient": "",
+      "trigger": "", "terminalOutcome": "", "stakeholder": "",
+      "stages": [
+        { "name": "", "entryCriteria": "", "exitCriteria": "", "stakeholders": [], "valueItem": "",
+          "metrics": [{ "name": "", "current": "", "target": "", "evidenced": false }] }
+      ]
+    }
+  ]
+}
+
+Source material:
+${transcript}`;
+}
+
+// ── Pass A2: Capability Mapping ──
+function buildPassA2Prompt(transcript, confirmedVS) {
+  const vsRef = confirmedVS.map(vs =>
+    `VS: "${vs.name}"\n  Stages: ${(vs.stages||[]).map(s => `"${typeof s==='string'?s:s.name}"`).join(', ')}`
+  ).join('\n\n');
+
+  return `You are extracting Roles and Capabilities for a business architecture diagnostic.
+
+The following Value Streams and their stages are CONFIRMED. Do not rename, add, or remove them:
+${vsRef}
+
+## Roles
+Identify all roles (4-10 total). Roles are responsibility-bearing positions, not people or departments.
+
+## Capability Map
+Produce a structured L1 → L2 → L3 capability hierarchy.
+- L1 = Business Area (5-8), L2 = Business Domain (3-7 per L1), L3 = Business Capability (3-8 per L2)
+- Every L3 grounded in a named business object
+- Classify each L1 as "Execution" or "Governance"
+- MECE: siblings must not overlap
+- Number each node: L1=1, L2=1.1, L3=1.1.1
+- Capabilities are SHARED across activities and value streams
+
+## Stage-Capability Assignments
+For each VS, map which L3 capabilities participate in each stage (2-5 per stage).
+
+Return ONLY valid JSON, no markdown fences:
+{
+  "roles": [{ "id": "role_x", "name": "", "type": "Internal", "description": "" }],
+  "capabilityMap": {
+    "l1Areas": [{
+      "name": "", "number": "1", "type": "Execution",
+      "domains": [{
+        "name": "", "number": "1.1",
+        "capabilities": [{ "name": "", "number": "1.1.1", "businessObject": "", "description": "" }]
+      }]
+    }]
+  },
+  "stageCapabilities": [{ "vsName": "", "stages": [{ "stageName": "", "capabilityNames": [] }] }],
+  "tech": [{ "id": 1, "name": "", "type": "", "friction": false, "notes": "" }],
+  "painPoints": [{ "id": 1, "description": "", "category": "", "intensity": 7, "affectedVsName": "", "affectedStage": "", "binding": false }],
+  "metrics": [{ "id": 1, "name": "", "current": "", "target": "", "affectedVsName": "", "stage": "" }],
+  "gaps": [{ "severity": "required", "prompt": "" }]
+}
+
+Source material:
+${transcript}`;
+}
+
+// ── Build DiscoveryIR from A1 + A2 results ──
+function buildDiscoveryIR(pass1, pass2, confirmedVS) {
+  function makeId(prefix, name) { return prefix + '_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
+
+  const valueStreams = confirmedVS.map(vs => ({
+    vsId: makeId('vs', vs.name), name: vs.name, description: vs.description || '',
+    zone: vs.zone || 'ecosystem', valueObject: vs.valueObject, recipient: vs.recipient,
+    trigger: vs.trigger || '', terminalOutcome: vs.terminalOutcome || '',
+    stakeholder: vs.stakeholder || pass1.org?.stakeholder || '',
+    stages: (vs.stages || []).map(s => typeof s === 'string' ? { name: s } : {
+      name: s.name, entryCriteria: s.entryCriteria, exitCriteria: s.exitCriteria,
+      stakeholders: s.stakeholders || [], valueItem: s.valueItem, metrics: s.metrics || []
+    })
+  }));
+
+  const capabilityMap = pass2.capabilityMap ? {
+    l1Areas: (pass2.capabilityMap.l1Areas || []).map(l1 => ({
+      name: l1.name, number: l1.number, type: l1.type,
+      domains: (l1.domains || []).map(l2 => ({
+        name: l2.name, number: l2.number,
+        capabilities: (l2.capabilities || []).map(c => ({
+          name: c.name, number: c.number, businessObject: c.businessObject || '', description: c.description || ''
+        }))
+      }))
+    }))
+  } : { l1Areas: [] };
+
+  const stageCapabilities = (pass2.stageCapabilities || []).map(sc => ({
+    vsName: sc.vsName, stages: (sc.stages || []).map(s => ({ stageName: s.stageName, capabilityNames: s.capabilityNames || [] }))
+  }));
+
+  return {
+    extractedAt: new Date().toISOString(),
+    org: pass1.org || {},
+    valueStreams, roles: pass2.roles || [], tech: pass2.tech || [],
+    painPoints: pass2.painPoints || [], metrics: pass2.metrics || [],
+    gaps: pass2.gaps || [], capabilityMap, stageCapabilities
+  };
+}
+
+// ── Build Pass B context from DiscoveryIR ──
+function buildPassBPrompt(ir) {
+  function makeId(prefix, name) { return prefix + '_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
+
+  const capMap = {};
+  for (const l1 of (ir.capabilityMap?.l1Areas || [])) {
+    for (const l2 of (l1.domains || [])) {
+      for (const cap of (l2.capabilities || [])) {
+        capMap[cap.name] = { id: makeId('cap', cap.name), name: cap.name, businessObject: cap.businessObject || '', description: cap.description || '' };
+      }
+    }
+  }
+
+  const stageCaps = {};
+  for (const sc of (ir.stageCapabilities || [])) {
+    stageCaps[sc.vsName] = {};
+    for (const s of (sc.stages || [])) stageCaps[sc.vsName][s.stageName] = s.capabilityNames || [];
+  }
+
+  const vsContext = ir.valueStreams.filter(vs => vs.name).map(vs => ({
+    vsName: vs.name, vsId: vs.vsId, description: vs.description, zone: vs.zone,
+    trigger: vs.trigger || '', terminalOutcome: vs.terminalOutcome || '',
+    stakeholder: vs.stakeholder || ir.org.stakeholder || '',
+    stages: vs.stages.map(s => ({
+      name: s.name, entryCriteria: s.entryCriteria || s.name + ' initiated',
+      exitCriteria: s.exitCriteria || s.name + ' complete', stakeholders: s.stakeholders || [],
+      valueItem: s.valueItem || '', stageMetrics: s.metrics || [],
+      capabilities: (stageCaps[vs.name]?.[s.name] || []).map(n => capMap[n]).filter(Boolean)
+    }))
+  }));
+
+  const roleContext = (ir.roles || []).filter(r => r.name).map(r => ({ id: r.id, name: r.name, description: r.description }));
+  const metricContext = (ir.metrics || []).filter(m => m.name).map(m => ({ id: m.id, name: m.name, current: m.current, target: m.target }));
+  const techContext = (ir.tech || []).filter(t => t.name).map(t => ({ id: t.id, name: t.name, type: t.type }));
+
+  return `You are a business architect formalising a value stream model into a VCC ScaffoldModel.
+
+## Determinism Requirement
+This is a structural formalisation step. Given these inputs, produce the same output every time. IDs derived mechanically from element names (snake_case with type prefix). No creative variation.
+
+## ID Convention
+- vs_<snake_case>, outcome_<snake_case>, act_<snake_case>, cap_<snake_case>, role_<snake_case>, metric_<snake_case>, io_<snake_case>, tech_<snake_case>
+
+## FSM Chain Rules (CRITICAL)
+Each Value Stream is a single linear activity chain:
+1. Each activity has preOutcomeId !== postOutcomeId
+2. activity[i].postOutcomeId === activity[i+1].preOutcomeId
+3. nextActivityId chain: no breaks, no cycles. Last activity has nextActivityId: null
+4. One Activity per stage. Chain length = number of stages.
+5. performedByRoleIds: at least one role per activity
+
+## Registry Population (CRITICAL)
+Populate elements registries for EVERY ID referenced in activities.
+
+## Capability Assignment
+Each activity MUST have 2-4 capabilities in requiresCapabilityIds. Capabilities are SHARED across activities.
+
+## capabilityPPIT — People, Process, Information, Technology
+For EACH capability on each activity, create: roleIds, activities (3 sub-activity descriptions), informationObjectIds, technologyAppIds.
+
+## Information Objects
+For each activity, create 2-3 informationObjects (business documents, data records, reports).
+
+## Your Task
+Given the confirmed inputs below, produce a complete ScaffoldModel.json.
+
+Confirmed inputs:
+${JSON.stringify({ valueStreams: vsContext, roles: roleContext, tech: techContext, metrics: metricContext }, null, 2)}
+
+Return ONLY valid JSON — the complete ScaffoldModel — no markdown fences:
+{
+  "schemaVersion": "1.0.0", "scaffoldId": "scaffold_<org>", "name": "<Org> — Operating Model",
+  "description": "", "createdAt": "${new Date().toISOString()}",
+  "modelIntegrityHash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "elements": {
+    "valueStreams": {}, "activities": {}, "outcomes": {}, "roles": {},
+    "capabilities": {}, "informationObjects": {}, "controls": {}, "constraints": {},
+    "directives": {}, "deonticLogic": {}, "flowLogic": {}, "concepts": {},
+    "properties": {}, "metrics": {}, "measures": {}, "conditions": {}
+  }
+}
+
+CRITICAL: All element maps must be present, even if empty. Every ID referenced MUST have a registry entry. Every activity MUST have capabilityPPIT for each requiresCapabilityIds.`;
+}
+
+// ── Inject L1/L2/L3 hierarchy into scaffold capabilities ──
+function injectCapabilityHierarchy(scaffold, ir) {
+  if (!scaffold?.elements?.capabilities || !ir.capabilityMap?.l1Areas?.length) return;
+  function makeId(prefix, name) { return prefix + '_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, ''); }
+  const caps = scaffold.elements.capabilities;
+  const nameToId = {};
+  for (const [id, cap] of Object.entries(caps)) nameToId[(cap.name || '').toLowerCase()] = id;
+
+  for (const l1 of ir.capabilityMap.l1Areas) {
+    const l1Id = makeId('cap_l1', l1.name);
+    caps[l1Id] = { id: l1Id, name: l1.name, elementType: 'Capability', level: 1, type: l1.type || 'Execution' };
+    for (const l2 of (l1.domains || [])) {
+      const l2Id = makeId('cap_l2', l2.name);
+      caps[l2Id] = { id: l2Id, name: l2.name, elementType: 'Capability', level: 2, parentId: l1Id };
+      for (const l3 of (l2.capabilities || [])) {
+        const existingId = nameToId[(l3.name || '').toLowerCase()];
+        if (existingId && caps[existingId]) {
+          caps[existingId].level = 3;
+          caps[existingId].parentId = l2Id;
+          caps[existingId].businessObject = caps[existingId].businessObject || l3.businessObject;
+        }
+      }
+    }
+  }
+}
+
+// ── Derive concepts from scaffold registries ──
+function deriveConcepts(scaffold) {
+  if (!scaffold?.elements) return;
+  const concepts = scaffold.elements.concepts || {};
+  for (const [id, r] of Object.entries(scaffold.elements.roles || {})) {
+    const cId = 'concept_party_' + id;
+    if (!concepts[cId]) concepts[cId] = { id: cId, name: r.name, type: 'Party', definition: r.description || 'Stakeholder role: ' + r.name, elementType: 'Concept', relationships: [] };
+  }
+  for (const [id, o] of Object.entries(scaffold.elements.informationObjects || {})) {
+    const cId = 'concept_record_' + id;
+    if (!concepts[cId]) concepts[cId] = { id: cId, name: o.name, type: 'Record', definition: o.description || 'Information object: ' + o.name, elementType: 'Concept', relationships: [] };
+  }
+  for (const [id, a] of Object.entries(scaffold.elements.technologyApplications || {})) {
+    const cId = 'concept_resource_' + id;
+    if (!concepts[cId]) concepts[cId] = { id: cId, name: a.name, type: 'Resource', definition: a.description || 'Technology: ' + a.name, elementType: 'Concept', relationships: [] };
+  }
+  scaffold.elements.concepts = concepts;
+}
+
+// ── Main pipeline orchestrator ──
+async function runPipeline(transcript) {
+  const uploadEl = document.getElementById('upload-state');
+  const genEl = document.getElementById('generating-state');
+  const statusEl = document.getElementById('gen-status');
+  const detailEl = document.getElementById('gen-detail');
+  const progressEl = document.getElementById('gen-progress');
+
+  uploadEl.style.display = 'none';
+  genEl.style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  try {
+    // ── Pass A1: Value Streams ──
+    statusEl.textContent = 'Extracting value streams...';
+    detailEl.textContent = 'Pass 1 of 3 — identifying end-to-end flows';
+    progressEl.style.width = '15%';
+
+    const a1Raw = await callCanvasLLM(
+      [{ role: 'user', content: buildPassA1Prompt(transcript) }],
+      8000
+    );
+    let pass1;
+    try {
+      pass1 = JSON.parse(a1Raw.replace(/```json|```/g, '').trim());
+    } catch {
+      const repaired = a1Raw.replace(/```json|```/g, '').trim().replace(/,\s*$/, '') + '}'.repeat(Math.max(0, (a1Raw.match(/{/g)||[]).length - (a1Raw.match(/}/g)||[]).length));
+      pass1 = JSON.parse(repaired);
+    }
+
+    const confirmedVS = pass1.valueStreams || [];
+    if (confirmedVS.length === 0) throw new Error('No value streams found in your content. Try adding more detail about how the organisation operates.');
+
+    // ── Pass A2: Capabilities ──
+    statusEl.textContent = 'Mapping capabilities...';
+    detailEl.textContent = `Pass 2 of 3 — ${confirmedVS.length} value stream${confirmedVS.length > 1 ? 's' : ''} found, mapping roles and capabilities`;
+    progressEl.style.width = '40%';
+
+    const a2Raw = await callCanvasLLM(
+      [{ role: 'user', content: buildPassA2Prompt(transcript, confirmedVS) }],
+      12000
+    );
+    let pass2;
+    try {
+      pass2 = JSON.parse(a2Raw.replace(/```json|```/g, '').trim());
+    } catch {
+      const repaired = a2Raw.replace(/```json|```/g, '').trim().replace(/,\s*$/, '') + '}'.repeat(Math.max(0, (a2Raw.match(/{/g)||[]).length - (a2Raw.match(/}/g)||[]).length));
+      pass2 = JSON.parse(repaired);
+    }
+
+    // ── Build DiscoveryIR ──
+    const ir = buildDiscoveryIR(pass1, pass2, confirmedVS);
+
+    // ── Pass B: Scaffold Formalisation ──
+    statusEl.textContent = 'Generating scaffold...';
+    detailEl.textContent = 'Pass 3 of 3 — formalising the operating model';
+    progressEl.style.width = '65%';
+
+    const bRaw = await callCanvasLLM(
+      [{ role: 'user', content: buildPassBPrompt(ir) }],
+      32000
+    );
+    let scaffold;
+    try {
+      scaffold = JSON.parse(bRaw.replace(/```json|```/g, '').trim());
+    } catch {
+      const repaired = bRaw.replace(/```json|```/g, '').trim().replace(/,\s*$/, '') + '}'.repeat(Math.max(0, (bRaw.match(/{/g)||[]).length - (bRaw.match(/}/g)||[]).length));
+      scaffold = JSON.parse(repaired);
+    }
+
+    // ── Post-processing enrichment ──
+    statusEl.textContent = 'Enriching model...';
+    detailEl.textContent = 'Adding capability hierarchy and concept model';
+    progressEl.style.width = '90%';
+
+    injectCapabilityHierarchy(scaffold, ir);
+    deriveConcepts(scaffold);
+
+    // ── Render ──
+    progressEl.style.width = '100%';
+    genEl.style.display = 'none';
+
+    // Wrap as a bundle for renderBundle
+    const bundle = {
+      bundleVersion: '2.0',
+      createdAt: new Date().toISOString(),
+      scaffold: scaffold,
+      heatmaps: [],
+      elements: scaffold.elements
+    };
+
+    // Track generation event
+    if (window.plausible) plausible('Canvas Generate', { props: { org: pass1.org?.name || 'unknown', vs_count: confirmedVS.length } });
+
+    renderBundle(bundle);
+
+  } catch (err) {
+    console.error('[Canvas Pipeline]', err);
+    genEl.style.display = 'none';
+    uploadEl.style.display = 'block';
+
+    if (err.message === 'LIMIT_REACHED') {
+      alert('You\'ve used all 3 free generations. Sign up for VCC to continue generating unlimited operating models.\n\nYou can still drop existing bundle JSON files on this page.');
+    } else {
+      alert('Generation failed: ' + err.message + '\n\nPlease try again or paste more detailed content.');
+    }
+  }
+}
 </script>
 </body>
 </html>

@@ -52,7 +52,7 @@
   <div class="hero-inner">
     <div class="hero-eyebrow">Get started in 3 steps</div>
     <h1>Install the BA Skills Library</h1>
-    <p class="hero-sub" style="margin-bottom:0">Three methodology-grade skills for Claude Cowork. Free, open source, no account required.</p>
+    <p class="hero-sub" style="margin-bottom:0">Four methodology-grade skills for Claude Cowork. Free, open source, no account required.</p>
   </div>
 </section>
 
@@ -61,6 +61,13 @@
 
     <!-- What you're installing -->
     <div class="section-eyebrow" style="margin-bottom:1rem">What you're installing</div>
+    <div style="margin-bottom:1.5rem">
+      <div class="skill-card" style="border-color:var(--party);border-width:2px;margin-bottom:1rem">
+        <div class="skill-cmd">/plausibleba</div>
+        <h3>Full PlausibleBA Session</h3>
+        <p>All three skills in a single guided flow. Produces one <code>ba-skills-bundle.json</code> with capabilities, concepts, value streams, roles, and metrics. <strong>Start here.</strong></p>
+      </div>
+    </div>
     <div class="grid-3" style="margin-bottom:3rem">
       <div class="skill-card">
         <div class="skill-cmd">/capability-map</div>
@@ -85,67 +92,92 @@
 
     <hr>
 
-    <!-- Installation steps -->
+    <!-- Installation steps — PRIMARY: zip upload -->
     <div class="section-eyebrow" style="margin:2.5rem 0 1.5rem">Installation</div>
+
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h3>Open Browse Plugins</h3>
-          <p>In Cowork, click <strong>Customize</strong> in the left sidebar, then select <strong>Skills</strong>. Click <strong>Browse plugins</strong> to open the marketplace. Select the <strong>Personal</strong> tab.</p>
+          <h3>Download the skill plugins</h3>
+          <p>Download each plugin zip below. These are ready to upload directly into Cowork — no unzipping needed.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem">
+            <a href="/downloads/ba-plausibleba.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+              <span style="font-size:20px">📦</span>
+              <span>
+                <strong style="display:block;font-size:13px">/plausibleba</strong>
+                <span style="font-size:11px;color:var(--ink-3)">Full session — all three in one flow</span>
+              </span>
+            </a>
+            <a href="/downloads/ba-capability-mapping.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+              <span style="font-size:20px">📦</span>
+              <span>
+                <strong style="display:block;font-size:13px">/capability-map</strong>
+                <span style="font-size:11px;color:var(--ink-3)">MECE capability hierarchy</span>
+              </span>
+            </a>
+            <a href="/downloads/ba-concept-model.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+              <span style="font-size:20px">📦</span>
+              <span>
+                <strong style="display:block;font-size:13px">/concept-model</strong>
+                <span style="font-size:11px;color:var(--ink-3)">Business object taxonomy</span>
+              </span>
+            </a>
+            <a href="/downloads/ba-value-streams.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+              <span style="font-size:20px">📦</span>
+              <span>
+                <strong style="display:block;font-size:13px">/value-stream</strong>
+                <span style="font-size:11px;color:var(--ink-3)">Staged value delivery</span>
+              </span>
+            </a>
+          </div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h3>Add the PlausibleBA marketplace</h3>
-          <p>Click the <strong>+</strong> button next to the Personal tab. Enter this address and click Add:</p>
-          <p style="margin-top:0.5rem"><code>plausibleba/ba-skills</code></p>
-          <p style="margin-top:0.5rem">Cowork will connect to the repository and display all three skills.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h3>Install each skill</h3>
-          <p>Click each skill card and press <strong>Install</strong>. Repeat for all three — Ba capability mapping, Ba concept model, Ba value streams. Each confirms with a toast notification.</p>
-        </div>
-      </div>
-    </div>
-
-    <div style="background:rgba(74,158,218,0.06);border:1px solid rgba(74,158,218,0.2);border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0 2rem;font-size:14px;color:var(--ink-3)">
-      <strong style="color:var(--ink-2)">Updating skills:</strong> Remove the marketplace (··· → Remove) and re-add it using the same address. Reinstalling picks up the latest version automatically.
-    </div>
-
-    <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius);padding:1rem 1.25rem;margin:0 0 3rem;font-size:14px;color:var(--ink-3)">
-      <strong style="color:var(--ink-2)">GitHub connector not working?</strong> The Cowork plugin installer occasionally has issues connecting to GitHub repositories. If Step 2 fails, use the <a href="#manual-install" style="color:#4a9eda">manual installation</a> method below.
-    </div>
-
-    <hr>
-
-    <div id="manual-install" class="section-eyebrow" style="margin:2.5rem 0 1.5rem">Manual installation (alternative)</div>
-    <p style="font-size:14px;color:var(--ink-3);margin-bottom:1.5rem">If the marketplace installer is unavailable, you can install skills by downloading them directly.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h3>Download the skills</h3>
-          <p>Download the skill files from the <a href="https://github.com/plausibleba/ba-skills/releases" target="_blank">GitHub releases page</a>, or clone the repository:</p>
-          <p style="margin-top:0.5rem"><code>git clone https://github.com/plausibleba/ba-skills.git</code></p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>Add skills locally in Cowork</h3>
-          <p>In Cowork, go to <strong>Customize → Skills</strong>. Click <strong>Browse plugins → Personal tab → +</strong> and choose <strong>Add local folder</strong>. Select the downloaded <code>ba-skills</code> folder from your computer.</p>
+          <h3>Upload each plugin to Cowork</h3>
+          <p>In Cowork, click <strong>Customize</strong> in the left sidebar, then <strong>Skills</strong>. Click <strong>Browse plugins</strong>, select the <strong>Personal</strong> tab, then click <strong>+</strong> and choose <strong>Upload plugin</strong>.</p>
+          <p style="margin-top:0.5rem">Select the first <code>.zip</code> file. Cowork will confirm installation with a toast notification. Repeat for each of the four plugins.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
           <h3>Verify installation</h3>
-          <p>All three skill commands should now appear: <code>/capability-map</code>, <code>/concept-model</code>, and <code>/value-stream</code>. Open a new task to test.</p>
+          <p>Open a <strong>new Cowork task</strong> and type <code>/</code> in the chat. You should see all four commands: <code>/plausibleba</code>, <code>/capability-map</code>, <code>/concept-model</code>, and <code>/value-stream</code>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(74,158,218,0.06);border:1px solid rgba(74,158,218,0.2);border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0 2rem;font-size:14px;color:var(--ink-3)">
+      <strong style="color:var(--ink-2)">Updating skills:</strong> Download the latest zips from this page, remove the old plugins in Cowork (Customize → Skills → ··· → Remove), then upload the new zips.
+    </div>
+
+    <hr>
+
+    <div id="github-install" class="section-eyebrow" style="margin:2.5rem 0 1.5rem">GitHub marketplace install (alternative)</div>
+    <p style="font-size:14px;color:var(--ink-3);margin-bottom:1.5rem">If you prefer to install from GitHub, you can add the PlausibleBA marketplace directly. Note: this method may not work with all Cowork versions.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Open Browse Plugins</h3>
+          <p>In Cowork, click <strong>Customize → Skills → Browse plugins</strong>. Select the <strong>Personal</strong> tab.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Add the PlausibleBA marketplace</h3>
+          <p>Click <strong>+</strong>, then enter: <code>plausibleba/ba-skills</code></p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Install each skill</h3>
+          <p>Click each skill card and press <strong>Install</strong>. If this fails, use the zip upload method above — it's the most reliable option.</p>
         </div>
       </div>
     </div>
@@ -173,7 +205,8 @@
         <div class="step-num">3</div>
         <div class="step-content">
           <h3>Type a slash command and press Enter</h3>
-          <p><code>/capability-map</code> — MECE capability hierarchy with interactive treemap<br>
+          <p><code>/plausibleba</code> — <strong>recommended</strong> — runs all three skills in sequence, exports a single bundle<br>
+          <code>/capability-map</code> — MECE capability hierarchy with interactive treemap<br>
           <code>/concept-model</code> — business object taxonomy with interactive graph<br>
           <code>/value-stream</code> — staged value stream with interactive stage view</p>
           <p style="margin-top:0.5rem">The skill guides you through two validation checkpoints before rendering. The visualisation appears automatically.</p>
