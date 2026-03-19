@@ -51,12 +51,6 @@ async function setUser(email: string, data: { firstName: string; lastName: strin
         headers: { Authorization: `Bearer ${kv.token}`, "Content-Type": "application/json" },
         body: JSON.stringify(JSON.stringify(data)),
       });
-      // Also maintain a sorted set of all user emails for listing
-      await fetch(`${kv.url}/zadd/users:all`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${kv.token}`, "Content-Type": "application/json" },
-        body: JSON.stringify([Date.now(), email]),
-      });
       return;
     } catch { /* fall through to memory */ }
   }
@@ -66,9 +60,13 @@ async function setUser(email: string, data: { firstName: string; lastName: strin
 // ── Google Sheets webhook (fire-and-forget) ────────────────────────────────
 async function sendToSheet(lead: { firstName: string; lastName: string; email: string; generation: number; source: string }): Promise<void> {
   const webhookUrl = process.env.GSHEET_WEBHOOK_URL;
-  if (!webhookUrl) return; // Silently skip if not configured
+  if (!webhookUrl) {
+    console.log("SHEETS: No GSHEET_WEBHOOK_URL configured, skipping");
+    return;
+  }
   try {
-    await fetch(webhookUrl, {
+    console.log("SHEETS: Sending lead to webhook...", lead.email);
+    const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -76,9 +74,9 @@ async function sendToSheet(lead: { firstName: string; lastName: string; email: s
         ...lead,
       }),
     });
-  } catch {
-    // Fire-and-forget — don't fail the generation if sheet webhook is down
-    console.warn("Google Sheets webhook failed (non-blocking)");
+    console.log("SHEETS: Response status:", res.status);
+  } catch (err) {
+    console.warn("SHEETS: Webhook failed:", err);
   }
 }
 
@@ -137,8 +135,8 @@ export default async function handler(req: Request): Promise<Response> {
     };
     await setUser(normalEmail, userData);
 
-    // Fire lead to Google Sheets (non-blocking)
-    sendToSheet({
+    // Fire lead to Google Sheets (await so we get logs, but don't block on failure)
+    await sendToSheet({
       firstName: userData.firstName,
       lastName: userData.lastName,
       email: normalEmail,
