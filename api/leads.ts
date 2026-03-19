@@ -3,7 +3,7 @@
 //
 // Returns all captured leads from Vercel KV as JSON.
 // Protected by a simple API key (env var LEADS_API_KEY).
-// For quick checking from a browser or phone.
+// Scans for user:* keys directly (no sorted set dependency).
 
 export const config = { runtime: "edge" };
 
@@ -12,7 +12,6 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response(null, { status: 204 });
   }
 
-  // Simple API key protection
   const url = new URL(req.url);
   const key = url.searchParams.get("key");
   const expectedKey = process.env.LEADS_API_KEY;
@@ -29,23 +28,25 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   try {
-    // Get all user emails from the sorted set (most recent first)
-    const listRes = await fetch(`${kvUrl}/zrange/users:all/0/-1`, {
+    // Scan for all user:* keys using KEYS command via Upstash REST API
+    const keysRes = await fetch(`${kvUrl}/keys/user:*`, {
       headers: { Authorization: `Bearer ${kvToken}` },
     });
 
-    if (!listRes.ok) {
-      return jsonResponse({ error: "Failed to list users", leads: [] }, 200);
+    if (!keysRes.ok) {
+      const errText = await keysRes.text();
+      return jsonResponse({ error: "Failed to list keys", detail: errText, leads: [] }, 200);
     }
 
-    const listData = await listRes.json();
-    const emails: string[] = listData.result || [];
+    const keysData = await keysRes.json();
+    const userKeys: string[] = keysData.result || [];
 
     // Fetch each user record
     const leads = [];
-    for (const email of emails) {
+    for (const userKey of userKeys) {
+      const email = userKey.replace(/^user:/, "");
       try {
-        const userRes = await fetch(`${kvUrl}/get/user:${email}`, {
+        const userRes = await fetch(`${kvUrl}/get/${userKey}`, {
           headers: { Authorization: `Bearer ${kvToken}` },
         });
         if (userRes.ok) {
