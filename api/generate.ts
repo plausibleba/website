@@ -114,8 +114,11 @@ export default async function handler(req: Request): Promise<Response> {
       return jsonResponse({ error: "Email and messages are required" }, 400);
     }
 
-    // Rate limiting
-    const existing = await getUser(email.toLowerCase().trim());
+    // Rate limiting — treat multiple calls within 2 min as one canvas session
+    const SESSION_WINDOW_MS = 2 * 60 * 1000; // 2 minutes
+    const now = new Date().toISOString();
+    const normalEmail = email.toLowerCase().trim();
+    const existing = await getUser(normalEmail);
     const count = existing?.count ?? 0;
 
     if (count >= MAX_FREE_GENERATIONS) {
@@ -126,26 +129,29 @@ export default async function handler(req: Request): Promise<Response> {
       }, 429);
     }
 
-    // Update user record
-    const now = new Date().toISOString();
-    const normalEmail = email.toLowerCase().trim();
+    // Only increment count + log lead if this is a NEW session (>2 min since last call)
+    const lastSeen = existing?.lastSeen ? new Date(existing.lastSeen).getTime() : 0;
+    const isNewSession = (Date.now() - lastSeen) > SESSION_WINDOW_MS;
+
     const userData = {
       firstName: firstName ?? existing?.firstName ?? "",
       lastName: lastName ?? existing?.lastName ?? "",
-      count: count + 1,
+      count: isNewSession ? count + 1 : count,
       firstSeen: existing?.firstSeen ?? now,
       lastSeen: now,
     };
     await setUser(normalEmail, userData);
 
-    // Fire lead to Google Sheets (await so we get logs, but don't block on failure)
-    await sendToSheet({
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: normalEmail,
-      generation: userData.count,
-      source: "canvas",
-    }).catch(() => {}); // swallow — never block generation
+    // Only fire lead to Google Sheets on new sessions
+    if (isNewSession) {
+      await sendToSheet({
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: normalEmail,
+        generation: userData.count,
+        source: "canvas",
+      }).catch(() => {}); // swallow — never block generation
+    }
 
     // Forward to Anthropic
     const anthropicBody = { model, max_tokens, temperature, messages, stream: true };
