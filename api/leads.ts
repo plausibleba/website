@@ -52,7 +52,8 @@ export default async function handler(req: Request): Promise<Response> {
         if (userRes.ok) {
           const userData = await userRes.json();
           if (userData.result) {
-            const record = JSON.parse(userData.result);
+            let record = JSON.parse(userData.result);
+            if (typeof record === "string") record = JSON.parse(record); // handle legacy double-encoding
             leads.push({ email, ...record });
           }
         }

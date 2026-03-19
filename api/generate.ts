@@ -35,7 +35,10 @@ async function getUser(email: string): Promise<{ firstName?: string; lastName?: 
       });
       if (res.ok) {
         const data = await res.json();
-        return data.result ? JSON.parse(data.result) : null;
+        if (!data.result) return null;
+        let parsed = JSON.parse(data.result);
+        if (typeof parsed === "string") parsed = JSON.parse(parsed); // handle legacy double-encoding
+        return parsed;
       }
     } catch { /* fall through to memory */ }
   }
@@ -49,7 +52,7 @@ async function setUser(email: string, data: { firstName: string; lastName: strin
       await fetch(`${kv.url}/set/user:${email}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${kv.token}`, "Content-Type": "application/json" },
-        body: JSON.stringify(JSON.stringify(data)),
+        body: JSON.stringify(data),
       });
       return;
     } catch { /* fall through to memory */ }
