@@ -3,6 +3,7 @@
 //
 // Rate limiting: 3 free generations per email address.
 // User data stored in Vercel KV (or in-memory fallback for dev).
+// Lead capture: fires webhook to Google Sheets on every generation.
 //
 // POST /api/generate
 // Body: { email, firstName, lastName, model, max_tokens, temperature, messages }
@@ -15,14 +16,22 @@ const memoryStore = new Map<string, { firstName: string; lastName: string; count
 
 const MAX_FREE_GENERATIONS = 3;
 
-async function getUser(email: string): Promise<{ count: number } | null> {
-  // Try Vercel KV if available
-  if (typeof globalThis !== "undefined" && (globalThis as any).process?.env?.KV_REST_API_URL) {
+// ── KV helpers ─────────────────────────────────────────────────────────────
+function getKVConfig(): { url: string; token: string } | null {
+  try {
+    const url = process.env.KV_REST_API_URL;
+    const token = process.env.KV_REST_API_TOKEN;
+    if (url && token) return { url, token };
+  } catch { /* env not available */ }
+  return null;
+}
+
+async function getUser(email: string): Promise<{ firstName?: string; lastName?: string; count: number; firstSeen?: string; lastSeen?: string } | null> {
+  const kv = getKVConfig();
+  if (kv) {
     try {
-      const kvUrl = (globalThis as any).process.env.KV_REST_API_URL;
-      const kvToken = (globalThis as any).process.env.KV_REST_API_TOKEN;
-      const res = await fetch(`${kvUrl}/get/user:${email}`, {
-        headers: { Authorization: `Bearer ${kvToken}` },
+      const res = await fetch(`${kv.url}/get/user:${email}`, {
+        headers: { Authorization: `Bearer ${kv.token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -34,20 +43,43 @@ async function getUser(email: string): Promise<{ count: number } | null> {
 }
 
 async function setUser(email: string, data: { firstName: string; lastName: string; count: number; firstSeen: string; lastSeen: string }): Promise<void> {
-  // Try Vercel KV if available
-  if (typeof globalThis !== "undefined" && (globalThis as any).process?.env?.KV_REST_API_URL) {
+  const kv = getKVConfig();
+  if (kv) {
     try {
-      const kvUrl = (globalThis as any).process.env.KV_REST_API_URL;
-      const kvToken = (globalThis as any).process.env.KV_REST_API_TOKEN;
-      await fetch(`${kvUrl}/set/user:${email}`, {
+      await fetch(`${kv.url}/set/user:${email}`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${kvToken}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${kv.token}`, "Content-Type": "application/json" },
         body: JSON.stringify(JSON.stringify(data)),
+      });
+      // Also maintain a sorted set of all user emails for listing
+      await fetch(`${kv.url}/zadd/users:all`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${kv.token}`, "Content-Type": "application/json" },
+        body: JSON.stringify([Date.now(), email]),
       });
       return;
     } catch { /* fall through to memory */ }
   }
   memoryStore.set(email, data);
+}
+
+// ── Google Sheets webhook (fire-and-forget) ────────────────────────────────
+async function sendToSheet(lead: { firstName: string; lastName: string; email: string; generation: number; source: string }): Promise<void> {
+  const webhookUrl = process.env.GSHEET_WEBHOOK_URL;
+  if (!webhookUrl) return; // Silently skip if not configured
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        ...lead,
+      }),
+    });
+  } catch {
+    // Fire-and-forget — don't fail the generation if sheet webhook is down
+    console.warn("Google Sheets webhook failed (non-blocking)");
+  }
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -95,13 +127,24 @@ export default async function handler(req: Request): Promise<Response> {
 
     // Update user record
     const now = new Date().toISOString();
-    await setUser(email.toLowerCase().trim(), {
+    const normalEmail = email.toLowerCase().trim();
+    const userData = {
       firstName: firstName ?? existing?.firstName ?? "",
       lastName: lastName ?? existing?.lastName ?? "",
       count: count + 1,
       firstSeen: existing?.firstSeen ?? now,
       lastSeen: now,
-    });
+    };
+    await setUser(normalEmail, userData);
+
+    // Fire lead to Google Sheets (non-blocking)
+    sendToSheet({
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: normalEmail,
+      generation: userData.count,
+      source: "canvas",
+    }).catch(() => {}); // swallow — never block generation
 
     // Forward to Anthropic
     const anthropicBody = { model, max_tokens, temperature, messages, stream: true };
