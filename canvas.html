@@ -761,6 +761,11 @@ function inferConceptCapabilityLinks(concepts, capabilities, stages) {
 }
 
 function normalizeBundle(raw) {
+  // VCC bundle wrapper: { bundleVersion, scaffold: { elements: ... } }
+  if (raw.bundleVersion && raw.scaffold && raw.scaffold.elements) {
+    raw = { ...raw.scaffold, meta: { client: raw.scaffold.name || '', bundleVersion: raw.bundleVersion } };
+  }
+
   // Already a unified bundle — has elements.capabilities as an object
   if (raw.elements && typeof raw.elements.capabilities === 'object') {
     // Normalise any string levels ("L1" → 1) in capabilities
@@ -963,6 +968,20 @@ function normalizeInlineVS(vs, elements) {
 function buildTreemap(caps) {
   const grid = document.getElementById('treemap-grid');
   grid.innerHTML = '';
+
+  // VCC flat capabilities have no level — assign them into a simple hierarchy
+  const hasLevels = Object.values(caps).some(c => typeof c.level === 'number');
+  if (!hasLevels && Object.keys(caps).length > 0) {
+    // Group flat caps by activity co-occurrence or just alphabetically into chunks
+    const flatCaps = Object.entries(caps).map(([id, c]) => ({ ...c, id: c.id || id }));
+    // Create a single L1 with one L2, all caps as L3
+    const l1Id = '__flat_l1';
+    const l2Id = '__flat_l2';
+    caps[l1Id] = { id: l1Id, name: 'Business Capabilities', level: 1, parentId: null, type: 'Execution' };
+    caps[l2Id] = { id: l2Id, name: 'Core Operations', level: 2, parentId: l1Id };
+    flatCaps.forEach(c => { caps[c.id] = { ...c, level: 3, parentId: l2Id }; });
+  }
+
   const l1s = Object.values(caps).filter(c => c.level === 1);
   const l2s = Object.values(caps).filter(c => c.level === 2);
   const l3s = Object.values(caps).filter(c => c.level === 3);
@@ -1502,7 +1521,7 @@ function renderBundle(raw) {
     <div class="canvas-name">${bundle.name || '<strong>Operating Model</strong>'}</div>
     <div class="canvas-desc">${bundle.description || ''}</div>
     <div class="canvas-meta">
-      <div class="canvas-meta-item">Capabilities <span>${Object.values(elements.capabilities||{}).filter(c=>c.level===3).length}</span></div>
+      <div class="canvas-meta-item">Capabilities <span>${Object.values(elements.capabilities||{}).filter(c=>c.level===3 || !c.level).length}</span></div>
       <div class="canvas-meta-item">Concepts <span>${Object.keys(elements.concepts||{}).length}</span></div>
       <div class="canvas-meta-item">Value streams <span>${Object.keys(elements.valueStreams||{}).length}</span></div>
       <div class="canvas-meta-item">Metrics <span>${Object.keys(elements.metrics||{}).length}</span></div>
