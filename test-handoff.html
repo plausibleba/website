@@ -17,6 +17,7 @@
   --ink-4: #a0a0a0;
   --surface: #ffffff;
   --surface-2: #f7f6f3;
+  --surface-3: #eeede9;
   --border: #e2e1dc;
   --border-strong: #c8c7c0;
   --radius: 8px;
@@ -28,6 +29,12 @@
   --red-light: #fef2f2;
   --amber: #d97706;
   --amber-light: #fffbeb;
+  --blue: #378ADD;
+  --blue-light: #E6F1FB;
+  --blue-text: #0C447C;
+  --purple: #7F77DD;
+  --purple-light: #F0EEFB;
+  --purple-text: #3D3580;
 }
 
 body {
@@ -35,10 +42,34 @@ body {
   background: var(--surface-2);
   color: var(--ink);
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 3rem 1.5rem;
+}
+
+/* ── NAV ── */
+.test-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(247,246,243,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px;
+}
+.test-nav-brand { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; }
+.test-nav-right { display: flex; align-items: center; gap: 16px; }
+.test-nav-right a { font-size: 12px; color: var(--ink-3); text-decoration: none; }
+.test-nav-right a:hover { color: var(--ink); }
+
+/* ── LAYOUT ── */
+.page-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ── HEADER ── */
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .test-badge {
@@ -54,32 +85,182 @@ body {
   border: 1px solid #fde68a;
   padding: 4px 12px;
   border-radius: 20px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 h1 {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 300;
   margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 h1 strong { font-weight: 600; }
 
-.subtitle {
+.page-subtitle {
   font-size: 14px;
   color: var(--ink-3);
-  margin-bottom: 2.5rem;
-  max-width: 520px;
-  text-align: center;
+  max-width: 560px;
+  margin: 0 auto;
   line-height: 1.6;
 }
 
+/* ── SECTION HEADERS ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 1rem;
+}
+
+/* ── FLOW DIAGRAM ── */
+.flow-container {
+  margin-bottom: 3rem;
+}
+
+.flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.flow-step {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.flow-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.flow-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.flow-dot.website { background: var(--blue-light); }
+.flow-dot.transition { background: var(--purple-light); }
+.flow-dot.vcc { background: var(--green-light); }
+
+.flow-line {
+  width: 2px;
+  flex: 1;
+  min-height: 16px;
+}
+.flow-line.website { background: linear-gradient(to bottom, #b8d8f5, #b8d8f5); }
+.flow-line.transition { background: linear-gradient(to bottom, #b8d8f5, #c5c1f0); }
+.flow-line.vcc { background: linear-gradient(to bottom, #c5c1f0, #a8e6cf); }
+.flow-line.vcc-cont { background: linear-gradient(to bottom, #a8e6cf, #a8e6cf); }
+
+.flow-body {
+  flex: 1;
+  padding-bottom: 24px;
+}
+
+.flow-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
+
+.flow-desc {
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.6;
+}
+
+.flow-detail {
+  margin-top: 10px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.flow-detail code {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  background: var(--surface-3);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.flow-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.flow-location.website { background: var(--blue-light); color: var(--blue-text); }
+.flow-location.vcc { background: var(--green-light); color: var(--green-text); }
+.flow-location.api { background: var(--purple-light); color: var(--purple-text); }
+
+.flow-branch {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.flow-branch-option {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.flow-branch-option h4 {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.flow-branch-option p {
+  font-size: 11px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.flow-branch-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  margin-bottom: 8px;
+}
+
+/* ── CARDS ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 2rem;
-  max-width: 600px;
-  width: 100%;
   margin-bottom: 1.5rem;
 }
 
@@ -105,12 +286,12 @@ h1 strong { font-weight: 600; }
   font-weight: 600;
 }
 
+/* ── FORMS ── */
 .field-row {
   display: flex;
   gap: 12px;
   margin-bottom: 12px;
 }
-
 .field-row .field { flex: 1; }
 
 label {
@@ -136,23 +317,9 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--ink-4);
 }
-
 textarea { resize: vertical; min-height: 60px; }
 
-.config-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.config-row label {
-  font-size: 12px;
-  margin-bottom: 0;
-  white-space: nowrap;
-  min-width: 100px;
-}
-
+/* ── BUTTONS ── */
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -191,6 +358,9 @@ textarea { resize: vertical; min-height: 60px; }
 }
 .btn-secondary:hover { border-color: var(--ink-4); color: var(--ink); }
 
+.actions { display: flex; gap: 10px; margin-top: 16px; }
+
+/* ── LOG ── */
 .log {
   font-family: 'DM Mono', monospace;
   font-size: 12px;
@@ -203,117 +373,404 @@ textarea { resize: vertical; min-height: 60px; }
   white-space: pre-wrap;
   word-break: break-all;
 }
-
 .log .error { color: #fca5a5; }
 .log .info { color: #93c5fd; }
 .log .success { color: #86efac; }
 .log .dim { color: #666; }
 
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  padding: 3px 10px;
-  border-radius: 12px;
-}
-.status-pill.pass { background: var(--green-light); color: var(--green-text); }
-.status-pill.fail { background: var(--red-light); color: var(--red); }
-.status-pill.pending { background: #f3f4f6; color: var(--ink-4); }
-
-.actions { display: flex; gap: 10px; margin-top: 16px; }
-
+/* ── OVERRIDES ── */
 .override-row {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
 }
-
 .override-row label {
   font-size: 11px;
   color: var(--ink-4);
   margin-bottom: 4px;
 }
+
+/* ── EDGE CASES TABLE ── */
+.edge-cases {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.edge-cases th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink-2);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.edge-cases td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.edge-cases tr:last-child td { border-bottom: none; }
+.edge-cases .scenario { font-weight: 500; color: var(--ink); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+.pill.graceful { background: var(--green-light); color: var(--green-text); }
+.pill.silent { background: var(--blue-light); color: var(--blue-text); }
+.pill.fallback { background: var(--amber-light); color: var(--amber); }
 </style>
 </head>
 <body>
 
-<div class="test-badge">&#9888; Internal test page</div>
+<!-- Nav -->
+<nav class="test-nav">
+  <a class="test-nav-brand" href="/">PlausibleBA</a>
+  <div class="test-nav-right">
+    <a href="/canvas">Canvas</a>
+    <a href="#flow">UX Flow</a>
+    <a href="#test">Test Harness</a>
+    <a href="#edge-cases">Edge Cases</a>
+  </div>
+</nav>
 
-<h1>Canvas &rarr; VCC <strong>Handoff Test</strong></h1>
-<p class="subtitle">
-  This page simulates the "Open in VCC" flow end-to-end. It creates a mock bundle,
-  claims it via the API, and redirects to VCC with the token. Not indexed, not linked.
-</p>
+<div class="page-content">
 
-<!-- Step 1: Configure test data -->
-<div class="card">
-  <h2><span class="step-num">1</span> Configure test data</h2>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="test-badge">&#9888; Internal test page &mdash; not indexed</div>
+    <h1>Canvas &rarr; VCC <strong>Handoff</strong></h1>
+    <p class="page-subtitle">
+      The complete user experience from generating an operating model on Canvas
+      through to landing inside VCC with it loaded as a project.
+    </p>
+  </div>
 
-  <div class="field-row">
-    <div class="field">
-      <label>First name</label>
-      <input type="text" id="firstName" value="Terry" />
+  <!-- ═══ SECTION: UX FLOW ═══ -->
+  <div class="flow-container" id="flow">
+    <div class="section-label">User journey</div>
+
+    <div class="flow-steps">
+
+      <!-- Step 1: Canvas intake -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot website">&#128221;</div>
+          <div class="flow-line website"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location website">plausibleba.com/canvas</div>
+          <div class="flow-title">User arrives at Canvas</div>
+          <div class="flow-desc">
+            They land on the Canvas intake page. They can paste meeting notes, upload a transcript
+            (Word, PDF, Excel), or click "Load the PortfolioProp demo" to try it with sample data.
+            They enter their name and email to pass the email gate.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Generation -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot website">&#9889;</div>
+          <div class="flow-line website"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location website">plausibleba.com/canvas</div>
+          <div class="flow-title">AI generates the operating model</div>
+          <div class="flow-desc">
+            The LLM pipeline builds a BIZBOK-grounded operating model: capability map,
+            concept model, value streams, and metrics. The model renders as an interactive
+            preview with tabs for each element type. Users can explore, browse tabs.
+          </div>
+          <div class="flow-detail">
+            Rate limit: 3 free generations per email. After 3, they see
+            "You've used all 3 free generations. Open in VCC for unlimited access."
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: CTA -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot website">&#128073;</div>
+          <div class="flow-line transition"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location website">plausibleba.com/canvas</div>
+          <div class="flow-title">User clicks "Open in VCC &rarr;"</div>
+          <div class="flow-desc">
+            Below the rendered model, a CTA banner reads:
+            <em>"Turn this into an interactive workshopping canvas."</em>
+            The user clicks "Open in VCC &rarr;". The button shows "Preparing&hellip;"
+            for about a second.
+          </div>
+          <div class="flow-detail">
+            Behind the scenes: the full bundle JSON is POSTed to <code>/api/claim-bundle</code>
+            along with the user's email, first and last name (captured during the email gate).
+            The API stores it in Vercel KV with a 24-hour TTL and returns a claim token
+            like <code>bndl_a8f3x9k2m7pq</code>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Redirect -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot transition">&#128640;</div>
+          <div class="flow-line vcc"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location api">Redirect</div>
+          <div class="flow-title">Redirect to VCC with claim token</div>
+          <div class="flow-desc">
+            The browser redirects to VCC with the claim token and pre-fill data in the URL.
+          </div>
+          <div class="flow-detail">
+            URL: <code>https://app.plausibleba.com/?claim=bndl_xxx&amp;email=...&amp;firstName=...&amp;lastName=...</code><br><br>
+            On arrival, VCC's <code>extractClaimFromURL()</code> runs immediately:
+            stashes the token in <code>sessionStorage</code> (so it survives the auth redirect),
+            saves the pre-fill data, and cleans the URL via <code>history.replaceState</code>.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Auth (branching) -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot vcc">&#128274;</div>
+          <div class="flow-line vcc-cont"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location vcc">VCC App</div>
+          <div class="flow-title">Authentication</div>
+          <div class="flow-desc">
+            What happens next depends on whether the user already has a VCC session.
+          </div>
+
+          <div class="flow-branch">
+            <div class="flow-branch-option">
+              <div class="flow-branch-label">Path A &mdash; New user</div>
+              <h4>Login page with context</h4>
+              <p>
+                They see the VCC login page, but it's customised for the handoff:<br><br>
+                &bull; Green banner: "Your operating model is ready to import"<br>
+                &bull; Subtitle: "Sign in to open your operating model"<br>
+                &bull; Email field pre-filled from the Canvas session<br>
+                &bull; Button reads "Sign in &amp; import model"<br><br>
+                They sign in with Google or request a magic link. After auth completes,
+                the flow continues automatically.
+              </p>
+            </div>
+            <div class="flow-branch-option">
+              <div class="flow-branch-label">Path B &mdash; Existing session</div>
+              <h4>Skips login entirely</h4>
+              <p>
+                If the user is already signed in to VCC (e.g. in another tab, or a
+                persistent session), the login page never appears. The claim consumer
+                fires immediately after auth state is confirmed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Import -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot vcc">&#128230;</div>
+          <div class="flow-line vcc-cont"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location vcc">VCC App</div>
+          <div class="flow-title">Bundle auto-imports</div>
+          <div class="flow-desc">
+            A spinner screen appears: "Importing your operating model&hellip; This will
+            only take a moment." Behind the scenes:
+          </div>
+          <div class="flow-detail">
+            1. Read claim token from <code>sessionStorage</code><br>
+            2. Fetch bundle from <code>plausibleba.com/api/claim-bundle?token=bndl_xxx</code><br>
+            3. Token is consumed (one-time use &mdash; deleted on retrieval)<br>
+            4. Bundle is normalised (PlausibleBA format &rarr; VCC internal scaffold)<br>
+            5. Scaffold loaded into the canvas store<br>
+            6. <code>autoSaveToProject()</code> creates a Supabase project automatically
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: Landing -->
+      <div class="flow-step">
+        <div class="flow-rail">
+          <div class="flow-dot vcc">&#10004;&#65039;</div>
+          <div class="flow-line" style="background:transparent;"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-location vcc">VCC App</div>
+          <div class="flow-title">User lands on Network view</div>
+          <div class="flow-desc">
+            The spinner clears and the user is looking at their operating model inside VCC &mdash;
+            the Network view showing value streams, capabilities, and concepts.
+            A project has been created automatically in their account.
+            They can now navigate to Stream, Capabilities, Concepts, Friction, and start workshopping.
+          </div>
+          <div class="flow-detail">
+            <strong>What the user never had to do:</strong> download a JSON file, find an import button,
+            navigate to the right screen, or re-enter any information. The bundle survived the
+            entire auth flow without them touching it.
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="field">
-      <label>Last name</label>
-      <input type="text" id="lastName" value="Roach" />
+  </div>
+
+  <!-- ═══ SECTION: EDGE CASES ═══ -->
+  <div id="edge-cases" style="margin-bottom: 3rem;">
+    <div class="section-label">Edge cases &amp; failure modes</div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table class="edge-cases">
+        <thead>
+          <tr>
+            <th style="width:30%">Scenario</th>
+            <th style="width:15%">Handling</th>
+            <th>What the user sees</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="scenario">Token expired (24h+)</td>
+            <td><span class="pill silent">Silent</span></td>
+            <td>Normal login/project list. No error. They can go back to Canvas and click "Open in VCC" again, or use Import Bundle.</td>
+          </tr>
+          <tr>
+            <td class="scenario">Token already claimed</td>
+            <td><span class="pill silent">Silent</span></td>
+            <td>Same as expired &mdash; claim API returns 404, consumer clears state, user sees normal VCC.</td>
+          </tr>
+          <tr>
+            <td class="scenario">Claim API unreachable</td>
+            <td><span class="pill graceful">Graceful</span></td>
+            <td>Console logs error. User lands on normal project list. No visible error &mdash; they can still import manually.</td>
+          </tr>
+          <tr>
+            <td class="scenario">Bookmarked claim URL</td>
+            <td><span class="pill silent">Silent</span></td>
+            <td>Token consumed on first visit. Bookmark loads normal VCC with no claim params.</td>
+          </tr>
+          <tr>
+            <td class="scenario">Unrecognised bundle format</td>
+            <td><span class="pill graceful">Graceful</span></td>
+            <td>Console warning. Import skipped silently. User sees project list.</td>
+          </tr>
+          <tr>
+            <td class="scenario">User clicks "Open in VCC" with no bundle</td>
+            <td><span class="pill fallback">Fallback</span></td>
+            <td>Alert: "No bundle to open. Generate or upload a model first."</td>
+          </tr>
+          <tr>
+            <td class="scenario">Claim API POST fails (Canvas side)</td>
+            <td><span class="pill fallback">Fallback</span></td>
+            <td>Alert: "Could not connect to VCC. You can download the bundle and import it manually." Button resets.</td>
+          </tr>
+          <tr>
+            <td class="scenario">Local dev mode (no Supabase)</td>
+            <td><span class="pill silent">Silent</span></td>
+            <td>Claim consumer skipped entirely (<code>isLocalMode</code> guard). Normal local VCC experience.</td>
+          </tr>
+          <tr>
+            <td class="scenario">User closes tab mid-auth</td>
+            <td><span class="pill graceful">Graceful</span></td>
+            <td>Token stays in <code>sessionStorage</code> (tab-scoped). If they re-open VCC from the magic link email, <code>sessionStorage</code> is empty &mdash; normal login. They can re-click "Open in VCC" from Canvas.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <div class="field-row">
-    <div class="field">
-      <label>Email</label>
-      <input type="email" id="email" value="terry.roach@mac.com" />
+  <!-- ═══ SECTION: TEST HARNESS ═══ -->
+  <div id="test">
+    <div class="section-label">Test harness</div>
+
+    <!-- Configure -->
+    <div class="card">
+      <h2><span class="step-num">1</span> Configure test data</h2>
+
+      <div class="field-row">
+        <div class="field">
+          <label>First name</label>
+          <input type="text" id="firstName" value="Terry" />
+        </div>
+        <div class="field">
+          <label>Last name</label>
+          <input type="text" id="lastName" value="Roach" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="email" value="terry.roach@mac.com" />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Bundle source</label>
+          <select id="bundleSource">
+            <option value="mock">Mock bundle (small, fast)</option>
+            <option value="demo-portfolioprop">Demo: PortfolioProp (from GitHub)</option>
+            <option value="custom">Custom JSON (paste below)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="custom-json-area" style="display:none; margin-top:8px;">
+        <label>Paste bundle JSON</label>
+        <textarea id="customJson" rows="4" placeholder='{"name":"My Model","elements":{...}}'></textarea>
+      </div>
+
+      <div class="override-row">
+        <label>VCC target URL (override for local dev)</label>
+        <input type="text" id="vccUrl" placeholder="https://app.plausibleba.com (default)" />
+      </div>
+    </div>
+
+    <!-- Run -->
+    <div class="card">
+      <h2><span class="step-num">2</span> Run handoff test</h2>
+
+      <div class="actions" style="margin-top:0">
+        <button class="btn-primary" id="run-test-btn" onclick="runTest()">
+          Claim bundle &amp; redirect to VCC &rarr;
+        </button>
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="testApiOnly()">
+          Test claim API only (no redirect)
+        </button>
+        <button class="btn-secondary" onclick="testRoundtrip()">
+          Test full roundtrip (store &amp; retrieve)
+        </button>
+      </div>
+    </div>
+
+    <!-- Log -->
+    <div class="card">
+      <h2><span class="step-num">3</span> Test log</h2>
+      <div class="log" id="log"><span class="dim">Ready. Click a test button above to begin.</span></div>
     </div>
   </div>
 
-  <div class="field-row">
-    <div class="field">
-      <label>Bundle source</label>
-      <select id="bundleSource">
-        <option value="mock">Mock bundle (small, fast)</option>
-        <option value="demo-portfolioprop">Demo: PortfolioProp (from GitHub)</option>
-        <option value="custom">Custom JSON (paste below)</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="custom-json-area" style="display:none; margin-top:8px;">
-    <label>Paste bundle JSON</label>
-    <textarea id="customJson" rows="4" placeholder='{"name":"My Model","elements":{...}}'></textarea>
-  </div>
-
-  <div class="override-row">
-    <label>VCC target URL (override for local dev)</label>
-    <input type="text" id="vccUrl" placeholder="https://app.plausibleba.com (default)" />
-  </div>
-</div>
-
-<!-- Step 2: Run the test -->
-<div class="card">
-  <h2><span class="step-num">2</span> Run handoff test</h2>
-
-  <div class="actions" style="margin-top:0">
-    <button class="btn-primary" id="run-test-btn" onclick="runTest()">
-      Claim bundle &amp; redirect to VCC &rarr;
-    </button>
-  </div>
-  <div class="actions">
-    <button class="btn-secondary" id="test-api-btn" onclick="testApiOnly()">
-      Test claim API only (no redirect)
-    </button>
-    <button class="btn-secondary" onclick="testRoundtrip()">
-      Test full roundtrip (store &amp; retrieve)
-    </button>
-  </div>
-</div>
-
-<!-- Step 3: Results log -->
-<div class="card">
-  <h2><span class="step-num">3</span> Test log</h2>
-  <div class="log" id="log"><span class="dim">Ready. Click a test button above to begin.</span></div>
 </div>
 
 <script>
@@ -463,7 +920,7 @@ function getVccUrl() {
 async function runTest() {
   const btn = document.getElementById('run-test-btn');
   btn.disabled = true;
-  btn.textContent = 'Claiming bundle...';
+  btn.textContent = 'Claiming bundle\u2026';
 
   try {
     const bundle = await getBundle();
@@ -581,7 +1038,7 @@ async function testRoundtrip() {
     if (originalStr === retrievedStr) {
       log('PASS: Bundle integrity verified (exact match)', 'success');
     } else {
-      log('WARN: Bundle content differs — may be OK if server normalises JSON', 'error');
+      log('WARN: Bundle content differs \u2014 may be OK if server normalises JSON', 'error');
     }
 
     // Verify email came back
