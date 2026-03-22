@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>VCC Handoff Test — PlausibleBA</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0f0f0f;
+  --ink-2: #3a3a3a;
+  --ink-3: #6b6b6b;
+  --ink-4: #a0a0a0;
+  --surface: #ffffff;
+  --surface-2: #f7f6f3;
+  --border: #e2e1dc;
+  --border-strong: #c8c7c0;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --green: #1D9E75;
+  --green-light: #E1F5EE;
+  --green-text: #085041;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --amber: #d97706;
+  --amber-light: #fffbeb;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, sans-serif;
+  background: var(--surface-2);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1.5rem;
+}
+
+.test-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+  background: var(--amber-light);
+  border: 1px solid #fde68a;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 300;
+  margin-bottom: 0.5rem;
+}
+h1 strong { font-weight: 600; }
+
+.subtitle {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-bottom: 2.5rem;
+  max-width: 520px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.card h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.field-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field-row .field { flex: 1; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-3);
+  margin-bottom: 4px;
+}
+
+input[type="text"], input[type="email"], select, textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface);
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--ink-4);
+}
+
+textarea { resize: vertical; min-height: 60px; }
+
+.config-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.config-row label {
+  font-size: 12px;
+  margin-bottom: 0;
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  width: 100%;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  background: none;
+  color: var(--ink-3);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-secondary:hover { border-color: var(--ink-4); color: var(--ink); }
+
+.log {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: #1a1a1a;
+  color: #a8e6a0;
+  border-radius: var(--radius);
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.log .error { color: #fca5a5; }
+.log .info { color: #93c5fd; }
+.log .success { color: #86efac; }
+.log .dim { color: #666; }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+.status-pill.pass { background: var(--green-light); color: var(--green-text); }
+.status-pill.fail { background: var(--red-light); color: var(--red); }
+.status-pill.pending { background: #f3f4f6; color: var(--ink-4); }
+
+.actions { display: flex; gap: 10px; margin-top: 16px; }
+
+.override-row {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.override-row label {
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+
+<div class="test-badge">&#9888; Internal test page</div>
+
+<h1>Canvas &rarr; VCC <strong>Handoff Test</strong></h1>
+<p class="subtitle">
+  This page simulates the "Open in VCC" flow end-to-end. It creates a mock bundle,
+  claims it via the API, and redirects to VCC with the token. Not indexed, not linked.
+</p>
+
+<!-- Step 1: Configure test data -->
+<div class="card">
+  <h2><span class="step-num">1</span> Configure test data</h2>
+
+  <div class="field-row">
+    <div class="field">
+      <label>First name</label>
+      <input type="text" id="firstName" value="Terry" />
+    </div>
+    <div class="field">
+      <label>Last name</label>
+      <input type="text" id="lastName" value="Roach" />
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="email" value="terry.roach@mac.com" />
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label>Bundle source</label>
+      <select id="bundleSource">
+        <option value="mock">Mock bundle (small, fast)</option>
+        <option value="demo-portfolioprop">Demo: PortfolioProp (from GitHub)</option>
+        <option value="custom">Custom JSON (paste below)</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="custom-json-area" style="display:none; margin-top:8px;">
+    <label>Paste bundle JSON</label>
+    <textarea id="customJson" rows="4" placeholder='{"name":"My Model","elements":{...}}'></textarea>
+  </div>
+
+  <div class="override-row">
+    <label>VCC target URL (override for local dev)</label>
+    <input type="text" id="vccUrl" placeholder="https://app.plausibleba.com (default)" />
+  </div>
+</div>
+
+<!-- Step 2: Run the test -->
+<div class="card">
+  <h2><span class="step-num">2</span> Run handoff test</h2>
+
+  <div class="actions" style="margin-top:0">
+    <button class="btn-primary" id="run-test-btn" onclick="runTest()">
+      Claim bundle &amp; redirect to VCC &rarr;
+    </button>
+  </div>
+  <div class="actions">
+    <button class="btn-secondary" id="test-api-btn" onclick="testApiOnly()">
+      Test claim API only (no redirect)
+    </button>
+    <button class="btn-secondary" onclick="testRoundtrip()">
+      Test full roundtrip (store &amp; retrieve)
+    </button>
+  </div>
+</div>
+
+<!-- Step 3: Results log -->
+<div class="card">
+  <h2><span class="step-num">3</span> Test log</h2>
+  <div class="log" id="log"><span class="dim">Ready. Click a test button above to begin.</span></div>
+</div>
+
+<script>
+// ── Bundle source toggle ──
+document.getElementById('bundleSource').addEventListener('change', (e) => {
+  document.getElementById('custom-json-area').style.display =
+    e.target.value === 'custom' ? 'block' : 'none';
+});
+
+// ── Logging ──
+const logEl = document.getElementById('log');
+let logStarted = false;
+
+function log(msg, cls = '') {
+  if (!logStarted) {
+    logEl.innerHTML = '';
+    logStarted = true;
+  }
+  const ts = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const line = document.createElement('div');
+  line.className = cls;
+  line.textContent = `[${ts}] ${msg}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// ── Mock bundle ──
+function getMockBundle() {
+  return {
+    meta: {
+      bundleVersion: "1.0.0",
+      scaffoldId: "test_handoff_" + Date.now(),
+      generatedAt: new Date().toISOString(),
+      source: "handoff-test"
+    },
+    scaffoldId: "test_handoff_" + Date.now(),
+    name: "Test Handoff Model",
+    description: "A minimal operating model for testing the Canvas-to-VCC handoff flow.",
+    elements: {
+      capabilities: {
+        "cap_area_ops": {
+          id: "cap_area_ops", elementType: "Capability", name: "Operations",
+          level: 1, parentId: null, type: "Execution"
+        },
+        "cap_order_mgmt": {
+          id: "cap_order_mgmt", elementType: "Capability", name: "Order Management",
+          level: 2, parentId: "cap_area_ops"
+        },
+        "cap_order_capture": {
+          id: "cap_order_capture", elementType: "Capability", name: "Order Capture",
+          level: 3, parentId: "cap_order_mgmt"
+        },
+        "cap_order_fulfil": {
+          id: "cap_order_fulfil", elementType: "Capability", name: "Order Fulfilment",
+          level: 3, parentId: "cap_order_mgmt"
+        }
+      },
+      concepts: {
+        "obj_customer": {
+          id: "obj_customer", elementType: "BusinessObject", name: "Customer",
+          type: "Party", definition: "A person or organisation that purchases goods.",
+          lifecycleStates: ["Prospect", "Active", "Churned"],
+          relatedObjects: []
+        },
+        "obj_order": {
+          id: "obj_order", elementType: "BusinessObject", name: "Order",
+          type: "Record", definition: "A request to purchase goods or services.",
+          lifecycleStates: ["Draft", "Submitted", "Fulfilled", "Cancelled"],
+          relatedObjects: [{ objectId: "obj_customer", relationship: "association", label: "placed by" }]
+        }
+      },
+      valueStreams: {
+        "vs_order_to_cash": {
+          id: "vs_order_to_cash", elementType: "ValueStream", name: "Order to Cash",
+          description: "From order placement to payment receipt",
+          trigger: "Customer places order",
+          recipient: "Finance",
+          valueObject: "obj_order",
+          stageIds: ["stg_capture", "stg_fulfil", "stg_invoice"]
+        }
+      },
+      valueStreamStages: {
+        "stg_capture": {
+          id: "stg_capture", elementType: "ValueStreamStage", name: "Capture Order",
+          capabilities: ["cap_order_capture"], objects: ["obj_customer", "obj_order"],
+          entryCriteria: "Customer submits order", exitCriteria: "Order validated",
+          valueObjectState: "Submitted"
+        },
+        "stg_fulfil": {
+          id: "stg_fulfil", elementType: "ValueStreamStage", name: "Fulfil Order",
+          capabilities: ["cap_order_fulfil"], objects: ["obj_order"],
+          entryCriteria: "Order validated", exitCriteria: "Goods shipped",
+          valueObjectState: "Fulfilled"
+        },
+        "stg_invoice": {
+          id: "stg_invoice", elementType: "ValueStreamStage", name: "Invoice & Collect",
+          capabilities: [], objects: ["obj_order"],
+          entryCriteria: "Goods shipped", exitCriteria: "Payment received",
+          valueObjectState: "Closed"
+        }
+      },
+      metrics: {
+        "met_cycle_time": {
+          id: "met_cycle_time", elementType: "Metric", name: "Order Cycle Time",
+          unit: "days", direction: "down"
+        }
+      },
+      controls: {},
+      constraints: {},
+      roles: {},
+      outcomes: {}
+    }
+  };
+}
+
+// ── Get bundle based on selection ──
+async function getBundle() {
+  const source = document.getElementById('bundleSource').value;
+
+  if (source === 'mock') {
+    return getMockBundle();
+  }
+
+  if (source === 'demo-portfolioprop') {
+    log('Fetching PortfolioProp demo bundle from GitHub...', 'info');
+    const res = await fetch('https://raw.githubusercontent.com/plausibleba/ba-skills/main/examples/portfolioprop_ba-skills-bundle_v1.json');
+    if (!res.ok) throw new Error('Failed to fetch demo bundle');
+    return await res.json();
+  }
+
+  if (source === 'custom') {
+    const raw = document.getElementById('customJson').value.trim();
+    if (!raw) throw new Error('Please paste a JSON bundle');
+    return JSON.parse(raw);
+  }
+
+  throw new Error('Unknown bundle source');
+}
+
+// ── Get VCC URL ──
+function getVccUrl() {
+  const override = document.getElementById('vccUrl').value.trim();
+  return override || 'https://app.plausibleba.com';
+}
+
+// ── Test: Full flow (claim + redirect) ──
+async function runTest() {
+  const btn = document.getElementById('run-test-btn');
+  btn.disabled = true;
+  btn.textContent = 'Claiming bundle...';
+
+  try {
+    const bundle = await getBundle();
+    const email = document.getElementById('email').value;
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+
+    log('Bundle loaded: ' + (bundle.name || 'unnamed') + ' (' + JSON.stringify(bundle).length + ' bytes)');
+    log('Posting to /api/claim-bundle...', 'info');
+
+    const res = await fetch('/api/claim-bundle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundle, email, firstName, lastName }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error('API returned ' + res.status + ': ' + err);
+    }
+
+    const { token } = await res.json();
+    log('Claim token: ' + token, 'success');
+
+    const vccUrl = getVccUrl();
+    const params = new URLSearchParams({ claim: token });
+    if (email) params.set('email', email);
+    if (firstName) params.set('firstName', firstName);
+    if (lastName) params.set('lastName', lastName);
+
+    const redirectUrl = vccUrl + '?' + params.toString();
+    log('Redirecting to: ' + redirectUrl, 'info');
+    log('--- Redirect in 2 seconds (check log above) ---', 'success');
+
+    setTimeout(() => {
+      window.location.href = redirectUrl;
+    }, 2000);
+
+  } catch (err) {
+    log('ERROR: ' + err.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Claim bundle & redirect to VCC \u2192';
+  }
+}
+
+// ── Test: API only (no redirect) ──
+async function testApiOnly() {
+  try {
+    const bundle = await getBundle();
+    const email = document.getElementById('email').value;
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+
+    log('--- API-only test ---', 'info');
+    log('Bundle: ' + (bundle.name || 'unnamed') + ' (' + JSON.stringify(bundle).length + ' bytes)');
+    log('POST /api/claim-bundle ...', 'info');
+
+    const res = await fetch('/api/claim-bundle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundle, email, firstName, lastName }),
+    });
+
+    const body = await res.json();
+    if (!res.ok) {
+      log('FAIL: ' + res.status + ' ' + JSON.stringify(body), 'error');
+      return;
+    }
+
+    log('PASS: Token received: ' + body.token, 'success');
+    log('Token would redirect to: ' + getVccUrl() + '?claim=' + body.token, 'dim');
+
+  } catch (err) {
+    log('ERROR: ' + err.message, 'error');
+  }
+}
+
+// ── Test: Full roundtrip (store + retrieve + verify) ──
+async function testRoundtrip() {
+  try {
+    const bundle = await getBundle();
+    const email = document.getElementById('email').value;
+
+    log('--- Roundtrip test ---', 'info');
+    log('Step 1: POST bundle to claim API...', 'info');
+
+    const postRes = await fetch('/api/claim-bundle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundle, email, firstName: 'Test', lastName: 'User' }),
+    });
+
+    if (!postRes.ok) {
+      log('FAIL: POST returned ' + postRes.status, 'error');
+      return;
+    }
+
+    const { token } = await postRes.json();
+    log('PASS: Token created: ' + token, 'success');
+
+    log('Step 2: GET bundle back with token...', 'info');
+
+    const getRes = await fetch('/api/claim-bundle?token=' + token);
+    if (!getRes.ok) {
+      log('FAIL: GET returned ' + getRes.status, 'error');
+      return;
+    }
+
+    const payload = await getRes.json();
+    log('PASS: Bundle retrieved (' + JSON.stringify(payload.bundle).length + ' bytes)', 'success');
+
+    // Verify bundle integrity
+    const originalStr = JSON.stringify(bundle);
+    const retrievedStr = JSON.stringify(payload.bundle);
+    if (originalStr === retrievedStr) {
+      log('PASS: Bundle integrity verified (exact match)', 'success');
+    } else {
+      log('WARN: Bundle content differs — may be OK if server normalises JSON', 'error');
+    }
+
+    // Verify email came back
+    if (payload.email === email) {
+      log('PASS: Email preserved: ' + payload.email, 'success');
+    } else {
+      log('WARN: Email mismatch. Sent: ' + email + ', Got: ' + payload.email, 'error');
+    }
+
+    log('Step 3: Try to GET same token again (should be consumed)...', 'info');
+
+    const getRes2 = await fetch('/api/claim-bundle?token=' + token);
+    if (getRes2.status === 404) {
+      log('PASS: Token correctly consumed (404 on second GET)', 'success');
+    } else {
+      log('WARN: Token still valid on second GET (status ' + getRes2.status + ')', 'error');
+    }
+
+    log('--- All roundtrip tests complete ---', 'success');
+
+  } catch (err) {
+    log('ERROR: ' + err.message, 'error');
+  }
+}
+</script>
+
+</body>
+</html>

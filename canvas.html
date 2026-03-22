@@ -619,7 +619,7 @@ nav {
       <div class="cta-sub">Add friction heatmaps, solution mapping, throughput projections, and governance controls. Import your bundle directly into VCC and run your first workshop in minutes.</div>
     </div>
     <div class="cta-actions">
-      <a class="cta-btn-primary" href="/vcc">Open in VCC →</a>
+      <a class="cta-btn-primary" href="#" id="open-in-vcc-btn" onclick="openInVCC(event)">Open in VCC →</a>
       <a class="cta-btn-secondary" href="/install">Install PlausibleBA free</a>
     </div>
   </div>
@@ -1507,6 +1507,61 @@ function downloadBundle() {
   a.download = name + '-bundle.json';
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+// ── Open in VCC — claim bundle and redirect ──
+// Posts the current bundle to the claim-bundle API, gets a short-lived token,
+// and redirects to VCC with the token (+ optional email/name for pre-fill).
+const VCC_APP_URL = 'https://app.plausibleba.com'; // TODO: update when VCC is deployed
+
+async function openInVCC(e) {
+  if (e) e.preventDefault();
+  if (!_lastRenderedBundle) {
+    alert('No bundle to open. Generate or upload a model first.');
+    return;
+  }
+
+  const btn = document.getElementById('open-in-vcc-btn');
+  const originalText = btn.textContent;
+  btn.textContent = 'Preparing…';
+  btn.style.pointerEvents = 'none';
+
+  try {
+    // Collect user data from the canvas session (captured during email gate)
+    const email = _userData?.email || '';
+    const firstName = _userData?.firstName || '';
+    const lastName = _userData?.lastName || '';
+
+    const res = await fetch('/api/claim-bundle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        bundle: _lastRenderedBundle,
+        email,
+        firstName,
+        lastName,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to prepare bundle for VCC');
+    }
+
+    const { token } = await res.json();
+
+    // Build VCC redirect URL with claim token and optional pre-fill params
+    const params = new URLSearchParams({ claim: token });
+    if (email) params.set('email', email);
+    if (firstName) params.set('firstName', firstName);
+    if (lastName) params.set('lastName', lastName);
+
+    window.location.href = `${VCC_APP_URL}?${params.toString()}`;
+  } catch (err) {
+    console.error('Open in VCC failed:', err);
+    btn.textContent = originalText;
+    btn.style.pointerEvents = '';
+    alert('Could not connect to VCC. You can download the bundle and import it manually.');
+  }
 }
 
 function renderBundle(raw) {
