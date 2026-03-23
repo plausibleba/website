@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Value Cognition Canvas — Friction analysis for your operating model</title>
-<meta name="description" content="The Value Cognition Canvas turns your PlausibleBA operating model into actionable intelligence — friction heatmaps, binding constraint analysis, solution mapping, and throughput projections.">
+<title>Value Cognition Canvas — Coming soon</title>
+<meta name="description" content="The Value Cognition Canvas is the analytical layer for PlausibleBA — friction heatmaps, solution mapping, throughput projections, and governance controls. Coming soon.">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
@@ -21,301 +21,90 @@
 <nav class="site-nav">
   <div class="nav-inner">
     <a class="nav-brand" href="/">PlausibleBA</a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="nav-links">
       <a href="/skills">Skills</a>
       <a href="/methodology">Methodology</a>
       <a href="/install">Install</a>
       <a href="/canvas">Canvas</a>
-      <a href="/vcc" class="active">VCC</a>
       <a href="/case-study">Case study</a>
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
-      <a class="nav-cta" href="https://app.plausibleba.com">Open VCC →</a>
+      <a class="nav-cta" href="/canvas">Try it free →</a>
     </div>
   </div>
 </nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="/">Home</a>
+  <a href="/skills">Skills</a>
+  <a href="/methodology">Methodology</a>
+  <a href="/install">Install</a>
+  <a href="/canvas">Canvas</a>
+  <a href="/case-study">Case study</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+  <a href="/canvas" class="nav-cta-mobile">Try it free →</a>
+</div>
+<script>
+  var btn = document.getElementById('nav-hamburger');
+  var menu = document.getElementById('nav-mobile');
+  if (btn && menu) {
+    btn.addEventListener('click', function() {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+  }
+</script>
 
-<!-- HERO -->
-<section class="hero" style="padding:5rem 2rem 4rem;">
-  <div class="hero-inner" style="max-width:720px;">
+<section class="hero" style="padding:5rem 2rem;text-align:center;min-height:480px;display:flex;align-items:center;">
+  <div class="hero-inner" style="max-width:600px;margin:0 auto;">
 
-    <div class="hero-eyebrow fade-up">Value Cognition Canvas</div>
+    <div class="hero-eyebrow fade-up" style="margin-bottom:1.5rem">Value Cognition Canvas</div>
 
-    <h1 class="fade-up-2" style="margin-bottom:1.25rem;">Your operating model,<br><em>under the microscope.</em></h1>
-
-    <p class="hero-sub fade-up-3">
-      PlausibleBA generates your operating model. VCC is where you analyse it — find the friction, map the solutions, model the throughput, and govern the transformation. It turns a static model into a living decision-support tool.
-    </p>
-
-    <div class="hero-actions fade-up-3">
-      <a class="btn-primary" href="https://app.plausibleba.com">Open VCC →</a>
-      <a class="btn-ghost" href="/canvas">Generate a model first</a>
+    <!-- Simple VCC icon -->
+    <div style="margin:0 auto 2rem;width:72px;height:72px;" class="fade-up">
+      <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <rect x="4" y="4" width="64" height="64" rx="14" fill="rgba(74,158,218,0.1)" stroke="rgba(74,158,218,0.35)" stroke-width="1.5"/>
+        <!-- Three stage columns -->
+        <rect x="14" y="22" width="12" height="32" rx="3" fill="rgba(74,158,218,0.2)" stroke="rgba(74,158,218,0.4)" stroke-width="1"/>
+        <rect x="30" y="16" width="12" height="38" rx="3" fill="rgba(74,158,218,0.3)" stroke="rgba(74,158,218,0.5)" stroke-width="1"/>
+        <rect x="46" y="26" width="12" height="28" rx="3" fill="rgba(74,158,218,0.2)" stroke="rgba(74,158,218,0.4)" stroke-width="1"/>
+        <!-- Friction dots -->
+        <circle cx="20" cy="30" r="2.5" fill="rgba(248,113,113,0.7)"/>
+        <circle cx="36" cy="24" r="2.5" fill="rgba(251,191,36,0.7)"/>
+        <circle cx="52" cy="34" r="2.5" fill="rgba(74,158,218,0.8)"/>
+      </svg>
     </div>
 
-    <p style="margin-top:1.5rem;font-size:12px;color:rgba(255,255,255,0.3);" class="fade-up-3">15-day free trial · No credit card required</p>
-  </div>
-</section>
+    <h1 class="fade-up-2" style="font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:1rem;color:#fff;">Almost ready.</h1>
+    <p class="hero-sub fade-up-3" style="margin-bottom:2.5rem;font-size:1.05rem">The Value Cognition Canvas takes your PlausibleBA bundle and adds the analytical layer — friction heatmaps, binding constraint analysis, solution mapping, throughput projections, and multi-user workshopping. We're putting the finishing touches on it now.</p>
 
-<!-- HOW IT WORKS -->
-<section class="section section-white">
-  <div class="section-inner">
-    <div class="section-eyebrow">How it works</div>
-    <h2 style="margin-bottom:0.5rem;max-width:600px">From model to actionable intelligence in four moves.</h2>
-    <p style="max-width:560px;margin-bottom:3rem;color:var(--ink-3)">Generate your operating model on the free PlausibleBA Canvas, then open it in VCC for deep analysis.</p>
-
-    <div class="steps" style="max-width:640px">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-content">
-          <h3>Import your bundle</h3>
-          <p>Click "Open in VCC" from the PlausibleBA Canvas, or upload any <code>ba-skills-bundle.json</code>. Your value stream, capability map, and concept model load instantly into the interactive stage view.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-content">
-          <h3>Assess friction</h3>
-          <p>VCC runs AI-powered friction assessment across every stage of your value stream — identifying bottlenecks, handoff failures, data gaps, and governance blind spots. Each friction point is scored by severity and mapped to its root cause.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-content">
-          <h3>Map solutions</h3>
-          <p>For every friction point, VCC suggests remediation options — from process changes to vendor solutions. Solutions are mapped to capabilities, so you can see exactly what each intervention affects across the operating model.</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-content">
-          <h3>Plan the transformation</h3>
-          <p>Model throughput projections, prioritise by impact, and build a sequenced transformation roadmap grounded in your actual operating model — not a disconnected spreadsheet.</p>
-        </div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem 2rem;margin-bottom:2.5rem;text-align:left;" class="fade-up-3">
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(74,158,218,0.7);margin-bottom:1rem;">What VCC adds to your bundle</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem 2rem;">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);">🔴 &nbsp;Friction heatmaps</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);">🔗 &nbsp;Solution mapping</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);">📊 &nbsp;Throughput projections</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);">🏛 &nbsp;Governance controls</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);">👥 &nbsp;Multi-user workshopping</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);">🃏 &nbsp;Concept & Policy Cards</div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- WHAT VCC ADDS -->
-<section class="section section-dark">
-  <div class="section-inner">
-    <div class="section-eyebrow light">Capabilities</div>
-    <h2 style="color:#fff;margin-bottom:0.5rem">Six analytical layers. One canvas.</h2>
-    <p style="color:rgba(255,255,255,0.45);max-width:520px;margin-bottom:3rem">Each layer builds on your PlausibleBA operating model. No re-entry. No re-drawing. Just analysis.</p>
-
-    <div class="grid-3">
-      <div class="skill-card">
-        <div class="skill-cmd">Friction Assessment</div>
-        <h3>Find the bottlenecks</h3>
-        <p>AI-powered analysis scores friction across every value stream stage. Identifies handoff failures, data gaps, skill shortages, and governance blind spots.</p>
-      </div>
-      <div class="skill-card">
-        <div class="skill-cmd">Binding Constraints</div>
-        <h3>Find the one that matters most</h3>
-        <p>Theory of Constraints analysis identifies the single binding constraint limiting throughput — so you invest in the right place, not everywhere at once.</p>
-      </div>
-      <div class="skill-card">
-        <div class="skill-cmd">Solution Mapping</div>
-        <h3>Map remediation to capabilities</h3>
-        <p>Every friction point gets matched to remediation options — process changes, technology solutions, or vendor products — mapped back to the capabilities they affect.</p>
-      </div>
-      <div class="skill-card">
-        <div class="skill-cmd">Throughput Modelling</div>
-        <h3>Model the impact</h3>
-        <p>Project throughput improvements for each intervention. Compare scenarios. Quantify the value of removing friction before you commit budget.</p>
-      </div>
-      <div class="skill-card">
-        <div class="skill-cmd">Transformation Planning</div>
-        <h3>Sequence the work</h3>
-        <p>Build a prioritised transformation roadmap grounded in your operating model. Dependencies, sequencing, and impact — all in one view.</p>
-      </div>
-      <div class="skill-card">
-        <div class="skill-cmd">Governance Controls</div>
-        <h3>Keep it honest</h3>
-        <p>Track observations, decisions, and rationale against each stage. Maintain an audit trail of analytical reasoning as the model evolves.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CANVAS → VCC FLOW -->
-<section class="section section-mid">
-  <div class="section-inner">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center">
-      <div>
-        <div class="section-eyebrow">The pipeline</div>
-        <h2 style="margin-bottom:1rem">Free model.<br>Powerful analysis.</h2>
-        <p style="color:var(--ink-3);margin-bottom:1.5rem">The PlausibleBA Canvas generates your operating model for free — no account required. When you're ready to go deeper, click "Open in VCC" and your bundle flows straight into the analytical canvas. No re-entry, no data loss, no format conversion.</p>
-        <p style="color:var(--ink-3);margin-bottom:2rem">VCC picks up exactly where the Canvas leaves off.</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <a class="btn-primary" href="/canvas">Generate a model →</a>
-          <a class="btn-outline" href="https://app.plausibleba.com">Already have a bundle? Open VCC</a>
-        </div>
-      </div>
-      <div>
-        <div style="background:var(--navy);border-radius:14px;padding:2rem;border:1px solid #2e3f5c;">
-          <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;margin-bottom:1.25rem">The PlausibleBA → VCC pipeline</div>
-          <div style="margin-bottom:1.25rem">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-              <div style="width:8px;height:8px;border-radius:50%;background:rgba(45,212,191,0.6)"></div>
-              <div style="font-family:'DM Mono',monospace;font-size:12px;color:rgba(45,212,191,0.8)">PlausibleBA Canvas</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-left:auto">FREE</div>
-            </div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.3);padding-left:16px">Paste description → capability map + concept model + value stream</div>
-          </div>
-          <div style="padding-left:3px;margin-bottom:1.25rem">
-            <div style="width:2px;height:24px;background:rgba(255,255,255,0.1);margin-left:1px"></div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-left:12px;margin-top:-14px">ba-skills-bundle.json</div>
-          </div>
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-              <div style="width:8px;height:8px;border-radius:50%;background:rgba(74,158,218,0.8)"></div>
-              <div style="font-family:'DM Mono',monospace;font-size:12px;color:rgba(74,158,218,0.9)">Value Cognition Canvas</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-left:auto">FROM $20/mo</div>
-            </div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.3);padding-left:16px">Friction → constraints → solutions → transformation plan</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section class="section section-white">
-  <div class="section-inner" style="text-align:center;">
-    <div class="section-eyebrow">Pricing</div>
-    <h2 style="margin-bottom:0.5rem">Simple, transparent pricing.</h2>
-    <p style="max-width:480px;margin:0 auto 3rem;color:var(--ink-3)">Start with a 15-day free trial. No credit card required. Upgrade when you're ready.</p>
-
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;max-width:900px;margin:0 auto;">
-
-      <!-- Starter -->
-      <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem 1.25rem;text-align:left;background:var(--surface);">
-        <h3 style="font-family:var(--sans);font-size:1rem;font-weight:600;margin-bottom:0.25rem;color:var(--ink);">Starter</h3>
-        <p style="font-size:12px;margin-bottom:1rem;">One use case, fully unlocked</p>
-        <div style="margin-bottom:1.25rem">
-          <span style="font-family:var(--sans);font-size:1.75rem;font-weight:700;color:var(--ink);">$20</span>
-          <span style="font-size:12px;color:var(--ink-3);">/mo</span>
-        </div>
-        <div style="font-size:12px;color:var(--ink-3);line-height:1.8;margin-bottom:1.5rem;">
-          Pick any use case<br>
-          Unlimited projects<br>
-          Full analytical access<br>
-          Add use cases at $20 each
-        </div>
-        <a class="btn-outline" href="https://app.plausibleba.com" style="display:block;text-align:center;font-size:13px;padding:10px;">Get Starter</a>
-      </div>
-
-      <!-- Individual -->
-      <div style="border:2px solid var(--blue);border-radius:var(--radius-lg);padding:1.75rem 1.25rem;text-align:left;background:var(--surface);position:relative;">
-        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--blue);color:#fff;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:3px 10px;border-radius:10px;white-space:nowrap;">Most popular</div>
-        <h3 style="font-family:var(--sans);font-size:1rem;font-weight:600;margin-bottom:0.25rem;color:var(--ink);">Individual</h3>
-        <p style="font-size:12px;margin-bottom:1rem;">Every use case, every feature</p>
-        <div style="margin-bottom:1.25rem">
-          <span style="font-family:var(--sans);font-size:1.75rem;font-weight:700;color:var(--ink);">$50</span>
-          <span style="font-size:12px;color:var(--ink-3);">/mo</span>
-          <div style="font-size:11px;color:var(--blue);">or $500/yr (pay 10, get 12)</div>
-        </div>
-        <div style="font-size:12px;color:var(--ink-3);line-height:1.8;margin-bottom:1.5rem;">
-          All 4 use cases included<br>
-          Unlimited projects<br>
-          All assessments &amp; enrichment<br>
-          PDF export &amp; reporting<br>
-          Priority support
-        </div>
-        <a class="btn-primary" href="https://app.plausibleba.com" style="display:block;text-align:center;font-size:13px;padding:10px;">Get Individual</a>
-      </div>
-
-      <!-- Team 5 -->
-      <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem 1.25rem;text-align:left;background:var(--surface);">
-        <h3 style="font-family:var(--sans);font-size:1rem;font-weight:600;margin-bottom:0.25rem;color:var(--ink);">Team 5</h3>
-        <p style="font-size:12px;margin-bottom:1rem;">5 seats, full collaboration</p>
-        <div style="margin-bottom:1.25rem">
-          <span style="font-family:var(--sans);font-size:1.75rem;font-weight:700;color:var(--ink);">$200</span>
-          <span style="font-size:12px;color:var(--ink-3);">/mo</span>
-          <div style="font-size:11px;color:var(--blue);">or $2,000/yr (pay 10, get 12)</div>
-          <div style="font-size:11px;color:var(--ink-4);">$40/seat/mo</div>
-        </div>
-        <div style="font-size:12px;color:var(--ink-3);line-height:1.8;margin-bottom:1.5rem;">
-          Everything in Individual<br>
-          5 team member seats<br>
-          Shared project library<br>
-          Team analytics<br>
-          Dedicated onboarding
-        </div>
-        <a class="btn-outline" href="https://app.plausibleba.com" style="display:block;text-align:center;font-size:13px;padding:10px;">Get Team 5</a>
-      </div>
-
-      <!-- Team 10 -->
-      <div style="border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem 1.25rem;text-align:left;background:var(--surface);">
-        <h3 style="font-family:var(--sans);font-size:1rem;font-weight:600;margin-bottom:0.25rem;color:var(--ink);">Team 10</h3>
-        <p style="font-size:12px;margin-bottom:1rem;">10 seats, best per-seat value</p>
-        <div style="margin-bottom:1.25rem">
-          <span style="font-family:var(--sans);font-size:1.75rem;font-weight:700;color:var(--ink);">$350</span>
-          <span style="font-size:12px;color:var(--ink-3);">/mo</span>
-          <div style="font-size:11px;color:var(--blue);">or $3,500/yr (pay 10, get 12)</div>
-          <div style="font-size:11px;color:var(--ink-4);">$35/seat/mo</div>
-        </div>
-        <div style="font-size:12px;color:var(--ink-3);line-height:1.8;margin-bottom:1.5rem;">
-          Everything in Individual<br>
-          10 team member seats<br>
-          Shared project library<br>
-          Team analytics<br>
-          Dedicated onboarding
-        </div>
-        <a class="btn-outline" href="https://app.plausibleba.com" style="display:block;text-align:center;font-size:13px;padding:10px;">Get Team 10</a>
-      </div>
-
+    <div class="hero-actions fade-up-3" style="justify-content:center;flex-wrap:wrap;gap:12px;">
+      <a class="btn-primary" href="/canvas">Generate your model now →</a>
+      <a class="btn-ghost" href="/contact">Get early access</a>
     </div>
 
-    <p style="margin-top:2rem;font-size:13px;color:var(--ink-4);">All plans include a 15-day free trial. <a href="mailto:hello@plausibleba.com?subject=VCC%20Custom%20Plan">Need something custom?</a></p>
+    <p style="margin-top:2rem;font-size:12px;color:rgba(255,255,255,0.25);">Already have a bundle? The Canvas free visualiser is available now at <a href="/canvas" style="color:rgba(74,158,218,0.6);">plausibleba.com/canvas</a></p>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-banner">
-  <div class="section-eyebrow light" style="margin-bottom:1rem">Free 15-day trial</div>
-  <h2 style="color:#fff;margin-bottom:0.75rem">Turn your operating model<br>into a transformation plan.</h2>
-  <p>Generate your model for free on the PlausibleBA Canvas, then open it in VCC for friction analysis, solution mapping, and transformation planning.</p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a class="btn-primary" href="https://app.plausibleba.com">Open VCC →</a>
-    <a class="btn-ghost" href="/canvas">Generate a model first</a>
-  </div>
-</section>
-
-<!-- FOOTER -->
 <footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand-col">
-      <span class="footer-brand">PlausibleBA</span>
-      <p>Just enough business architecture.<br>For every BA, on every project.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Tools</h4>
-      <a href="/canvas">Canvas</a>
-      <a href="/vcc">Value Cognition Canvas</a>
-      <a href="/skills#capability-map">Capability Mapping</a>
-      <a href="/skills#concept-model">Concept Model</a>
-      <a href="/skills#value-streams">Value Streams</a>
-      <a href="/install">Install Skills</a>
-    </div>
-    <div class="footer-col">
-      <h4>Learn</h4>
-      <a href="/methodology">Methodology</a>
-      <a href="/case-study">Case study</a>
-      <a href="https://discoverednotinvented.substack.com/" target="_blank">Substack</a>
-      <a href="https://github.com/plausibleba/ba-skills" target="_blank">GitHub</a>
-    </div>
-    <div class="footer-col">
-      <h4>About</h4>
-      <a href="/about">About PlausibleBA</a>
-      <a href="/contact">Contact</a>
-      <a href="/privacy">Privacy policy</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2026 PlausibleBA · Licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a></p>
+  <div class="footer-bottom" style="max-width:var(--max);margin:0 auto;">
+    <p>© 2026 PlausibleBA · <a href="/privacy">Privacy policy</a></p>
     <p>Built with <a href="https://claude.ai/download" target="_blank">Claude</a> by Anthropic</p>
   </div>
 </footer>

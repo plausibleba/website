@@ -22,19 +22,42 @@
 <nav class="site-nav">
   <div class="nav-inner">
     <a class="nav-brand" href="/">PlausibleBA</a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="nav-links">
       <a href="/skills">Skills</a>
       <a href="/methodology" class="active">Methodology</a>
       <a href="/install">Install</a>
       <a href="/canvas">Canvas</a>
-      <a href="/vcc">VCC</a>
       <a href="/case-study">Case study</a>
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
-      <a class="nav-cta" href="/canvas">Try it free →</a>
+      <a class="nav-cta" href="/install">Install free →</a>
     </div>
   </div>
 </nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="/">Home</a>
+  <a href="/skills">Skills</a>
+  <a href="/methodology">Methodology</a>
+  <a href="/install">Install</a>
+  <a href="/canvas">Canvas</a>
+  <a href="/case-study">Case study</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+  <a href="/canvas" class="nav-cta-mobile">Try it free →</a>
+</div>
+<script>
+  var btn = document.getElementById('nav-hamburger');
+  var menu = document.getElementById('nav-mobile');
+  if (btn && menu) {
+    btn.addEventListener('click', function() {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+  }
+</script>
 
 <section class="hero" style="padding:4rem 2rem 3rem">
   <div class="hero-inner">

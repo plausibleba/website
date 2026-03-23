@@ -145,10 +145,71 @@ code { font-family: var(--mono); font-size: 0.875em; background: var(--surface-3
 .footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.25); }
 .footer-bottom a { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; }
 .footer-bottom a:hover { color: rgba(255,255,255,0.7); }
+/* ── HAMBURGER ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: auto;
+}
+.nav-hamburger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── MOBILE DRAWER ── */
+.nav-mobile {
+  display: none;
+  position: fixed;
+  top: 56px;
+  left: 0; right: 0;
+  background: var(--navy);
+  border-bottom: 1px solid var(--border-nav);
+  padding: 1.25rem 2rem 1.5rem;
+  z-index: 99;
+  flex-direction: column;
+  gap: 0;
+}
+.nav-mobile.open { display: flex; }
+.nav-mobile a {
+  font-size: 15px;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: color 0.15s;
+}
+.nav-mobile a:last-child { border-bottom: none; }
+.nav-mobile a:hover { color: #fff; }
+.nav-mobile .nav-cta-mobile {
+  margin-top: 1rem;
+  display: inline-block;
+  background: var(--blue);
+  color: #fff !important;
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  border-bottom: none !important;
+}
+
 @media (max-width: 768px) {
   .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .nav-links { display: none; }
   .site-nav .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
 }
 @media (max-width: 480px) { .footer-inner { grid-template-columns: 1fr; } }
 
