@@ -442,6 +442,28 @@ textarea { resize: vertical; min-height: 60px; }
     <a href="#edge-cases">Edge Cases</a>
   </div>
 </nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="/">Home</a>
+  <a href="/skills">Skills</a>
+  <a href="/methodology">Methodology</a>
+  <a href="/install">Install</a>
+  <a href="/canvas">Canvas</a>
+  <a href="/vcc">VCC</a>
+  <a href="/case-study">Case study</a>
+  <a href="/about">About</a>
+  <a href="/contact">Contact</a>
+  <a href="/canvas" class="nav-cta-mobile">Try it free →</a>
+</div>
+<script>
+  var btn = document.getElementById('nav-hamburger');
+  var menu = document.getElementById('nav-mobile');
+  if (btn && menu) {
+    btn.addEventListener('click', function() {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+  }
+</script>
 
 <div class="page-content">
 

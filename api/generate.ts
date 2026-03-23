@@ -3,6 +3,7 @@
 //
 // Rate limiting: 3 free generations per email address.
 // User data stored in Vercel KV (or in-memory fallback for dev).
+// Lead capture: fires webhook to Google Sheets on every generation.
 //
 // POST /api/generate
 // Body: { email, firstName, lastName, model, max_tokens, temperature, messages }
@@ -15,18 +16,29 @@ const memoryStore = new Map<string, { firstName: string; lastName: string; count
 
 const MAX_FREE_GENERATIONS = 3;
 
-async function getUser(email: string): Promise<{ count: number } | null> {
-  // Try Vercel KV if available
-  if (typeof globalThis !== "undefined" && (globalThis as any).process?.env?.KV_REST_API_URL) {
+// ── KV helpers ─────────────────────────────────────────────────────────────
+function getKVConfig(): { url: string; token: string } | null {
+  try {
+    const url = process.env.KV_REST_API_URL;
+    const token = process.env.KV_REST_API_TOKEN;
+    if (url && token) return { url, token };
+  } catch { /* env not available */ }
+  return null;
+}
+
+async function getUser(email: string): Promise<{ firstName?: string; lastName?: string; count: number; firstSeen?: string; lastSeen?: string } | null> {
+  const kv = getKVConfig();
+  if (kv) {
     try {
-      const kvUrl = (globalThis as any).process.env.KV_REST_API_URL;
-      const kvToken = (globalThis as any).process.env.KV_REST_API_TOKEN;
-      const res = await fetch(`${kvUrl}/get/user:${email}`, {
-        headers: { Authorization: `Bearer ${kvToken}` },
+      const res = await fetch(`${kv.url}/get/user:${email}`, {
+        headers: { Authorization: `Bearer ${kv.token}` },
       });
       if (res.ok) {
         const data = await res.json();
-        return data.result ? JSON.parse(data.result) : null;
+        if (!data.result) return null;
+        let parsed = JSON.parse(data.result);
+        if (typeof parsed === "string") parsed = JSON.parse(parsed); // handle legacy double-encoding
+        return parsed;
       }
     } catch { /* fall through to memory */ }
   }
@@ -34,20 +46,41 @@ async function getUser(email: string): Promise<{ count: number } | null> {
 }
 
 async function setUser(email: string, data: { firstName: string; lastName: string; count: number; firstSeen: string; lastSeen: string }): Promise<void> {
-  // Try Vercel KV if available
-  if (typeof globalThis !== "undefined" && (globalThis as any).process?.env?.KV_REST_API_URL) {
+  const kv = getKVConfig();
+  if (kv) {
     try {
-      const kvUrl = (globalThis as any).process.env.KV_REST_API_URL;
-      const kvToken = (globalThis as any).process.env.KV_REST_API_TOKEN;
-      await fetch(`${kvUrl}/set/user:${email}`, {
+      await fetch(`${kv.url}/set/user:${email}`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${kvToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify(JSON.stringify(data)),
+        headers: { Authorization: `Bearer ${kv.token}`, "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
       return;
     } catch { /* fall through to memory */ }
   }
   memoryStore.set(email, data);
+}
+
+// ── Google Sheets webhook (fire-and-forget) ────────────────────────────────
+async function sendToSheet(lead: { firstName: string; lastName: string; email: string; generation: number; source: string }): Promise<void> {
+  const webhookUrl = process.env.GSHEET_WEBHOOK_URL;
+  if (!webhookUrl) {
+    console.log("SHEETS: No GSHEET_WEBHOOK_URL configured, skipping");
+    return;
+  }
+  try {
+    console.log("SHEETS: Sending lead to webhook...", lead.email);
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        ...lead,
+      }),
+    });
+    console.log("SHEETS: Response status:", res.status);
+  } catch (err) {
+    console.warn("SHEETS: Webhook failed:", err);
+  }
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -81,8 +114,11 @@ export default async function handler(req: Request): Promise<Response> {
       return jsonResponse({ error: "Email and messages are required" }, 400);
     }
 
-    // Rate limiting
-    const existing = await getUser(email.toLowerCase().trim());
+    // Rate limiting — treat multiple calls within 2 min as one canvas session
+    const SESSION_WINDOW_MS = 2 * 60 * 1000; // 2 minutes
+    const now = new Date().toISOString();
+    const normalEmail = email.toLowerCase().trim();
+    const existing = await getUser(normalEmail);
     const count = existing?.count ?? 0;
 
     if (count >= MAX_FREE_GENERATIONS) {
@@ -93,15 +129,29 @@ export default async function handler(req: Request): Promise<Response> {
       }, 429);
     }
 
-    // Update user record
-    const now = new Date().toISOString();
-    await setUser(email.toLowerCase().trim(), {
+    // Only increment count + log lead if this is a NEW session (>2 min since last call)
+    const lastSeen = existing?.lastSeen ? new Date(existing.lastSeen).getTime() : 0;
+    const isNewSession = (Date.now() - lastSeen) > SESSION_WINDOW_MS;
+
+    const userData = {
       firstName: firstName ?? existing?.firstName ?? "",
       lastName: lastName ?? existing?.lastName ?? "",
-      count: count + 1,
+      count: isNewSession ? count + 1 : count,
       firstSeen: existing?.firstSeen ?? now,
       lastSeen: now,
-    });
+    };
+    await setUser(normalEmail, userData);
+
+    // Only fire lead to Google Sheets on new sessions
+    if (isNewSession) {
+      await sendToSheet({
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: normalEmail,
+        generation: userData.count,
+        source: "canvas",
+      }).catch(() => {}); // swallow — never block generation
+    }
 
     // Forward to Anthropic
     const anthropicBody = { model, max_tokens, temperature, messages, stream: true };
