@@ -801,6 +801,15 @@ function normalizeBundle(raw) {
         normalizeInlineVS(v, raw.elements);
       }
       if (v.outcome && !v.terminalOutcome) v.terminalOutcome = v.outcome;
+      // Pattern 3: resolve stageIds from stages that reference VS via valueStreamId
+      if (!v.stageIds && !v.stages) {
+        const matching = Object.values(raw.elements.valueStreamStages || {})
+          .filter(s => s.valueStreamId === v.id)
+          .sort((a, b) => (a.number || 0) - (b.number || 0));
+        if (matching.length > 0) {
+          v.stageIds = matching.map(s => s.id);
+        }
+      }
     });
 
     // Normalise valueStreamStages field names
