@@ -125,31 +125,31 @@
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <h3>Download the skill plugins</h3>
-          <p>Download each plugin zip below. These are ready to upload directly into Cowork — no unzipping needed.</p>
+          <h3>Download the skill files</h3>
+          <p>Download each <code>.skill</code> file below. These are the native Cowork format — upload directly, no unzipping needed.</p>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem">
-            <a href="/downloads/ba-plausibleba.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+            <a href="/downloads/ba-plausibleba.skill" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
               <span style="font-size:20px">📦</span>
               <span>
                 <strong style="display:block;font-size:13px">/plausibleba</strong>
                 <span style="font-size:11px;color:var(--ink-3)">Full session — all three in one flow</span>
               </span>
             </a>
-            <a href="/downloads/ba-capability-mapping.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+            <a href="/downloads/ba-capability-mapping.skill" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
               <span style="font-size:20px">📦</span>
               <span>
                 <strong style="display:block;font-size:13px">/capability-map</strong>
                 <span style="font-size:11px;color:var(--ink-3)">MECE capability hierarchy</span>
               </span>
             </a>
-            <a href="/downloads/ba-concept-model.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+            <a href="/downloads/ba-concept-model.skill" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
               <span style="font-size:20px">📦</span>
               <span>
                 <strong style="display:block;font-size:13px">/concept-model</strong>
                 <span style="font-size:11px;color:var(--ink-3)">Business object taxonomy</span>
               </span>
             </a>
-            <a href="/downloads/ba-value-streams.zip" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
+            <a href="/downloads/ba-value-streams.skill" download class="download-card" style="display:flex;align-items:center;gap:10px;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);text-decoration:none;color:var(--ink);transition:all 0.15s;background:var(--surface)">
               <span style="font-size:20px">📦</span>
               <span>
                 <strong style="display:block;font-size:13px">/value-stream</strong>
@@ -157,14 +157,15 @@
               </span>
             </a>
           </div>
+          <p style="margin-top:0.75rem;font-size:12px;color:var(--ink-3)">Using Claude Code instead? Download the <a href="/downloads/ba-plausibleba.zip">.zip versions</a> and unzip into <code>~/.claude/skills/</code>.</p>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <h3>Upload each plugin to Cowork</h3>
-          <p>In Cowork, open the <strong>Skills</strong> menu, then click <strong>Upload skill</strong>. Select a downloaded <code>.zip</code> file — Cowork will confirm installation with a toast notification.</p>
-          <p style="margin-top:0.5rem">Repeat for each of the four plugins. No unzipping needed.</p>
+          <h3>Upload each skill to Cowork</h3>
+          <p>In Cowork, open the <strong>Skills</strong> menu, then click <strong>Upload skill</strong>. Select a downloaded <code>.skill</code> file — Cowork will confirm installation with a toast notification.</p>
+          <p style="margin-top:0.5rem">Repeat for each of the four skills. No unzipping needed.</p>
         </div>
       </div>
       <div class="step">
@@ -177,7 +178,7 @@
     </div>
 
     <div style="background:rgba(74,158,218,0.06);border:1px solid rgba(74,158,218,0.2);border-radius:var(--radius);padding:1rem 1.25rem;margin:1rem 0 2rem;font-size:14px;color:var(--ink-3)">
-      <strong style="color:var(--ink-2)">Updating skills:</strong> Download the latest zips from this page, remove the old plugins in Cowork (Customize → Skills → ··· → Remove), then upload the new zips.
+      <strong style="color:var(--ink-2)">Updating skills:</strong> Download the latest <code>.skill</code> files from this page, remove the old skills in Cowork (Customize → Skills → ··· → Remove), then upload the new files.
     </div>
 
     <hr>
@@ -241,8 +242,8 @@
       <div class="step">
         <div class="step-num">4</div>
         <div class="step-content">
-          <h3>Download or export</h3>
-          <p>After the visualisation renders, the skill offers to download an XLSX workbook or export JSON for the VCC pipeline. Both are on demand — the visualisation is the primary deliverable.</p>
+          <h3>Exports &amp; next steps</h3>
+          <p>After the visualisation renders, the skill automatically generates an XLSX workbook and a JSON bundle — both appear as clickable download links, no extra prompt needed. You'll also see suggested next steps to run companion skills (e.g. Concept Model → Value Stream) so you can build the full business architecture stack in sequence.</p>
         </div>
       </div>
     </div>
