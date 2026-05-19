@@ -1,0 +1,134 @@
+/**
+ * regulatory_anchors_strip — widget-scoped styles v1.0
+ *
+ * Imports tokens.css + base.css; adds widget-specific layout.
+ * STRAT renderer injects this CSS alongside index.html.
+ *
+ * Brand token slots (overridable per customer):
+ *   --ras-pill-bg        → defaults to rgba(0, 0, 0, 0.25)
+ *   --ras-pill-border    → defaults to var(--line-2)
+ *   --ras-pill-color     → defaults to var(--ink-3)
+ *   --ras-regulator-color → defaults to var(--teal)
+ *   --ras-panel-bg       → defaults to var(--card)
+ *   --ras-panel-border   → defaults to var(--line)
+ *   --ras-label-color    → defaults to var(--ink-3)
+ */
+
+/* ── Widget-level brand token defaults ─────────────────────── */
+:root {
+  --ras-pill-bg:         rgba(0, 0, 0, 0.25);
+  --ras-pill-border:     var(--line-2);
+  --ras-pill-color:      var(--ink-3);
+  --ras-regulator-color: var(--teal);
+  --ras-panel-bg:        var(--card);
+  --ras-panel-border:    var(--line);
+  --ras-label-color:     var(--ink-3);
+}
+
+/* ── Outer panel ────────────────────────────────────────────── */
+.reg-anchors-panel {
+  background: var(--ras-panel-bg);
+  border: 1px solid var(--ras-panel-border);
+  border-radius: var(--r-2xl);
+  padding: var(--sp-7) var(--sp-8);
+}
+
+/* ── Heading row ────────────────────────────────────────────── */
+.ras-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--sp-6);
+  padding-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--ras-pill-border);
+}
+
+.ras-heading-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ras-regulator-color);
+}
+
+.ras-heading-tail {
+  font-size: var(--text-sm);
+  color: var(--ink-4);
+}
+
+/* ── Pill strip ─────────────────────────────────────────────── */
+.ras-pill-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+/* ── Individual pill ────────────────────────────────────────── */
+.ras-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--ras-pill-bg);
+  border: 1px solid var(--ras-pill-border);
+  font-size: var(--text-sm);
+  color: var(--ras-pill-color);
+  white-space: nowrap;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+/* ── Regulator prefix badge ─────────────────────────────────── */
+.ras-regulator-badge {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--ras-regulator-color);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+/* ── Reference text ─────────────────────────────────────────── */
+.ras-reference {
+  font-size: var(--text-sm);
+  color: var(--ras-pill-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 340px;
+  white-space: nowrap;
+}
+
+/* ── Empty state ────────────────────────────────────────────── */
+.ras-empty {
+  font-size: var(--text-sm);
+  color: var(--ink-4);
+  font-style: italic;
+}
+
+/* ── Framework-specific accent colours ─────────────────────── */
+/* Applied via .ras-pill[data-framework="APRA"] etc. */
+.ras-pill[data-framework="APRA"] {
+  border-color: rgba(167, 139, 250, 0.22);
+}
+.ras-pill[data-framework="ASIC"] {
+  border-color: rgba(78, 205, 196, 0.22);
+}
+.ras-pill[data-framework="RBNZ"] {
+  border-color: rgba(16, 185, 129, 0.22);
+}
+.ras-pill[data-framework="NCCP"],
+.ras-pill[data-framework="SIS"] {
+  border-color: rgba(245, 158, 11, 0.22);
+}
+
+/* ── Count badge (shown to right of heading) ────────────────── */
+.ras-count-badge {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ras-regulator-color);
+  background: rgba(78, 205, 196, 0.10);
+  border: 1px solid rgba(78, 205, 196, 0.25);
+  border-radius: var(--r-full);
+  padding: 2px var(--sp-3);
+}

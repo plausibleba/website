@@ -1,0 +1,12 @@
+{
+  "widgetId": "operating_posture_card",
+  "version": "v1.0",
+  "publishedAt": "2026-05-19T00:00:00.000Z",
+  "status": "current",
+  "supersededBy": null,
+  "url": "https://plausibleba.com/widgets/operating_posture_card/v1.0/",
+  "changeLog": [
+    "v1.0 — Initial publication. Single card rendering operatingPosture.statement as prose body (ink-2, 17px, 1.6 line-height) and operatingPosture.framing as comma-split purple pill tags. Reads from WorkshopContext D-137 substrate."
+  ],
+  "urlImmutabilityNote": "Per Dan Roach 2026-05-17: this URL stays live indefinitely. Patch releases overwrite this v1.0 directory; major bumps go to v2.0/. Older minors are marked superseded in index.json but remain resolvable for STRAT audit-anchor reproducibility."
+}

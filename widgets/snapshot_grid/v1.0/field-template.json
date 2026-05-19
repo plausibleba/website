@@ -1,0 +1,55 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "snapshot_grid",
+  "version": "v1.0",
+  "description": "3-column responsive KPI grid rendering workshopContext.businessSnapshot.metrics[]. Each card shows label, value, optional unit, optional note, and trend arrow. Customer-specific metric labels live in the substrate; widget is generic.",
+  "fieldDependencies": [
+    {
+      "path": "workshopContext.businessSnapshot.metrics",
+      "type": "object[]",
+      "required": true,
+      "displayAs": "Array of metric cards — one card per entry"
+    },
+    {
+      "path": "workshopContext.businessSnapshot.metrics[].label",
+      "type": "string",
+      "required": true,
+      "displayAs": "Uppercase card label (e.g. 'Funds Under Management')"
+    },
+    {
+      "path": "workshopContext.businessSnapshot.metrics[].value",
+      "type": "string",
+      "required": true,
+      "displayAs": "Large primary value — rendered as-is (string or number)"
+    },
+    {
+      "path": "workshopContext.businessSnapshot.metrics[].unit",
+      "type": "string",
+      "required": false,
+      "displayAs": "Unit label beside the value (e.g. 'AUD', 'days', 'members')"
+    },
+    {
+      "path": "workshopContext.businessSnapshot.metrics[].note",
+      "type": "string",
+      "required": false,
+      "displayAs": "Small italic note line below the value"
+    },
+    {
+      "path": "workshopContext.businessSnapshot.metrics[].trendDirection",
+      "type": "string",
+      "required": false,
+      "displayAs": "Corner trend arrow: ▲ (up=green), ▼ (down=amber), — (flat=muted). Absent = no arrow."
+    }
+  ],
+  "brandTokenSlots": [
+    "--sg-label-color",
+    "--sg-value-color",
+    "--sg-note-color",
+    "--sg-bg",
+    "--sg-border",
+    "--sg-divider-color"
+  ],
+  "auditAnchorTemplate": "vcc:widget:snapshot_grid:v1.0:business-snapshot-metrics",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-137"]
+}

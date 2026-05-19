@@ -1,0 +1,12 @@
+{
+  "widgetId": "snapshot_grid",
+  "version": "v1.0",
+  "publishedAt": "2026-05-19T00:00:00.000Z",
+  "status": "current",
+  "supersededBy": null,
+  "url": "https://plausibleba.com/widgets/snapshot_grid/v1.0/",
+  "changeLog": [
+    "v1.0 — Initial publication. 3-column responsive KPI grid (2-col tablet, 1-col mobile) rendering workshopContext.businessSnapshot.metrics[]. Each card: uppercase label, large value+unit, italic note, corner trend arrow (▲/▼/—). Reads from WorkshopContext D-137 substrate."
+  ],
+  "urlImmutabilityNote": "Per Dan Roach 2026-05-17: this URL stays live indefinitely. Patch releases overwrite this v1.0 directory; major bumps go to v2.0/. Older minors are marked superseded in index.json but remain resolvable for STRAT audit-anchor reproducibility."
+}

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>operating_posture_card — VCC Widget v1.0</title>
+<!--
+  VCC Widget: operating_posture_card v1.0
+  URL: https://plausibleba.com/widgets/operating_posture_card/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. Example injection:
+
+      <script>
+        window.widgetData = {
+          manifest: { ... },
+          workshopContext: {
+            operatingPosture: {
+              statement: "...",
+              framing: "regulated, fiduciary, member-first"
+            }
+          }
+        };
+      </script>
+
+  Field dependencies (from field-template.json):
+    workshopContext.operatingPosture.statement — required (string)
+    workshopContext.operatingPosture.framing   — optional (string, comma-separated tags)
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.operatingPosture ||
+      !data.workshopContext.operatingPosture.statement) {
+    mount.innerHTML =
+      '<div class="widget-error">operating_posture_card: window.widgetData.workshopContext.operatingPosture.statement is required.</div>';
+    return;
+  }
+
+  var posture   = data.workshopContext.operatingPosture;
+  var statement = posture.statement;
+  var framing   = posture.framing || '';
+
+  // ── Parse framing into individual pills ────────────────────────
+  // framing is a comma-separated string e.g. "regulated, fiduciary, member-first"
+  function buildFramingHtml(framingStr) {
+    if (!framingStr) return '';
+    var tags = framingStr.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
+    if (!tags.length) return '';
+    var pills = tags.map(function (tag) {
+      return '<span class="opc-pill">' + tag + '</span>';
+    }).join('');
+    return [
+      '<div class="opc-framing-row">',
+      '  <span class="opc-framing-label">Framing</span>',
+      pills,
+      '</div>'
+    ].join('\n');
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  var html = [
+    '<div class="posture-card" role="region" aria-label="Operating posture">',
+    '  <p class="opc-statement">' + statement + '</p>',
+    buildFramingHtml(framing),
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

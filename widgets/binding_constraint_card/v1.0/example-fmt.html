@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>binding_constraint_card — FMT (First Mortgage Trust) Example</title>
+<!--
+  Self-contained example render for binding_constraint_card v1.0.
+  Uses PLACEHOLDER FMT workshop-context data — FMT does not yet have a
+  workshop-context.jsonld. Binding constraint shape is synthetic but
+  plausible, derived from fixtures/FMT/se-briefing/04.5a-fmt-diagnostic.html
+  and fixtures/FMT/fmt-bundle-se-final.json.
+
+  Binding: Credit Write-Up Bottleneck at Assess Credit stage
+  Current: 8 days median per application (3 hours – 2 days = ~1–2 day average
+           across ~200/yr volume, annualised to 8-day queue-inclusive median)
+  Target: 2 days (STRAT projection: <1 hour active work; 2 days = calendar
+          incl. approvals pipeline, plausible conservative target)
+  Leverage: Loan officer capacity + APRA CPS 230 ORM context
+
+  Opens directly in a browser — no server required.
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject PLACEHOLDER FMT fixture data -->
+<script>
+window.widgetData = {
+  workshopContext: {
+    collectionUrn: "urn:vcc:workshop-context:fmt-credit-writeup:v1-placeholder",
+    synthesisedAt: "2026-05-19T00:00:00.000Z",
+    bindingConstraint: {
+      "label": "Credit Write-Up Bottleneck",
+      "description": "Loan officers spend 3 hours to 2 days drafting credit write-ups in Word and manually copying content into Salesforce Prism — the single largest time sink in the origination lifecycle. CEO named this the priority target and was already attempting to automate it before the VCC engagement.",
+      "valueStreamStageRef": "fmt_vs_s04_assess_credit",
+      "currentMetric": {
+        "label": "Median Write-Up Time",
+        "value": "3 hr – 2 days",
+        "unit": "per application"
+      },
+      "targetMetric": {
+        "label": "Target Write-Up Time",
+        "value": "< 1 hour",
+        "unit": "per application"
+      },
+      "strategicLeverage": "Loan officer capacity reclaimed for new application assessment, directly enabling the origination volume uplift (~200/yr → FUM target trajectory) required for the $4.5B growth ambition. Eliminates the manual copy-paste failure mode that surfaces in audit trails as a data-quality risk — a CPS 230 ORM concern given APRA's operational resilience expectations. The CEO's north-star metric (1-hour lead-to-drawdown for Tier-1 loans) is unachievable without closing this bottleneck first."
+    },
+    valueStream: {
+      "valueStreamId": "vs_fmt_loan_origination",
+      "bindingStageIndex": 3,
+      "stages": [
+        { "stageId": "fmt_vs_s01_lead_qualified", "stageIndex": 0, "label": "Lead Qualified", "frictionIntensity": 6, "isBinding": false },
+        { "stageId": "fmt_vs_s02_application_submitted", "stageIndex": 1, "label": "Application Submitted", "frictionIntensity": 7, "isBinding": false },
+        { "stageId": "fmt_vs_s03_prism_submission", "stageIndex": 2, "label": "Prism Submission", "frictionIntensity": 7, "isBinding": false },
+        { "stageId": "fmt_vs_s04_assess_credit", "stageIndex": 3, "label": "Assess Credit", "frictionIntensity": 10, "isBinding": true },
+        { "stageId": "fmt_vs_s05_credit_approved", "stageIndex": 4, "label": "Credit Approved", "frictionIntensity": 5, "isBinding": false },
+        { "stageId": "fmt_vs_s06_documentation", "stageIndex": 5, "label": "Documentation", "frictionIntensity": 6, "isBinding": false },
+        { "stageId": "fmt_vs_s07_settlement", "stageIndex": 6, "label": "Settlement", "frictionIntensity": 4, "isBinding": false }
+      ]
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · binding_constraint_card v1.0 · First Mortgage Trust (PLACEHOLDER) · 2026-05-19
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Fixture: PLACEHOLDER — FMT workshop-context.jsonld not yet authored · binding stage: Assess Credit (stageIndex 3, intensity 10) · 3hr–2d → &lt;1hr · CPS 230 ORM context
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.bindingConstraint) {
+    mount.innerHTML =
+      '<div class="widget-error">binding_constraint_card: window.widgetData.workshopContext.bindingConstraint is required.</div>';
+    return;
+  }
+
+  var bc = data.workshopContext.bindingConstraint;
+  var vs = (data.workshopContext.valueStream) || null;
+
+  if (!bc.label || !bc.description || !bc.currentMetric || !bc.targetMetric) {
+    mount.innerHTML =
+      '<div class="widget-error">binding_constraint_card: bindingConstraint requires label, description, currentMetric, and targetMetric.</div>';
+    return;
+  }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtMetric(m) {
+    if (!m) return '—';
+    var val = m.value !== undefined ? esc(String(m.value)) : '—';
+    var unit = m.unit ? ' <span style="font-size:var(--text-sm);font-weight:400;color:var(--ink-3);">' + esc(m.unit) + '</span>' : '';
+    return val + unit;
+  }
+
+  var bindingStageLabel = null;
+  if (vs && Array.isArray(vs.stages) && typeof vs.bindingStageIndex === 'number') {
+    var bindingStage = vs.stages.find(function (s) {
+      return s.stageIndex === vs.bindingStageIndex || s.isBinding === true;
+    });
+    if (bindingStage && bindingStage.label) {
+      bindingStageLabel = bindingStage.label;
+    }
+  }
+
+  var stageRef = typeof bc.valueStreamStageRef === 'string' ? bc.valueStreamStageRef : '';
+  var stageRefAttr = stageRef ? ' data-stage-ref="' + esc(stageRef) + '"' : '';
+
+  var headTail = bindingStageLabel
+    ? 'stage: ' + esc(bindingStageLabel).toLowerCase()
+    : stageRef
+      ? esc(stageRef)
+      : 'binding constraint';
+
+  var anchors = '';
+  if (stageRef) {
+    anchors = '<div class="bcc-anchors">';
+    anchors += '<span class="bcc-anchor">stage-ref: ' + esc(stageRef) + '</span>';
+    if (bindingStageLabel) {
+      anchors += '<span class="bcc-anchor">stage: ' + esc(bindingStageLabel) + '</span>';
+    }
+    anchors += '</div>';
+  }
+
+  var leverageHtml = '';
+  if (bc.strategicLeverage) {
+    leverageHtml = [
+      '<div class="bcc-leverage">',
+      '  <div class="bcc-leverage-label">Strategic leverage</div>',
+      '  ' + esc(bc.strategicLeverage),
+      '</div>'
+    ].join('\n');
+  }
+
+  var html = [
+    '<div class="bcc-widget" role="region" aria-label="Binding constraint card"' + stageRefAttr + '>',
+    '  <div class="bcc-head">',
+    '    <span class="bcc-head-label">The Binding Constraint</span>',
+    '    <span class="bcc-head-tail">' + headTail + '</span>',
+    '  </div>',
+    '  <div class="bcc-card">',
+    '    <span class="bcc-badge">&#9889; Manifest binding constraint</span>',
+    '    <h3 class="bcc-headline">' + esc(bc.label) + '</h3>',
+    '    <p class="bcc-description">' + esc(bc.description) + '</p>',
+    anchors,
+    '    <div class="bcc-metrics">',
+    '      <div class="bcc-metric current">',
+    '        <div class="bcc-metric-label">' + esc(bc.currentMetric.label || 'Current') + '</div>',
+    '        <div class="bcc-metric-value">' + fmtMetric(bc.currentMetric) + '</div>',
+    '      </div>',
+    '      <div class="bcc-metric target">',
+    '        <div class="bcc-metric-label">' + esc(bc.targetMetric.label || 'Target') + '</div>',
+    '        <div class="bcc-metric-value">' + fmtMetric(bc.targetMetric) + '</div>',
+    '      </div>',
+    '    </div>',
+    leverageHtml,
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

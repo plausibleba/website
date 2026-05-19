@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deterministic_guarantees_grid — VCC Widget v1.0</title>
+<!--
+  VCC Widget: deterministic_guarantees_grid v1.0
+  URL: https://plausibleba.com/widgets/deterministic_guarantees_grid/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. Example injection:
+
+      <script>
+        window.widgetData = {
+          charter: { ... }   // JsonLdCharter
+        };
+      </script>
+
+  Field dependencies (from field-template.json):
+    charter.decisionSurface.decisions[]        — required
+    charter.authorityScope.prohibitions[]      — required (widget filters by enforcement === "platform")
+    charter.escalationTriggers                 — required
+    charter.knowledgeAnchors[]                 — required
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.charter) {
+    mount.innerHTML =
+      '<div class="widget-error">deterministic_guarantees_grid: window.widgetData.charter is required.</div>';
+    return;
+  }
+
+  var c = data.charter;
+
+  // ── Cell 1: Decisions ──────────────────────────────────────────
+  var decisions = (c.decisionSurface && Array.isArray(c.decisionSurface.decisions))
+    ? c.decisionSurface.decisions : [];
+  var decisionCount = decisions.length;
+  var decisionSamples = decisions.slice(0, 2).map(function (d) {
+    return d.name || d['@id'] || '(unnamed)';
+  });
+
+  // ── Cell 2: Platform Prohibitions ─────────────────────────────
+  var allProhibitions = (c.authorityScope && Array.isArray(c.authorityScope.prohibitions))
+    ? c.authorityScope.prohibitions : [];
+  // Widget-side filter: platform-enforced only
+  var platformProhibitions = allProhibitions.filter(function (p) {
+    return p.enforcement === 'platform';
+  });
+  // If enforcement field is absent on all (older schema), fall back to full list
+  var prohibitionList = platformProhibitions.length > 0 ? platformProhibitions : allProhibitions;
+  var prohibitionCount = prohibitionList.length;
+  var prohibitionSamples = prohibitionList.slice(0, 2).map(function (p) {
+    return p.action ? (p.modal || 'MUSTNOT') + ' ' + p.action : (p.object || '(prohibition)');
+  });
+
+  // ── Cell 3: Escalation Triggers ───────────────────────────────
+  var eps = c.escalationTriggers || {};
+  // Remove @type and @id metadata keys; count only populated epsilon rules
+  var epsilonKeys = Object.keys(eps).filter(function (k) {
+    return k !== '@type' && k !== '@id' && eps[k] && typeof eps[k] === 'object';
+  });
+  var epsilonCount = epsilonKeys.length;
+  // Map epsilon key → short display label
+  var epsilonLabels = epsilonKeys.map(function (k) {
+    // epsilon1_ambiguity → ε1, epsilon2_conflict → ε2, etc.
+    var match = k.match(/epsilon(\d+)/i);
+    if (match) {
+      return 'ε' + match[1];
+    }
+    return k;
+  });
+
+  // ── Cell 4: Knowledge Anchors ─────────────────────────────────
+  var anchors = Array.isArray(c.knowledgeAnchors) ? c.knowledgeAnchors : [];
+  var anchorCount = anchors.length;
+  var anchorSamples = anchors.slice(0, 2).map(function (a) {
+    return a.label || a.reference || a['@id'] || '(anchor)';
+  });
+
+  // ── Helpers ────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function renderCount(n) {
+    if (n === null || n === undefined) {
+      return '<span class="dgg-count-absent">—</span>';
+    }
+    return '<div class="dgg-count">' + n + '</div>';
+  }
+
+  function renderSamples(items) {
+    if (!items || items.length === 0) return '';
+    return '<div class="dgg-samples"><b>' + esc(items[0]) + '</b>'
+      + (items[1] ? '<br>' + esc(items[1]) : '') + '</div>';
+  }
+
+  function renderEpsilonChips(labels) {
+    if (!labels || labels.length === 0) return '';
+    var chips = labels.map(function (l) {
+      return '<span class="dgg-eps-chip">' + esc(l) + '</span>';
+    }).join('');
+    return '<div class="dgg-eps-list">' + chips + '</div>';
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  var html = [
+    '<div class="det-guarantees-panel" role="region" aria-label="Deterministic guarantees">',
+
+    '  <div class="dgg-heading">',
+    '    <span class="dgg-heading-label">Deterministic guarantees</span>',
+    '    <span class="dgg-heading-tail">4 primitives · VCC populates each</span>',
+    '  </div>',
+
+    '  <div class="dgg-grid">',
+
+    // Cell 1 — Decisions
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">conditional</div>',
+    '      <div class="dgg-category">Decision Surface</div>',
+         renderCount(decisionCount),
+         renderSamples(decisionSamples),
+    '    </div>',
+
+    // Cell 2 — Platform Prohibitions
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">guard</div>',
+    '      <div class="dgg-category">Platform Prohibitions</div>',
+         renderCount(prohibitionCount),
+         renderSamples(prohibitionSamples),
+    '    </div>',
+
+    // Cell 3 — Escalation Triggers
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">transition</div>',
+    '      <div class="dgg-category">Escalation Triggers</div>',
+         renderCount(epsilonCount),
+         renderEpsilonChips(epsilonLabels),
+    '    </div>',
+
+    // Cell 4 — Knowledge Anchors
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">retrieval</div>',
+    '      <div class="dgg-category">Knowledge Anchors</div>',
+         renderCount(anchorCount),
+         renderSamples(anchorSamples),
+    '    </div>',
+
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

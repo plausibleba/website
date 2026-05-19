@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>bundle_metric_strip — Coastline Super Example</title>
+<!--
+  Self-contained example render for bundle_metric_strip v1.0.
+  Uses Coastline Super fixture data derived from:
+    fixtures/coastline-super/coastline-super-vcc-bundle.json
+    fixtures/coastline-super/stories.jsonld
+
+  Representative manifest — Coastline Super has no real export yet (scaffold only).
+  Counts are REAL from fixture files:
+    - storyCount: 12 (confirmed from stories.jsonld — 12 UserStory @type entries)
+    - derivedFromFrictionIds: 12 (fr_p1 through fr_p12, one per story)
+    - charterVersion: 1 (scaffold v1)
+    - hash: canonical placeholder until real export run
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject Coastline Super fixture data -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "a4f9e2b1c83d7056f21e4a9b3c8d1f5e6a7b2c9d4e5f0a1b2c3d4e5f6a7b8c9",
+    canonicalBundleHashAlgorithm: "sha256",
+    builtAt: "2026-05-19T00:00:00.000Z",
+    charterUrn: "urn:vcc:charter:coastline-super-death-benefit-claim-intake",
+    charterVersion: 1,
+    derivedProfiles: [],
+    userStories: {
+      filePath: "stories.jsonld",
+      sha256: "b5e8f3c2d1a0796e4f3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1",
+      collectionUrn: "urn:vcc:stories:coastline-super-death-benefit-claim-intake:v1",
+      storyCount: 12,
+      storyIds: [
+        "urn:vcc:user-story:story-9a9647c0",
+        "urn:vcc:user-story:story-a92012d5",
+        "urn:vcc:user-story:story-f1152349",
+        "urn:vcc:user-story:story-88a3eda8",
+        "urn:vcc:user-story:story-d845cc0a",
+        "urn:vcc:user-story:story-ee2f622e",
+        "urn:vcc:user-story:story-0ff51386",
+        "urn:vcc:user-story:story-4278a886",
+        "urn:vcc:user-story:story-2104287d",
+        "urn:vcc:user-story:story-0101cbaa",
+        "urn:vcc:user-story:story-c8e6871d",
+        "urn:vcc:user-story:story-9df70bb9"
+      ],
+      derivedFromFrictionIds: [
+        "fr_p1_intake_to_team_queue",
+        "fr_p2_generalist_intake",
+        "fr_p3_multi_cycle_documents",
+        "fr_p4_state_scattered_eight_systems",
+        "fr_p5_reactive_comms",
+        "fr_p6_no_trauma_informed_intake",
+        "fr_p7_manual_beneficiary_trace",
+        "fr_p8_parallel_insurer_invisible",
+        "fr_p9_187_day_median_time_to_payment",
+        "fr_p10_afca_escalation",
+        "fr_p11_rg271_idr_breach",
+        "fr_p12_tone_misalignment_risk"
+      ],
+      generatedAt: "2026-05-19T00:00:00.000Z"
+    },
+    workshopContext: {
+      filePath: "workshop-context.jsonld",
+      sha256: "c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6",
+      collectionUrn: "urn:vcc:workshop-context:coastline-super-death-benefit-claim:v1",
+      bindingConstraintLabel: "Death Claim Cycle Time — 187-Day Median",
+      valueStreamStageCount: 9,
+      metricsCount: 14
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · bundle_metric_strip v1.0 · Coastline Super — Death Benefit Claim Intake
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/ · Representative manifest (no real export yet) · 12 stories (stories.jsonld confirmed) · 12 friction IDs (fr_p1–fr_p12) · Hash is placeholder until real export run
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.manifest) {
+    mount.innerHTML = '<div class="widget-error">bundle_metric_strip: window.widgetData.manifest is required.</div>';
+    return;
+  }
+
+  var m = data.manifest;
+  var hash    = typeof m.canonicalBundleHash === 'string' ? m.canonicalBundleHash : null;
+  var builtAt = typeof m.builtAt === 'string' ? m.builtAt : null;
+  var version = typeof m.charterVersion === 'number' ? m.charterVersion : null;
+  var stories = m.userStories || null;
+  var storyCount    = stories ? stories.storyCount : null;
+  var frictionCount = stories && Array.isArray(stories.derivedFromFrictionIds)
+    ? stories.derivedFromFrictionIds.length : null;
+
+  function fmtHash(h) {
+    if (!h) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value mono">' + h.slice(0, 12) + '…</span>';
+  }
+  function fmtDate(iso) {
+    if (!iso) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value">' + iso.slice(0, 10) + '</span>';
+  }
+  function fmtVersion(v) {
+    if (v === null || v === undefined) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value">v' + v + '</span>';
+  }
+  function fmtCount(n) {
+    if (n === null || n === undefined) return '<span class="bms-value bms-absent">—</span>';
+    return '<span class="bms-value">' + n + '</span>';
+  }
+
+  var html = [
+    '<div class="bundle-metric-strip" role="region" aria-label="Bundle provenance metrics">',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Bundle Hash</div>',
+    '    ' + fmtHash(hash),
+    '    <div class="bms-note">sha256 · drift anchor</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Exported</div>',
+    '    ' + fmtDate(builtAt),
+    '    <div class="bms-note">manifest.builtAt</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Charter Version</div>',
+    '    ' + fmtVersion(version),
+    '    <div class="bms-note">charterVersion</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">User Stories</div>',
+    '    ' + fmtCount(storyCount),
+    '    <div class="bms-note">stories.jsonld</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Friction IDs</div>',
+    '    ' + fmtCount(frictionCount),
+    '    <div class="bms-note">derivedFromFrictionIds</div>',
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

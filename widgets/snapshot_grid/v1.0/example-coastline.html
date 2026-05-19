@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>snapshot_grid — Coastline Super Example</title>
+<!--
+  Self-contained example render for snapshot_grid v1.0.
+  Uses Coastline Super fixture data inlined as window.widgetData.
+  Opens directly in a browser — no server required.
+
+  Fixture source: fixtures/coastline-super/workshop-context.json
+  businessSnapshot.metrics — 14 metrics
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject Coastline Super fixture data -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "a4f9e2b1c83d7056f21e4a9b3c8d1f5e6a7b2c9d4e5f0a1b2c3d4e5f6a7b8c9",
+    builtAt: "2026-05-19T00:00:00.000Z",
+    charterVersion: 1
+  },
+  workshopContext: {
+    businessSnapshot: {
+      metrics: [
+        {
+          "label": "Members",
+          "value": 415000,
+          "unit": "members",
+          "note": "Cross-industry — skews government, education, NFP, professional services",
+          "trendDirection": "up"
+        },
+        {
+          "label": "Funds Under Management",
+          "value": "$32B",
+          "unit": "AUD",
+          "note": "Internal growth ambition: $50B FUM by 2028 via member growth and tactical mergers",
+          "trendDirection": "up"
+        },
+        {
+          "label": "Median Time-to-Payment (Death Claims)",
+          "value": 187,
+          "unit": "days",
+          "note": "2024 internal review; against an internal target of 90 days. 75th percentile: 240 days.",
+          "trendDirection": "down"
+        },
+        {
+          "label": "75th Percentile Time-to-Payment",
+          "value": 240,
+          "unit": "days",
+          "trendDirection": "down"
+        },
+        {
+          "label": "AFCA Escalation Rate",
+          "value": "8%",
+          "unit": "%",
+          "note": "Against industry benchmark of ~3%. Attracted regulatory correspondence.",
+          "trendDirection": "down"
+        },
+        {
+          "label": "IDR Breach Rate (RG 271)",
+          "value": "12%",
+          "unit": "%",
+          "note": "Rolling 6-month period; ASIC Q3 2025 breach; remediation plan submitted.",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Claims with Valid Binding Nomination",
+          "value": "53%",
+          "unit": "%",
+          "trendDirection": "flat"
+        },
+        {
+          "label": "Claims Requiring Trustee Discretionary Determination",
+          "value": "47%",
+          "unit": "%",
+          "note": "SIS s101 human-only obligation; cannot be automated",
+          "trendDirection": "flat"
+        },
+        {
+          "label": "Claims with Insurance Component",
+          "value": "~65%",
+          "unit": "%",
+          "note": "Parallel Northstar Life insurer track; adds 42+ days median on clean submissions",
+          "trendDirection": "flat"
+        },
+        {
+          "label": "Average Inbound Family Contacts per Claim",
+          "value": 7,
+          "unit": "contacts",
+          "note": "Against RG 277-implied target of <3. Driven by reactive comms model.",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Intake-to-Team Queue",
+          "value": 48,
+          "unit": "hours",
+          "note": "Generalist contact-centre intake; manual case routing delay",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Document-Gathering Cycles",
+          "value": 3,
+          "unit": "cycles",
+          "note": "~1 week per cycle. Reactive process; no format validation; no proactive chase.",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Systems Holding Claim State",
+          "value": 8,
+          "unit": "systems",
+          "note": "'Cannot answer where the claim is today without opening four systems' — workshop verbatim",
+          "trendDirection": "flat"
+        },
+        {
+          "label": "Inbound Notification Channels",
+          "value": 7,
+          "unit": "channels",
+          "trendDirection": "flat"
+        }
+      ]
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · snapshot_grid v1.0 · Coastline Super — Death Benefit Claim Intake · 14 metrics
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/workshop-context.json · businessSnapshot.metrics[] · 3-col responsive grid
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.workshopContext ||
+      !data.workshopContext.businessSnapshot ||
+      !Array.isArray(data.workshopContext.businessSnapshot.metrics)) {
+    mount.innerHTML = '<div class="widget-error">snapshot_grid: window.widgetData.workshopContext.businessSnapshot.metrics[] is required.</div>';
+    return;
+  }
+
+  var metrics = data.workshopContext.businessSnapshot.metrics;
+
+  function trendArrow(direction) {
+    if (!direction || direction === 'n/a') return '';
+    var arrow = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '—';
+    var cls = 'sg-trend trend-' + direction;
+    return '<span class="' + cls + '" aria-label="trend ' + direction + '">' + arrow + '</span>';
+  }
+
+  function renderCard(metric) {
+    var label    = metric.label || '';
+    var rawValue = (metric.value !== undefined && metric.value !== null) ? metric.value : null;
+    var unit     = metric.unit || '';
+    var note     = metric.note || '';
+    var trend    = metric.trendDirection || '';
+
+    var valueHtml = (rawValue !== null)
+      ? '<span class="sg-value">' + rawValue + '</span>'
+      : '<span class="sg-absent">—</span>';
+
+    var unitHtml = unit
+      ? '<span class="sg-unit">' + unit + '</span>'
+      : '';
+
+    var noteHtml = note
+      ? '<div class="sg-note">' + note + '</div>'
+      : '';
+
+    return [
+      '<div class="sg-card">',
+      trendArrow(trend),
+      '  <div class="sg-label">' + label + '</div>',
+      '  <div class="sg-value-row">' + valueHtml + unitHtml + '</div>',
+      noteHtml,
+      '</div>'
+    ].join('\n');
+  }
+
+  var cards = metrics.map(renderCard).join('\n');
+  var html = [
+    '<div class="snapshot-grid" role="region" aria-label="Business snapshot metrics">',
+    cards,
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

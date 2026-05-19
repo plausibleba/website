@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>operating_posture_card — FMT / Driva Example</title>
+<!--
+  Self-contained example render for operating_posture_card v1.0.
+  Uses FMT (First Mortgage Trust) plausible fixture data.
+  FMT does not yet have a workshop-context.jsonld; data is authored from
+  04.5a-fmt-diagnostic.html and known FMT business context.
+  Opens directly in a browser — no server required.
+
+  Fixture source: authored from fixtures/FMT/se-briefing/04.5a-fmt-diagnostic.html
+  Note: replace with real workshopContext when FMT workshop-context.jsonld is authored.
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject FMT plausible fixture data -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "05f336c69b4a2e18d7f0c3a91b8e5d72f6c4a0b9e2d1f8a3c7b5e0d9f4a6b1c",
+    builtAt: "2026-05-19T00:00:00.000Z",
+    charterVersion: 1
+  },
+  workshopContext: {
+    operatingPosture: {
+      statement: "Operating capacity, not appetite, is the constraint on FMT's next phase of growth. First Mortgage Trust is a NZ non-bank lender operating under a capital-disciplined, broker-channel-led model with a 30-year zero-capital-loss record. Growth to the $4.5B FUM target is available in the market; the binding constraint is origination throughput — specifically, the credit write-up bottleneck in Stage 4 that limits the fund to approximately 200 loans per year. The fund sits on the perimeter of APRA and RBNZ oversight; every automation decision must be auditable, explainable, and bounded by policy.",
+      framing: "NZ non-bank lender, capital-disciplined, broker-channel-led, APRA + RBNZ adjacent"
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · operating_posture_card v1.0 · First Mortgage Trust — Credit Write-Up Agent · plausible fixture data
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Note: FMT workshop-context.jsonld not yet authored — data sourced from 04.5a-fmt-diagnostic.html + known business context.
+    Replace with real workshopContext when available.
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.operatingPosture ||
+      !data.workshopContext.operatingPosture.statement) {
+    mount.innerHTML = '<div class="widget-error">operating_posture_card: window.widgetData.workshopContext.operatingPosture.statement is required.</div>';
+    return;
+  }
+
+  var posture   = data.workshopContext.operatingPosture;
+  var statement = posture.statement;
+  var framing   = posture.framing || '';
+
+  function buildFramingHtml(framingStr) {
+    if (!framingStr) return '';
+    var tags = framingStr.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
+    if (!tags.length) return '';
+    var pills = tags.map(function (tag) {
+      return '<span class="opc-pill">' + tag + '</span>';
+    }).join('');
+    return [
+      '<div class="opc-framing-row">',
+      '  <span class="opc-framing-label">Framing</span>',
+      pills,
+      '</div>'
+    ].join('\n');
+  }
+
+  var html = [
+    '<div class="posture-card" role="region" aria-label="Operating posture">',
+    '  <p class="opc-statement">' + statement + '</p>',
+    buildFramingHtml(framing),
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

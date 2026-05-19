@@ -1,0 +1,49 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "bundle_metric_strip",
+  "version": "v1.0",
+  "description": "Five-column provenance strip showing bundle hash (truncated), story count, friction-id count, charter version, and export timestamp.",
+  "fieldDependencies": [
+    {
+      "path": "manifest.canonicalBundleHash",
+      "type": "string",
+      "required": true,
+      "displayAs": "Truncated to first 12 chars with ellipsis — '${hash.slice(0,12)}…'"
+    },
+    {
+      "path": "manifest.builtAt",
+      "type": "string",
+      "format": "ISO-8601",
+      "required": true,
+      "displayAs": "Date portion of ISO string — YYYY-MM-DD"
+    },
+    {
+      "path": "manifest.charterVersion",
+      "type": "number",
+      "required": true,
+      "displayAs": "Integer version number — 'v${charterVersion}'"
+    },
+    {
+      "path": "manifest.userStories.storyCount",
+      "type": "number",
+      "required": false,
+      "displayAs": "Story count or '—' when manifest.userStories is absent"
+    },
+    {
+      "path": "manifest.userStories.derivedFromFrictionIds",
+      "type": "string[]",
+      "required": false,
+      "displayAs": "Array length — friction-id count, or '—' when absent"
+    }
+  ],
+  "brandTokenSlots": [
+    "--bms-label-color",
+    "--bms-value-color",
+    "--bms-divider-color",
+    "--bms-bg",
+    "--bms-border"
+  ],
+  "auditAnchorTemplate": "vcc:widget:bundle_metric_strip:v1.0:manifest-provenance",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-131", "D-134-v1.1", "D-137"]
+}

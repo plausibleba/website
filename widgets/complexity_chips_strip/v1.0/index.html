@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>complexity_chips_strip — VCC Widget v1.0</title>
+<!--
+  VCC Widget: complexity_chips_strip v1.0
+  URL: https://plausibleba.com/widgets/complexity_chips_strip/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. window.widgetData shape:
+
+      {
+        manifest: { userStories: { derivedFromFrictionIds: [...] } },
+        workshopContext: { bindingConstraint: { label: "..." } },
+        charter: { regulatoryAnchors: [...], aesClassification: "..." }
+      }
+
+  Field dependencies (from field-template.json):
+    workshopContext.bindingConstraint.label         — chip 1: binding constraint label
+    manifest.userStories.derivedFromFrictionIds     — chip 2: friction observation count
+    charter.regulatoryAnchors                       — chip 3: regulatory anchor count
+    charter.aesClassification                       — chip 4: AES classification badge
+
+  Path note — frictionIds:
+    The D-137 spec listed charter.provenance.derivedFrom.derivedFromFrictionIds.length
+    as the source primitive. The actual FMT charter v1.3.1 (exports/fmt-credit-writeup-v1.3.1/charter.jsonld)
+    does NOT have this field — provenance.derivedFrom contains 'decisions[]' and
+    'enrichmentEvidenceBasis[]' only. The correct source for friction-id count is
+    manifest.userStories.derivedFromFrictionIds (same as bundle_metric_strip).
+    field-template.json documents both paths; index.html reads manifest path with
+    charter path as fallback.
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data) {
+    mount.innerHTML =
+      '<div class="widget-error">complexity_chips_strip: window.widgetData is required.</div>';
+    return;
+  }
+
+  var wc      = data.workshopContext || {};
+  var charter = data.charter || {};
+  var mf      = data.manifest || {};
+
+  // ── Field extraction ──────────────────────────────────────────
+
+  // Chip 1: Binding constraint label
+  var bindingLabel = (wc.bindingConstraint && wc.bindingConstraint.label)
+    ? wc.bindingConstraint.label : null;
+
+  // Chip 2: Friction observation count
+  // Primary: manifest.userStories.derivedFromFrictionIds[]
+  // Fallback: charter.provenance.derivedFrom.derivedFromFrictionIds[] (spec path, not in v1.3.1)
+  var frictionCount = null;
+  if (mf.userStories && Array.isArray(mf.userStories.derivedFromFrictionIds)) {
+    frictionCount = mf.userStories.derivedFromFrictionIds.length;
+  } else if (charter.provenance && charter.provenance.derivedFrom &&
+             Array.isArray(charter.provenance.derivedFrom.derivedFromFrictionIds)) {
+    frictionCount = charter.provenance.derivedFrom.derivedFromFrictionIds.length;
+  }
+
+  // Chip 3: Regulatory anchor count
+  var regAnchorCount = Array.isArray(charter.regulatoryAnchors)
+    ? charter.regulatoryAnchors.length : null;
+
+  // Chip 4: AES classification
+  // Path: charter.aesClassification (confirmed in FMT charter v1.3.1 at top level)
+  var aesClass = (typeof charter.aesClassification === 'string')
+    ? charter.aesClassification : null;
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function absent(text) {
+    return '<span class="ccs-absent">' + (text || '—') + '</span>';
+  }
+
+  // ── Build chips ───────────────────────────────────────────────
+
+  // Chip 1: Binding constraint
+  var chip1Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">Binding Constraint</div>',
+    '  <div class="ccs-value">',
+    bindingLabel
+      ? '<span class="accent">1</span> · ' + bindingLabel
+      : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  // Chip 2: Friction observations
+  var chip2Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">Mapped Frictions</div>',
+    '  <div class="ccs-value">',
+    frictionCount !== null
+      ? '<span class="accent">' + frictionCount + '</span> observations'
+      : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  // Chip 3: Regulatory anchors
+  var chip3Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">Regulatory Anchors</div>',
+    '  <div class="ccs-value">',
+    regAnchorCount !== null
+      ? '<span class="accent">' + regAnchorCount + '</span> anchors'
+      : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  // Chip 4: AES classification
+  var chip4Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">AES Classification</div>',
+    '  <div class="ccs-value">',
+    aesClass
+      ? '<span class="accent">' + aesClass + '</span>'
+      : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  // ── Render ────────────────────────────────────────────────────
+  mount.innerHTML = [
+    '<div class="chips-strip" role="region" aria-label="Complexity summary chips">',
+    chip1Html,
+    chip2Html,
+    chip3Html,
+    chip4Html,
+    '</div>'
+  ].join('\n');
+
+})();
+</script>
+</body>
+</html>

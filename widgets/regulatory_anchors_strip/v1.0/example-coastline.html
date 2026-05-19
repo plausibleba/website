@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>regulatory_anchors_strip — Coastline Super Example</title>
+<!--
+  Self-contained example render for regulatory_anchors_strip v1.0.
+  Fixture: Coastline Super — Document Validation Agent
+  Charter chosen: cap_c_cl_03_document_validation (Document Validation capability)
+
+  Why this charter: Document Validation is the demo focus for Coastline Super
+  (Benioff demo reference per session memory). Anchored to fr_p3_multi_cycle_documents
+  (intensity 8) and act_vs_001_s03_evidence_assembled.
+
+  Regulatory anchors are drawn from the Coastline Super regulatory perimeter:
+  - SIS Act (APRA/Treasury) — trustee obligations for death benefit determination
+  - ASIC RG 271 — IDR timeframe obligations (45-day window)
+  - ASIC RG 277 — complaints-handling communications standard
+  - SPS 510 (APRA) — trustee governance standard
+
+  These are representative anchors for a APRA-regulated Australian superannuation
+  fund in the death benefit claim space. Coastline Super has no real export yet
+  (scaffold only in fixtures/).
+
+  Field shape: { regulator, reference } — same as FMT, confirmed from charter.jsonld.
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<script>
+window.widgetData = {
+  charter: {
+    "@type": "vcc:AgentCharter",
+    "@id": "urn:vcc:charter:cap_c_cl_03_document_validation_coastline",
+    "name": "Document Validation Agent",
+    "version": 1,
+    "regulatoryAnchors": [
+      {
+        "@id": "urn:vcc:regulatory-anchor:coastline_sis_s101",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "SIS",
+        "reference": "SIS Act s101 — Trustee obligations for death benefit determination"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:coastline_asic_rg271",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "ASIC",
+        "reference": "ASIC RG 271 — Internal Dispute Resolution (45-day IDR window)"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:coastline_asic_rg277",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "ASIC",
+        "reference": "ASIC RG 277 — Superannuation complaints communications standard"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:coastline_sps510",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "SPS 510 — Trustee Governance (fitness and propriety of claims decisions)"
+      }
+    ]
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · regulatory_anchors_strip v1.0 · Coastline Super — Document Validation Agent · synthetic charter from scaffold
+  </div>
+
+  <div id="widget-mount"></div>
+
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/ → cap_c_cl_03_document_validation · 4 anchors (2 ASIC · 1 SIS · 1 APRA/SPS 510) · Synthetic charter (no real export yet)
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.charter) {
+    mount.innerHTML = '<div class="widget-error">regulatory_anchors_strip: window.widgetData.charter is required.</div>';
+    return;
+  }
+
+  var anchors = data.charter.regulatoryAnchors;
+  if (!Array.isArray(anchors)) {
+    mount.innerHTML = '<div class="widget-error">regulatory_anchors_strip: charter.regulatoryAnchors[] is required.</div>';
+    return;
+  }
+
+  function getRegulator(anchor) {
+    return anchor.regulator || anchor.framework || '';
+  }
+  function getReference(anchor) {
+    return anchor.reference || anchor.name || anchor.title || anchor['@id'] || '(unnamed anchor)';
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var pillsHtml;
+  if (anchors.length === 0) {
+    pillsHtml = '<span class="ras-empty">No regulatory anchors declared on this charter.</span>';
+  } else {
+    pillsHtml = anchors.map(function (anchor) {
+      var regulator = getRegulator(anchor);
+      var reference = getReference(anchor);
+      var dataAttr  = regulator ? ' data-framework="' + esc(regulator) + '"' : '';
+      var badge     = regulator ? '<span class="ras-regulator-badge">' + esc(regulator) + '</span>' : '';
+      return '<span class="ras-pill"' + dataAttr + '>'
+        + badge
+        + '<span class="ras-reference">' + esc(reference) + '</span>'
+        + '</span>';
+    }).join('\n    ');
+  }
+
+  var countBadge = anchors.length > 0
+    ? '<span class="ras-count-badge">' + anchors.length + '</span>'
+    : '';
+
+  var html = [
+    '<div class="reg-anchors-panel" role="region" aria-label="Regulatory anchors">',
+    '  <div class="ras-heading">',
+    '    <span class="ras-heading-label">Regulatory anchors</span>',
+    '    ' + countBadge,
+    '  </div>',
+    '  <div class="ras-pill-strip">',
+    '    ' + pillsHtml,
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

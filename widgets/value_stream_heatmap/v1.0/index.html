@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>value_stream_heatmap — VCC Widget v1.0</title>
+<!--
+  VCC Widget: value_stream_heatmap v1.0
+  URL: https://plausibleba.com/widgets/value_stream_heatmap/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. Example injection:
+
+      <script>
+        window.widgetData = {
+          workshopContext: {
+            valueStream: {
+              valueStreamId: "vs_death_benefit_claim",
+              bindingStageIndex: 2,
+              stages: [
+                { stageId: "...", stageIndex: 0, label: "Stage Name", frictionIntensity: 7, isBinding: false },
+                ...
+              ]
+            }
+          }
+        };
+      </script>
+
+  Field dependencies (from field-template.json):
+    workshopContext.valueStream.valueStreamId    — required (caption)
+    workshopContext.valueStream.stages           — required (one cell per stage)
+    workshopContext.valueStream.bindingStageIndex — required (deep-link target)
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.valueStream) {
+    mount.innerHTML =
+      '<div class="widget-error">value_stream_heatmap: window.widgetData.workshopContext.valueStream is required.</div>';
+    return;
+  }
+
+  var vs = data.workshopContext.valueStream;
+  var stages = vs.stages;
+
+  if (!Array.isArray(stages) || stages.length === 0) {
+    mount.innerHTML =
+      '<div class="widget-error">value_stream_heatmap: workshopContext.valueStream.stages must be a non-empty array.</div>';
+    return;
+  }
+
+  // ── Sort stages by stageIndex ──────────────────────────────────
+  var sorted = stages.slice().sort(function (a, b) {
+    return (a.stageIndex || 0) - (b.stageIndex || 0);
+  });
+
+  var stageCount = sorted.length;
+  var bindingStageIndex = typeof vs.bindingStageIndex === 'number' ? vs.bindingStageIndex : -1;
+  var valueStreamId = typeof vs.valueStreamId === 'string' ? vs.valueStreamId : '';
+
+  // ── Heat class mapping (0–10 scale) ───────────────────────────
+  // 0–5: subdued (h-low); 6–10: named heat classes matching FMT page
+  function heatClass(intensity) {
+    var n = Math.round(intensity || 0);
+    if (n <= 5)  return 'h-low';
+    if (n === 6)  return 'h6';
+    if (n === 7)  return 'h7';
+    if (n === 8)  return 'h8';
+    if (n === 9)  return 'h9';
+    return 'h10';
+  }
+
+  // ── Zero-pad stage number ──────────────────────────────────────
+  function padNum(n) {
+    return n < 10 ? '0' + n : '' + n;
+  }
+
+  // ── Escape HTML ────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Build legend entries for heat levels present ───────────────
+  function buildLegend(stages) {
+    var levels = {};
+    stages.forEach(function (s) {
+      var cls = heatClass(s.frictionIntensity);
+      if (cls !== 'h-low') levels[cls] = true;
+    });
+    var order = ['h6','h7','h8','h9','h10'];
+    var items = [];
+    order.forEach(function (cls) {
+      if (levels[cls]) {
+        items.push(
+          '<span><span class="vsh-legend-pip ' + cls + '"></span>' + cls.replace('h', '') + '</span>'
+        );
+      }
+    });
+    if (items.length === 0) return '';
+    return (
+      '<div class="vsh-legend" role="note" aria-label="Friction intensity legend">' +
+      'Friction intensity: ' + items.join('') +
+      '<span><span class="vsh-legend-pip h10"></span>10 · binding</span>' +
+      '</div>'
+    );
+  }
+
+  // ── Render stages ──────────────────────────────────────────────
+  var stageCells = sorted.map(function (stage, idx) {
+    var isBinding = !!stage.isBinding;
+    var intensity = typeof stage.frictionIntensity === 'number' ? stage.frictionIntensity : 0;
+    var cls = heatClass(intensity);
+    var displayNum = padNum((stage.stageIndex || idx) + 1);
+    var label = esc(stage.label || 'Stage ' + displayNum);
+    var bindingAttr = isBinding
+      ? ' data-binding-stage-index="' + bindingStageIndex + '"'
+      : '';
+
+    var bindingPill = isBinding
+      ? '<span class="vsh-binding-pill">Binding</span>'
+      : '';
+
+    return [
+      '<div class="vsh-stage' + (isBinding ? ' binding' : '') + '"' + bindingAttr + '>',
+      '  <div class="vsh-stage-num">' + displayNum + '</div>',
+      '  <div class="vsh-stage-name">' + label + bindingPill + '</div>',
+      '  <span class="vsh-heat ' + cls + '" aria-label="Friction intensity ' + intensity + '">' + intensity + '</span>',
+      '</div>'
+    ].join('\n');
+  }).join('\n');
+
+  // ── Caption ────────────────────────────────────────────────────
+  var caption = valueStreamId
+    ? '<div class="vsh-caption" aria-label="Value stream identifier">' + esc(valueStreamId) + ' · ' + stageCount + ' stages</div>'
+    : '';
+
+  // ── Assemble widget ────────────────────────────────────────────
+  var html = [
+    '<div class="vsh-widget" role="region" aria-label="Value stream friction heatmap">',
+    '  <div class="vsh-head">',
+    '    <span class="vsh-head-label">Focal Value Stream</span>',
+    '    <span class="vsh-head-tail">' + stageCount + ' stages · friction intensity heatmap</span>',
+    '  </div>',
+    '  <div class="vsh-stages" style="grid-template-columns: repeat(' + stageCount + ', 1fr);">',
+    stageCells,
+    '  </div>',
+    buildLegend(sorted),
+    caption,
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

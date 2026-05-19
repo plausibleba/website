@@ -1,0 +1,89 @@
+/**
+ * complexity_chips_strip — widget-scoped styles v1.0
+ *
+ * Imports tokens.css + base.css; adds widget-specific layout.
+ * STRAT renderer injects this CSS alongside index.html.
+ *
+ * Brand token slots (overridable per customer):
+ *   --ccs-bg          → defaults to var(--card)
+ *   --ccs-border      → defaults to var(--line)
+ *   --ccs-label-color → defaults to var(--ink-3)
+ *   --ccs-value-color → defaults to var(--ink)
+ *   --ccs-accent      → defaults to var(--teal)
+ */
+
+/* ── Widget-level brand token defaults ─────────────────────── */
+:root {
+  --ccs-bg:          var(--card);
+  --ccs-border:      var(--line);
+  --ccs-label-color: var(--ink-3);
+  --ccs-value-color: var(--ink);
+  --ccs-accent:      var(--teal);
+}
+
+/* ── Chips strip container ───────────────────────────────────── */
+.chips-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4);
+}
+
+/* ── Individual complexity chip ──────────────────────────────── */
+.complexity-chip {
+  background: var(--ccs-bg);
+  border: 1px solid var(--ccs-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5) var(--sp-6);
+}
+
+/* ── Label (category name, all-caps) ────────────────────────── */
+.ccs-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--ccs-label-color);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  margin-bottom: var(--sp-2);
+}
+
+/* ── Value row — accent count + description ──────────────────── */
+.ccs-value {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--ccs-value-color);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.ccs-value .accent {
+  color: var(--ccs-accent);
+}
+
+/* ── Sub-note below value ────────────────────────────────────── */
+.ccs-note {
+  font-size: var(--text-sm);
+  color: var(--ccs-label-color);
+  margin-top: var(--sp-1);
+  line-height: 1.4;
+}
+
+/* ── Absent state ────────────────────────────────────────────── */
+.ccs-absent {
+  color: var(--ink-4);
+  font-style: italic;
+  font-size: var(--text-base);
+}
+
+/* ── Responsive: 2-col on tablet ───────────────────────────── */
+@media (max-width: 900px) {
+  .chips-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Responsive: 1-col on mobile ───────────────────────────── */
+@media (max-width: 480px) {
+  .chips-strip {
+    grid-template-columns: 1fr;
+  }
+}

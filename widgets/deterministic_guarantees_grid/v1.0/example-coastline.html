@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deterministic_guarantees_grid — Coastline Super Example</title>
+<!--
+  Self-contained example render for deterministic_guarantees_grid v1.0.
+  Fixture: Coastline Super — Document Validation Agent
+  Charter chosen: cap_c_cl_03_document_validation (Document Validation capability)
+
+  Why this charter: Document Validation is the demo focus for Coastline Super
+  (Benioff demo reference per session memory). It is the capability anchored to
+  fr_p3_multi_cycle_documents (intensity 8, binding-stage contributor) and
+  directly addresses the 3-average document-gathering-cycle friction.
+
+  Coastline Super does not yet have a rendered export (scaffold only). This is a
+  representative synthetic charter constructed from:
+    fixtures/coastline-super/coastline-super-vcc-bundle.json
+    → cap_c_cl_03_document_validation capability
+    → act_vs_001_s03_evidence_assembled activity
+    → user story story-f1152349 (Document Validation, ACs x4)
+
+  Regulatory anchors are drawn from ASIC/APRA obligations present in the
+  Coastline Super regulatory perimeter (SIS Act, ASIC RG 271, SPS 510).
+
+  Data summary:
+  - decisions[]: 2 (Document Completeness Gate, Document Chase Cadence)
+  - prohibitions[]: 3 (enforcement field absent — full list shown)
+  - escalationTriggers: ε1_ambiguity, ε3_threshold populated (2 triggers)
+  - knowledgeAnchors[]: 4 (2 regulatory + 2 data)
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<script>
+window.widgetData = {
+  charter: {
+    "@type": "vcc:AgentCharter",
+    "@id": "urn:vcc:charter:cap_c_cl_03_document_validation_coastline",
+    "name": "Document Validation Agent",
+    "version": 1,
+    "aesClassification": "hitl_supervised",
+    "decisionSurface": {
+      "@type": "vcc:DecisionSurface",
+      "decisions": [
+        {
+          "@id": "urn:vcc:decision:cap_c_cl_03::doc_completeness_gate",
+          "@type": "vcc:Decision",
+          "name": "Document Completeness Gate",
+          "decisionLogic": "policy_governed",
+          "outcomeAuthorities": ["evidence-complete", "hold-pending-document", "request-certified-copy"],
+          "regulatoryAnchors": [
+            "SIS Act s101 — Trustee evidence obligations",
+            "ASIC RG 271 — IDR timeframe obligations"
+          ]
+        },
+        {
+          "@id": "urn:vcc:decision:cap_c_cl_03::chase_cadence_gate",
+          "@type": "vcc:Decision",
+          "name": "Document Chase Cadence",
+          "decisionLogic": "policy_governed",
+          "outcomeAuthorities": ["emit-consolidated-chase", "hold-without-prompting", "internal-status-refresh"],
+          "regulatoryAnchors": [
+            "ASIC RG 271 — IDR timeframe obligations"
+          ]
+        }
+      ]
+    },
+    "authorityScope": {
+      "@type": "vcc:AuthorityScope",
+      "prohibitions": [
+        {
+          "@id": "urn:vcc:norm:coastline_doc_val_MUSTNOT_multi_prompt",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "prompt",
+          "object": "family within 7-day silence window",
+          "rationale": "Re-prompting a bereaved family within 7 days of last contact violates trauma-informed communication charter commitment."
+        },
+        {
+          "@id": "urn:vcc:norm:coastline_doc_val_MUSTNOT_proceed_without_death_cert",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "advance",
+          "object": "claim past Evidence Assembled without certified death certificate",
+          "rationale": "SIS Act s101 — certified death certificate is a mandatory evidence gate. Agent may not advance the claim to insurance resolution without it."
+        },
+        {
+          "@id": "urn:vcc:norm:coastline_doc_val_MUSTNOT_fabricate_document_state",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "assert",
+          "object": "document received when not confirmed in system of record",
+          "rationale": "Agent must not record a document as received unless the document object exists and is indexed in the case management system."
+        }
+      ]
+    },
+    "escalationTriggers": {
+      "@type": "vcc:EscalationTriggers",
+      "epsilon1_ambiguity": {
+        "@id": "urn:vcc:rule:rule_eps1_coastline_doc_val",
+        "@type": "vcc:EscalationRule",
+        "triggerCondition": "Document type cannot be determined from the uploaded artefact — ambiguous format, illegible scan, or mismatched metadata.",
+        "escalateToRoleId": "role_claims_specialist_consultant",
+        "handoffInstructions": "Flag the specific ambiguity. Do not reject; route to Claims Specialist with the document and the parse failure signal."
+      },
+      "epsilon3_threshold": {
+        "@id": "urn:vcc:rule:rule_eps3_coastline_doc_val",
+        "@type": "vcc:EscalationRule",
+        "triggerCondition": "ASIC RG 271 45-day IDR window is at risk — outstanding documents with fewer than 10 days remaining.",
+        "escalateToRoleId": "role_claims_assessor",
+        "handoffInstructions": "Escalate immediately with remaining-day count and the list of outstanding document types. Include the case timeline."
+      }
+    },
+    "knowledgeAnchors": [
+      {
+        "@id": "urn:vcc:knowledge-anchor:coastline_doc_val_sis_s101",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "SIS Act s101 — Trustee evidence obligations for death benefit determination",
+        "reference": "Superannuation Industry (Supervision) Act 1993 s101",
+        "versionPin": "current",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:coastline_doc_val_rg271",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "ASIC RG 271 — Internal Dispute Resolution timeframe obligations (45-day IDR window)",
+        "reference": "ASIC Regulatory Guide 271",
+        "versionPin": "current",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:coastline_doc_val_io_document_request",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "io_document_request",
+        "reference": "io_document_request",
+        "versionPin": "latest",
+        "onUpdate": "auto",
+        "contentType": "data"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:coastline_doc_val_io_case_record",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "io_case_record",
+        "reference": "io_case_record",
+        "versionPin": "latest",
+        "onUpdate": "auto",
+        "contentType": "data"
+      }
+    ]
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · deterministic_guarantees_grid v1.0 · Coastline Super — Document Validation Agent · synthetic charter from scaffold
+  </div>
+
+  <div id="widget-mount"></div>
+
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/coastline-super-vcc-bundle.json → cap_c_cl_03_document_validation · 2 decisions · 3 prohibitions · 2 epsilon triggers (ε1, ε3) · 4 knowledge anchors · Synthetic charter (no real export yet)
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.charter) {
+    mount.innerHTML = '<div class="widget-error">deterministic_guarantees_grid: window.widgetData.charter is required.</div>';
+    return;
+  }
+
+  var c = data.charter;
+
+  var decisions = (c.decisionSurface && Array.isArray(c.decisionSurface.decisions))
+    ? c.decisionSurface.decisions : [];
+  var decisionCount = decisions.length;
+  var decisionSamples = decisions.slice(0, 2).map(function (d) { return d.name || d['@id'] || '(unnamed)'; });
+
+  var allProhibitions = (c.authorityScope && Array.isArray(c.authorityScope.prohibitions))
+    ? c.authorityScope.prohibitions : [];
+  var platformProhibitions = allProhibitions.filter(function (p) { return p.enforcement === 'platform'; });
+  var prohibitionList = platformProhibitions.length > 0 ? platformProhibitions : allProhibitions;
+  var prohibitionCount = prohibitionList.length;
+  var prohibitionSamples = prohibitionList.slice(0, 2).map(function (p) {
+    return p.action ? (p.modal || 'MUSTNOT') + ' ' + p.action : (p.object || '(prohibition)');
+  });
+
+  var eps = c.escalationTriggers || {};
+  var epsilonKeys = Object.keys(eps).filter(function (k) {
+    return k !== '@type' && k !== '@id' && eps[k] && typeof eps[k] === 'object';
+  });
+  var epsilonCount = epsilonKeys.length;
+  var epsilonLabels = epsilonKeys.map(function (k) {
+    var match = k.match(/epsilon(\d+)/i);
+    return match ? 'ε' + match[1] : k;
+  });
+
+  var anchors = Array.isArray(c.knowledgeAnchors) ? c.knowledgeAnchors : [];
+  var anchorCount = anchors.length;
+  var anchorSamples = anchors.slice(0, 2).map(function (a) { return a.label || a.reference || a['@id'] || '(anchor)'; });
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function renderCount(n) {
+    if (n === null || n === undefined) return '<span class="dgg-count-absent">—</span>';
+    return '<div class="dgg-count">' + n + '</div>';
+  }
+  function renderSamples(items) {
+    if (!items || items.length === 0) return '';
+    return '<div class="dgg-samples"><b>' + esc(items[0]) + '</b>' + (items[1] ? '<br>' + esc(items[1]) : '') + '</div>';
+  }
+  function renderEpsilonChips(labels) {
+    if (!labels || labels.length === 0) return '';
+    var chips = labels.map(function (l) { return '<span class="dgg-eps-chip">' + esc(l) + '</span>'; }).join('');
+    return '<div class="dgg-eps-list">' + chips + '</div>';
+  }
+
+  var html = [
+    '<div class="det-guarantees-panel" role="region" aria-label="Deterministic guarantees">',
+    '  <div class="dgg-heading">',
+    '    <span class="dgg-heading-label">Deterministic guarantees</span>',
+    '    <span class="dgg-heading-tail">4 primitives · VCC populates each</span>',
+    '  </div>',
+    '  <div class="dgg-grid">',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">conditional</div>',
+    '      <div class="dgg-category">Decision Surface</div>',
+    renderCount(decisionCount),
+    renderSamples(decisionSamples),
+    '    </div>',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">guard</div>',
+    '      <div class="dgg-category">Platform Prohibitions</div>',
+    renderCount(prohibitionCount),
+    renderSamples(prohibitionSamples),
+    '    </div>',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">transition</div>',
+    '      <div class="dgg-category">Escalation Triggers</div>',
+    renderCount(epsilonCount),
+    renderEpsilonChips(epsilonLabels),
+    '    </div>',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">retrieval</div>',
+    '      <div class="dgg-category">Knowledge Anchors</div>',
+    renderCount(anchorCount),
+    renderSamples(anchorSamples),
+    '    </div>',
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

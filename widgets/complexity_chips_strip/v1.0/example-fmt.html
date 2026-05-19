@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>complexity_chips_strip — FMT / Driva Example</title>
+<!--
+  Self-contained example render for complexity_chips_strip v1.0.
+  Uses REAL FMT (First Mortgage Trust) data from:
+    - charter: exports/fmt-credit-writeup-v1.3.1/charter.jsonld (v1.3.1)
+      aesClassification: "hitl_assisted" (top-level field, confirmed)
+      regulatoryAnchors: 6 entries (APRA CPS 220, APRA CPS 230 x2, FMT Policy v3.2 x2, NCCP Act)
+    - manifest: derived from FMT export bundle (9 friction IDs, from 04.5a diagnostic)
+    - workshopContext: plausible bindingConstraint (FMT has no workshop-context.jsonld yet)
+  Opens directly in a browser — no server required.
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject FMT real charter data + plausible manifest/workshopContext -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "05f336c69b4a2e18d7f0c3a91b8e5d72f6c4a0b9e2d1f8a3c7b5e0d9f4a6b1c",
+    builtAt: "2026-05-19T00:00:00.000Z",
+    charterVersion: 1,
+    userStories: {
+      filePath: "stories.jsonld",
+      storyCount: 9,
+      // 9 friction IDs derived from FMT credit write-up frictions (04.5a diagnostic)
+      derivedFromFrictionIds: [
+        "fr_001_credit_writeup_manual_copy_to_salesforce",
+        "fr_002_word_draft_to_prism_rekey",
+        "fr_003_cdd_record_assembly_manual",
+        "fr_004_credit_report_integration_gap",
+        "fr_005_memo_template_inconsistency",
+        "fr_006_committee_referral_threshold_ambiguity",
+        "fr_007_rlo_affordability_narrative_generation",
+        "fr_008_analyst_context_switching_cost",
+        "fr_009_credit_manager_review_rework_loop"
+      ]
+    }
+  },
+  workshopContext: {
+    // FMT workshop-context.jsonld not yet authored — plausible bindingConstraint
+    bindingConstraint: {
+      label: "Credit Write-Up Bottleneck",
+      description: "Analysts spend 3 hours to 2 days drafting credit write-ups in Word and manually copying content into Salesforce/Prism. The single largest time sink in the origination lifecycle.",
+      valueStreamStageRef: "stage_4_assess_credit"
+    }
+  },
+  charter: {
+    // REAL DATA from exports/fmt-credit-writeup-v1.3.1/charter.jsonld
+    "@type": "vcc:AgentCharter",
+    "@id": "urn:vcc:charter:chr_cap_prepare_credit_memo_1779146375252",
+    "name": "Prepare Credit Memo Agent",
+    "version": 1,
+
+    // CONFIRMED: top-level field, value "hitl_assisted"
+    "aesClassification": "hitl_assisted",
+
+    // REAL: 6 regulatory anchors from charter.jsonld lines 133-170
+    "regulatoryAnchors": [
+      {
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "APRA CPS 220 — Risk Management (credit submission integrity)"
+      },
+      {
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "APRA CPS 230 — Operational Risk Management (AI-derived credit narratives)"
+      },
+      {
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "APRA CPS 230 — Operational Risk Management (escalation pathways must be deterministic)"
+      },
+      {
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "FMT",
+        "reference": "FMT Internal Credit Policy v3.2 — credit committee referral criteria"
+      },
+      {
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "FMT",
+        "reference": "FMT Internal Credit Policy v3.2 — credit memo template + minimum evidence set"
+      },
+      {
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "NCCP",
+        "reference": "NCCP Act — Responsible Lending Obligations (affordability evidence)"
+      }
+    ],
+
+    "provenance": {
+      "@type": "vcc:Provenance",
+      "derivedFrom": {
+        "@type": "vcc:CharterDerivation",
+        "aesSnapshot": {
+          "compositeAtCharter": 3.8,
+          "classificationAtCharter": "hitl_assisted"
+        }
+        // derivedFromFrictionIds NOT present in v1.3.1 charter — widget reads manifest path
+      }
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · complexity_chips_strip v1.0 · First Mortgage Trust — Credit Write-Up Agent · real charter v1.3.1 data
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Real data: charter.aesClassification="hitl_assisted" · 6 regulatoryAnchors (APRA×3, FMT×2, NCCP×1) ·
+    9 frictionIds from manifest · bindingConstraint from plausible workshopContext
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data) {
+    mount.innerHTML = '<div class="widget-error">complexity_chips_strip: window.widgetData is required.</div>';
+    return;
+  }
+
+  var wc      = data.workshopContext || {};
+  var charter = data.charter || {};
+  var mf      = data.manifest || {};
+
+  var bindingLabel = (wc.bindingConstraint && wc.bindingConstraint.label)
+    ? wc.bindingConstraint.label : null;
+
+  var frictionCount = null;
+  if (mf.userStories && Array.isArray(mf.userStories.derivedFromFrictionIds)) {
+    frictionCount = mf.userStories.derivedFromFrictionIds.length;
+  } else if (charter.provenance && charter.provenance.derivedFrom &&
+             Array.isArray(charter.provenance.derivedFrom.derivedFromFrictionIds)) {
+    frictionCount = charter.provenance.derivedFrom.derivedFromFrictionIds.length;
+  }
+
+  var regAnchorCount = Array.isArray(charter.regulatoryAnchors)
+    ? charter.regulatoryAnchors.length : null;
+
+  var aesClass = (typeof charter.aesClassification === 'string')
+    ? charter.aesClassification : null;
+
+  function absent() { return '<span class="ccs-absent">—</span>'; }
+
+  var chip1Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">Binding Constraint</div>',
+    '  <div class="ccs-value">',
+    bindingLabel ? '<span class="accent">1</span> · ' + bindingLabel : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  var chip2Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">Mapped Frictions</div>',
+    '  <div class="ccs-value">',
+    frictionCount !== null ? '<span class="accent">' + frictionCount + '</span> observations' : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  var chip3Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">Regulatory Anchors</div>',
+    '  <div class="ccs-value">',
+    regAnchorCount !== null ? '<span class="accent">' + regAnchorCount + '</span> anchors' : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  var chip4Html = [
+    '<div class="complexity-chip">',
+    '  <div class="ccs-label">AES Classification</div>',
+    '  <div class="ccs-value">',
+    aesClass ? '<span class="accent">' + aesClass + '</span>' : absent(),
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = [
+    '<div class="chips-strip" role="region" aria-label="Complexity summary chips">',
+    chip1Html,
+    chip2Html,
+    chip3Html,
+    chip4Html,
+    '</div>'
+  ].join('\n');
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "deterministic_guarantees_grid",
+  "version": "v1.0",
+  "description": "Four-cell grid surfacing the charter's deterministic guarantees: decision surface (conditional), authority-scope prohibitions (guard — widget filters enforcement==='platform'; falls back to full list when enforcement field is absent), escalation triggers (transition — counts populated epsilon keys), and knowledge anchors (retrieval).",
+  "fieldDependencies": [
+    {
+      "path": "charter.decisionSurface.decisions",
+      "type": "object[]",
+      "required": true,
+      "displayAs": "Array length as big count; top 2 decision.name values as footnote samples"
+    },
+    {
+      "path": "charter.authorityScope.prohibitions",
+      "type": "object[]",
+      "required": true,
+      "displayAs": "Widget filters by enforcement==='platform'; count + top 2 action-object pairs shown. Falls back to full array when enforcement field is absent on all items."
+    },
+    {
+      "path": "charter.escalationTriggers",
+      "type": "object",
+      "required": true,
+      "displayAs": "Keys matching /epsilon\\d+/ that have object values are counted and labelled ε1..εN as pill chips"
+    },
+    {
+      "path": "charter.knowledgeAnchors",
+      "type": "object[]",
+      "required": true,
+      "displayAs": "Array length as big count; top 2 anchor.label values as footnote samples"
+    }
+  ],
+  "brandTokenSlots": [
+    "--dgg-cell-bg",
+    "--dgg-cell-border",
+    "--dgg-panel-bg",
+    "--dgg-panel-border",
+    "--dgg-accent",
+    "--dgg-label-color",
+    "--dgg-value-color"
+  ],
+  "auditAnchorTemplate": "vcc:widget:deterministic_guarantees_grid:v1.0:charter-determinism",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-131", "D-134-v1.1", "D-137"]
+}

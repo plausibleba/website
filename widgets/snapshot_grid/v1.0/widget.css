@@ -1,0 +1,118 @@
+/**
+ * snapshot_grid — widget-scoped styles v1.0
+ *
+ * Imports tokens.css + base.css; adds widget-specific layout.
+ * STRAT renderer injects this CSS alongside index.html.
+ *
+ * Brand token slots (overridable per customer):
+ *   --sg-label-color   → defaults to var(--ink-3)
+ *   --sg-value-color   → defaults to var(--ink)
+ *   --sg-note-color    → defaults to var(--ink-3)
+ *   --sg-bg            → defaults to var(--card)
+ *   --sg-border        → defaults to var(--line)
+ *   --sg-divider-color → defaults to var(--line-2)
+ */
+
+/* ── Widget-level brand token defaults ─────────────────────── */
+:root {
+  --sg-label-color:   var(--ink-3);
+  --sg-value-color:   var(--ink);
+  --sg-note-color:    var(--ink-3);
+  --sg-bg:            var(--card);
+  --sg-border:        var(--line);
+  --sg-divider-color: var(--line-2);
+}
+
+/* ── Snapshot grid container ────────────────────────────────── */
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-5);
+}
+
+/* ── Individual metric card ─────────────────────────────────── */
+.sg-card {
+  background: var(--sg-bg);
+  border: 1px solid var(--sg-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-7) var(--sp-8);
+  position: relative;
+}
+
+/* ── Trend arrow — top-right corner ────────────────────────── */
+.sg-trend {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-5);
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+
+.sg-trend.trend-up   { color: var(--trend-up); }
+.sg-trend.trend-down { color: var(--trend-down); }
+.sg-trend.trend-flat { color: var(--trend-flat); }
+
+/* ── Label (UPPERCASE, muted) ──────────────────────────────── */
+.sg-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--sg-label-color);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  margin-bottom: var(--sp-3);
+  padding-right: var(--sp-8);
+}
+
+/* ── Value row — number + unit ──────────────────────────────── */
+.sg-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+
+.sg-value {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: var(--sg-value-color);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.sg-unit {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--sg-label-color);
+  letter-spacing: 0.02em;
+}
+
+/* ── Note ───────────────────────────────────────────────────── */
+.sg-note {
+  font-size: var(--text-base);
+  color: var(--sg-note-color);
+  font-style: italic;
+  line-height: 1.45;
+  margin-top: var(--sp-2);
+}
+
+/* ── Absent-value placeholder ───────────────────────────────── */
+.sg-absent {
+  color: var(--ink-4);
+  font-style: italic;
+  font-size: var(--text-xl);
+}
+
+/* ── Responsive: 2-col on tablet ───────────────────────────── */
+@media (max-width: 900px) {
+  .snapshot-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Responsive: 1-col on mobile ───────────────────────────── */
+@media (max-width: 560px) {
+  .snapshot-grid {
+    grid-template-columns: 1fr;
+  }
+}

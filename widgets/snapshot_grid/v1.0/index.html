@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>snapshot_grid — VCC Widget v1.0</title>
+<!--
+  VCC Widget: snapshot_grid v1.0
+  URL: https://plausibleba.com/widgets/snapshot_grid/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. Example injection:
+
+      <script>
+        window.widgetData = {
+          manifest: { ... },
+          workshopContext: {
+            businessSnapshot: {
+              metrics: [
+                { label: "...", value: 415000, unit: "members", note: "...", trendDirection: "up" },
+                ...
+              ]
+            }
+          }
+        };
+      </script>
+      <script src="index.html" ...></script>
+
+  Field dependencies (from field-template.json):
+    workshopContext.businessSnapshot.metrics — required (array)
+    Each metric: label (required), value (required), unit (optional),
+                 note (optional), trendDirection (optional: "up"|"down"|"flat"|"n/a")
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.workshopContext ||
+      !data.workshopContext.businessSnapshot ||
+      !Array.isArray(data.workshopContext.businessSnapshot.metrics)) {
+    mount.innerHTML =
+      '<div class="widget-error">snapshot_grid: window.widgetData.workshopContext.businessSnapshot.metrics[] is required.</div>';
+    return;
+  }
+
+  var metrics = data.workshopContext.businessSnapshot.metrics;
+
+  // ── Trend arrow helper ────────────────────────────────────────
+  function trendArrow(direction) {
+    if (!direction || direction === 'n/a') return '';
+    var arrow = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '—';
+    var cls = 'sg-trend trend-' + direction;
+    return '<span class="' + cls + '" aria-label="trend ' + direction + '">' + arrow + '</span>';
+  }
+
+  // ── Render one card ───────────────────────────────────────────
+  function renderCard(metric) {
+    var label    = metric.label || '';
+    var rawValue = (metric.value !== undefined && metric.value !== null) ? metric.value : null;
+    var unit     = metric.unit || '';
+    var note     = metric.note || '';
+    var trend    = metric.trendDirection || '';
+
+    var valueHtml = (rawValue !== null)
+      ? '<span class="sg-value">' + rawValue + '</span>'
+      : '<span class="sg-absent">—</span>';
+
+    var unitHtml = unit
+      ? '<span class="sg-unit">' + unit + '</span>'
+      : '';
+
+    var noteHtml = note
+      ? '<div class="sg-note">' + note + '</div>'
+      : '';
+
+    return [
+      '<div class="sg-card">',
+      trendArrow(trend),
+      '  <div class="sg-label">' + label + '</div>',
+      '  <div class="sg-value-row">' + valueHtml + unitHtml + '</div>',
+      noteHtml,
+      '</div>'
+    ].join('\n');
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  var cards = metrics.map(renderCard).join('\n');
+  var html = [
+    '<div class="snapshot-grid" role="region" aria-label="Business snapshot metrics">',
+    cards,
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

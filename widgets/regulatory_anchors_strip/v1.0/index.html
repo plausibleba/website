@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>regulatory_anchors_strip — VCC Widget v1.0</title>
+<!--
+  VCC Widget: regulatory_anchors_strip v1.0
+  URL: https://plausibleba.com/widgets/regulatory_anchors_strip/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. Example injection:
+
+      <script>
+        window.widgetData = {
+          charter: { ... }   // JsonLdCharter
+        };
+      </script>
+
+  Field dependencies (from field-template.json):
+    charter.regulatoryAnchors[]  — required
+      Each anchor: { regulator, reference } (real FMT field names)
+      Note: field names confirmed from exports/fmt-credit-writeup-v1.3.1/charter.jsonld
+        - "regulator"  (e.g. "APRA", "FMT", "NCCP") — framework identifier
+        - "reference"  — full regulatory reference string (version embedded inline)
+      There is NO "versionPin" or "name" on regulatoryAnchors[]. Those fields
+      exist on knowledgeAnchors[], not regulatoryAnchors[].
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.charter) {
+    mount.innerHTML =
+      '<div class="widget-error">regulatory_anchors_strip: window.widgetData.charter is required.</div>';
+    return;
+  }
+
+  var anchors = data.charter.regulatoryAnchors;
+  if (!Array.isArray(anchors)) {
+    mount.innerHTML =
+      '<div class="widget-error">regulatory_anchors_strip: charter.regulatoryAnchors[] is required.</div>';
+    return;
+  }
+
+  // ── Field-name resolution ──────────────────────────────────────
+  // Real FMT charter uses: { regulator, reference }
+  // Accept legacy aliases too: { framework, name, title }
+  function getRegulator(anchor) {
+    return anchor.regulator || anchor.framework || '';
+  }
+  function getReference(anchor) {
+    return anchor.reference || anchor.name || anchor.title || anchor['@id'] || '(unnamed anchor)';
+  }
+
+  // ── HTML escape ────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Build pills ────────────────────────────────────────────────
+  var pillsHtml;
+  if (anchors.length === 0) {
+    pillsHtml = '<span class="ras-empty">No regulatory anchors declared on this charter.</span>';
+  } else {
+    pillsHtml = anchors.map(function (anchor) {
+      var regulator = getRegulator(anchor);
+      var reference = getReference(anchor);
+      var dataAttr  = regulator ? ' data-framework="' + esc(regulator) + '"' : '';
+      var badge     = regulator
+        ? '<span class="ras-regulator-badge">' + esc(regulator) + '</span>'
+        : '';
+      return '<span class="ras-pill"' + dataAttr + '>'
+        + badge
+        + '<span class="ras-reference">' + esc(reference) + '</span>'
+        + '</span>';
+    }).join('\n    ');
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  var countBadge = anchors.length > 0
+    ? '<span class="ras-count-badge">' + anchors.length + '</span>'
+    : '';
+
+  var html = [
+    '<div class="reg-anchors-panel" role="region" aria-label="Regulatory anchors">',
+    '  <div class="ras-heading">',
+    '    <span class="ras-heading-label">Regulatory anchors</span>',
+    '    ' + countBadge,
+    '  </div>',
+    '  <div class="ras-pill-strip">',
+    '    ' + pillsHtml,
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

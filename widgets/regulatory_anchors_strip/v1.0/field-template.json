@@ -1,0 +1,27 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "regulatory_anchors_strip",
+  "version": "v1.0",
+  "description": "Horizontal strip of pills, one per regulatory anchor. Each pill shows the regulator prefix (e.g. APRA) + the full reference string (version embedded in reference text). Pure charter.regulatoryAnchors[] read.",
+  "fieldDependencies": [
+    {
+      "path": "charter.regulatoryAnchors",
+      "type": "object[]",
+      "required": true,
+      "displayAs": "One pill per anchor. Pill shows: regulator badge (charter.regulatoryAnchors[].regulator) + reference text (charter.regulatoryAnchors[].reference). Widget accepts legacy aliases: framework→regulator, name/title→reference."
+    }
+  ],
+  "_fieldNameDivergenceNote": "Confirmed from exports/fmt-credit-writeup-v1.3.1/charter.jsonld: regulatoryAnchors[] items use 'regulator' (not 'framework') and 'reference' (not 'name', 'title', or 'versionPin'). Version information is embedded inline in the 'reference' string (e.g. 'FMT Internal Credit Policy v3.2 — ...'). There is NO separate versionPin field on regulatoryAnchors — that field exists only on knowledgeAnchors[].",
+  "brandTokenSlots": [
+    "--ras-pill-bg",
+    "--ras-pill-border",
+    "--ras-pill-color",
+    "--ras-regulator-color",
+    "--ras-panel-bg",
+    "--ras-panel-border",
+    "--ras-label-color"
+  ],
+  "auditAnchorTemplate": "vcc:widget:regulatory_anchors_strip:v1.0:charter-regulatory-perimeter",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-131", "D-134-v1.1", "D-137"]
+}

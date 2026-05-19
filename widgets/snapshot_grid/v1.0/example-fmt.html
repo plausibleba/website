@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>snapshot_grid — FMT / Driva Example</title>
+<!--
+  Self-contained example render for snapshot_grid v1.0.
+  Uses FMT (First Mortgage Trust) plausible fixture data.
+  FMT does not yet have a workshop-context.jsonld; data is authored from
+  04.5a-fmt-diagnostic.html and known FMT business context.
+  Opens directly in a browser — no server required.
+
+  Fixture source: authored from fixtures/FMT/se-briefing/04.5a-fmt-diagnostic.html
+  Note: replace with real workshopContext when FMT workshop-context.jsonld is authored.
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject FMT plausible fixture data -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "05f336c69b4a2e18d7f0c3a91b8e5d72f6c4a0b9e2d1f8a3c7b5e0d9f4a6b1c",
+    builtAt: "2026-05-19T00:00:00.000Z",
+    charterVersion: 1
+  },
+  workshopContext: {
+    businessSnapshot: {
+      metrics: [
+        {
+          "label": "Funds Under Management",
+          "value": "$2B+",
+          "unit": "AUD",
+          "note": "Target $4.5B within 5 years; constrained by origination throughput, not investor demand",
+          "trendDirection": "up"
+        },
+        {
+          "label": "Mortgage Book",
+          "value": "$1.8B",
+          "unit": "AUD",
+          "note": "Commercial and residential first-mortgage exposures; zero capital loss in 30-year record",
+          "trendDirection": "up"
+        },
+        {
+          "label": "Average LTV",
+          "value": "65%",
+          "unit": "LTV",
+          "note": "Conservative lending criteria; max 70% LTV policy; supports capital preservation track record",
+          "trendDirection": "flat"
+        },
+        {
+          "label": "Net Interest Margin",
+          "value": "1.8%",
+          "unit": "NIM",
+          "note": "Compressed from prior years; FUM growth is the primary NIM-recovery lever",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Annualised Return (Current)",
+          "value": "5.71%",
+          "unit": "%",
+          "note": "Down from 7.44% in 18 months; driven by origination volume constraint, not credit quality",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Cost-to-Income Ratio",
+          "value": "38%",
+          "unit": "%",
+          "note": "Manual credit memo process is the largest contributor to operational cost per loan",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Origination Volume",
+          "value": "~200",
+          "unit": "loans/yr",
+          "note": "Scale required to reach $4.5B FUM target is ~350–400 per year",
+          "trendDirection": "flat"
+        },
+        {
+          "label": "Credit Memo Time",
+          "value": "3hr – 2d",
+          "note": "CEO north star: <1 hour for Tier-1 loans. Current bottleneck: Word draft + manual Salesforce copy.",
+          "trendDirection": "down"
+        },
+        {
+          "label": "Investor Capital Loss (30yr)",
+          "value": "$0",
+          "note": "30-year lifetime record; core to brand proposition and investor trust",
+          "trendDirection": "flat"
+        }
+      ]
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · snapshot_grid v1.0 · First Mortgage Trust — Credit Write-Up Agent · plausible fixture data
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Note: FMT workshop-context.jsonld not yet authored — data sourced from 04.5a-fmt-diagnostic.html + known business context.
+    Replace with real workshopContext when available.
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.workshopContext ||
+      !data.workshopContext.businessSnapshot ||
+      !Array.isArray(data.workshopContext.businessSnapshot.metrics)) {
+    mount.innerHTML = '<div class="widget-error">snapshot_grid: window.widgetData.workshopContext.businessSnapshot.metrics[] is required.</div>';
+    return;
+  }
+
+  var metrics = data.workshopContext.businessSnapshot.metrics;
+
+  function trendArrow(direction) {
+    if (!direction || direction === 'n/a') return '';
+    var arrow = direction === 'up' ? '▲' : direction === 'down' ? '▼' : '—';
+    var cls = 'sg-trend trend-' + direction;
+    return '<span class="' + cls + '" aria-label="trend ' + direction + '">' + arrow + '</span>';
+  }
+
+  function renderCard(metric) {
+    var label    = metric.label || '';
+    var rawValue = (metric.value !== undefined && metric.value !== null) ? metric.value : null;
+    var unit     = metric.unit || '';
+    var note     = metric.note || '';
+    var trend    = metric.trendDirection || '';
+
+    var valueHtml = (rawValue !== null)
+      ? '<span class="sg-value">' + rawValue + '</span>'
+      : '<span class="sg-absent">—</span>';
+
+    var unitHtml = unit
+      ? '<span class="sg-unit">' + unit + '</span>'
+      : '';
+
+    var noteHtml = note
+      ? '<div class="sg-note">' + note + '</div>'
+      : '';
+
+    return [
+      '<div class="sg-card">',
+      trendArrow(trend),
+      '  <div class="sg-label">' + label + '</div>',
+      '  <div class="sg-value-row">' + valueHtml + unitHtml + '</div>',
+      noteHtml,
+      '</div>'
+    ].join('\n');
+  }
+
+  var cards = metrics.map(renderCard).join('\n');
+  var html = [
+    '<div class="snapshot-grid" role="region" aria-label="Business snapshot metrics">',
+    cards,
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

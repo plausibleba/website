@@ -1,0 +1,166 @@
+{
+  "$schema": "https://plausibleba.com/widgets/index-schema/v1.0.json",
+  "registryVersion": "1.0",
+  "updatedAt": "2026-05-19T18:00:00.000Z",
+  "baseUrl": "https://plausibleba.com/widgets/",
+  "note": "plausibleba.com/widgets/ redirects to widgets.plausibleba.com/ once subdomain DNS lands. URL-immutability commitment: all prior minor URLs stay live indefinitely per Dan's 2026-05-17 reply.",
+  "widgets": [
+    {
+      "widgetId": "bundle_metric_strip",
+      "description": "Five-column provenance strip showing bundle hash, story count, friction-id count, charter version, and export timestamp. Pure-manifest read \u2014 no workshop-context dependency.",
+      "sourcePrimitives": [
+        "manifest.canonicalBundleHash",
+        "manifest.builtAt",
+        "manifest.charterVersion",
+        "manifest.userStories.storyCount",
+        "manifest.userStories.derivedFromFrictionIds.length"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/bundle_metric_strip/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "value_stream_heatmap",
+      "description": "Horizontal stage-by-stage heatmap of friction intensity across the value stream. Reads workshopContext.valueStream stages with frictionIntensity 0\u201310 colour scale. Binding stage rendered with coral border.",
+      "sourcePrimitives": [
+        "workshopContext.valueStream.stages",
+        "workshopContext.valueStream.bindingStageIndex"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/value_stream_heatmap/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "deterministic_guarantees_grid",
+      "description": "Four-cell grid surfacing the charter's deterministic guarantees: decision surface (conditional), authority-scope prohibitions (guard \u2014 widget filters enforcement==='platform', falls back to full list), escalation triggers (transition \u2014 epsilon keys counted), and knowledge anchors (retrieval). Pure-charter input.",
+      "sourcePrimitives": [
+        "charter.decisionSurface",
+        "charter.authorityScope.prohibitions",
+        "charter.escalationTriggers",
+        "charter.knowledgeAnchors"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/deterministic_guarantees_grid/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "binding_constraint_card",
+      "description": "Coral-bordered card surfacing the workshop's binding constraint \u2014 label, description, current/target metric delta, strategic leverage statement. Deep-links into the value_stream_heatmap via valueStreamStageRef.",
+      "sourcePrimitives": [
+        "workshopContext.bindingConstraint",
+        "workshopContext.valueStream.stages[bindingStageIndex]"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/binding_constraint_card/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "complexity_chips_strip",
+      "description": "Four-chip header strip showing: friction-observation count, regulatory-anchor count, AES classification badge, and bound-constraint indicator. Cross-substrate: reads workshop context, charter, and manifest.",
+      "sourcePrimitives": [
+        "workshopContext.bindingConstraint",
+        "manifest.userStories.derivedFromFrictionIds.length",
+        "charter.regulatoryAnchors.length",
+        "charter.aesClassification"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/complexity_chips_strip/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "snapshot_grid",
+      "description": "3-column KPI grid rendering workshopContext.businessSnapshot.metrics[]. Each metric cell shows label, value, optional unit/note, and trend arrow. Customer-specific labels live in the substrate; widget is generic.",
+      "sourcePrimitives": [
+        "workshopContext.businessSnapshot.metrics"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/snapshot_grid/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "operating_posture_card",
+      "description": "One-paragraph synthesis card rendering workshopContext.operatingPosture.statement + framing qualifier badge. Pure workshop-context read.",
+      "sourcePrimitives": [
+        "workshopContext.operatingPosture.statement",
+        "workshopContext.operatingPosture.framing"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/operating_posture_card/v1.0/"
+        }
+      ]
+    },
+    {
+      "widgetId": "regulatory_anchors_strip",
+      "description": "Horizontal pill strip listing charter.regulatoryAnchors[] \u2014 one pill per anchor showing regulator badge + reference text. Field names confirmed: 'regulator' + 'reference' (not framework/name/versionPin \u2014 those don't exist on regulatoryAnchors[]). Pure-charter read.",
+      "sourcePrimitives": [
+        "charter.regulatoryAnchors"
+      ],
+      "latest": "v1.0",
+      "status": "published",
+      "versions": [
+        {
+          "version": "v1.0",
+          "publishedAt": "2026-05-19T00:00:00.000Z",
+          "status": "current",
+          "supersededBy": null,
+          "url": "https://plausibleba.com/widgets/regulatory_anchors_strip/v1.0/"
+        }
+      ]
+    }
+  ]
+}

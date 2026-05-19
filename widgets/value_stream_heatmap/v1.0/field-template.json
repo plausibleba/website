@@ -1,0 +1,66 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "value_stream_heatmap",
+  "version": "v1.0",
+  "description": "Horizontal stage-by-stage heatmap of friction intensity across the value stream. Each stage cell shows label and intensity score (0–10 heat scale, green→amber→coral). Binding stage is visually distinguished with coral border and BINDING pill.",
+  "fieldDependencies": [
+    {
+      "path": "workshopContext.valueStream.valueStreamId",
+      "type": "string",
+      "required": true,
+      "displayAs": "Caption below the heatmap — value stream identifier string"
+    },
+    {
+      "path": "workshopContext.valueStream.stages",
+      "type": "object[]",
+      "required": true,
+      "displayAs": "One stage cell per element, ordered by stageIndex. Each cell shows label + frictionIntensity heat badge."
+    },
+    {
+      "path": "workshopContext.valueStream.stages[].stageId",
+      "type": "string",
+      "required": true,
+      "displayAs": "Stage identifier — used as data-stage-id attribute on each cell for deep-link targeting"
+    },
+    {
+      "path": "workshopContext.valueStream.stages[].stageIndex",
+      "type": "number",
+      "required": true,
+      "displayAs": "0-based ordering index — determines left-to-right sequence of stage cells"
+    },
+    {
+      "path": "workshopContext.valueStream.stages[].label",
+      "type": "string",
+      "required": true,
+      "displayAs": "Stage cell title text"
+    },
+    {
+      "path": "workshopContext.valueStream.stages[].frictionIntensity",
+      "type": "number",
+      "required": true,
+      "displayAs": "0–10 integer drives heat badge colour: ≤5 muted, 6=#FCA5A5, 7=#F87171, 8=#EF4444, 9=#DC2626, 10=#991B1B"
+    },
+    {
+      "path": "workshopContext.valueStream.stages[].isBinding",
+      "type": "boolean",
+      "required": true,
+      "displayAs": "true → coral border, coral fill, BINDING pill label on stage cell"
+    },
+    {
+      "path": "workshopContext.valueStream.bindingStageIndex",
+      "type": "number",
+      "required": true,
+      "displayAs": "Placed as data-binding-stage-index attribute on binding stage cell for deep-link targeting from binding_constraint_card"
+    }
+  ],
+  "brandTokenSlots": [
+    "--vsh-stage-bg",
+    "--vsh-stage-border",
+    "--vsh-binding-bg",
+    "--vsh-binding-border",
+    "--vsh-caption-color"
+  ],
+  "auditAnchorTemplate": "vcc:widget:value_stream_heatmap:v1.0:workshop-context-stages",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-137"]
+}

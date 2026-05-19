@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>bundle_metric_strip — VCC Widget v1.0</title>
+<!--
+  VCC Widget: bundle_metric_strip v1.0
+  URL: https://plausibleba.com/widgets/bundle_metric_strip/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. Example injection:
+
+      <script>
+        window.widgetData = {
+          manifest: { ... },   // ExportManifest or VsExportManifest
+          workshopContext: { ... }  // optional WorkshopContext
+        };
+      </script>
+      <script src="index.html" ...></script>
+
+  Field dependencies (from field-template.json):
+    manifest.canonicalBundleHash        — required
+    manifest.builtAt                    — required
+    manifest.charterVersion             — required
+    manifest.userStories.storyCount     — optional
+    manifest.userStories.derivedFromFrictionIds — optional (length only)
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.manifest) {
+    mount.innerHTML =
+      '<div class="widget-error">bundle_metric_strip: window.widgetData.manifest is required.</div>';
+    return;
+  }
+
+  var m = data.manifest;
+
+  // ── Field extraction ──────────────────────────────────────────
+  var hash    = typeof m.canonicalBundleHash === 'string' ? m.canonicalBundleHash : null;
+  var builtAt = typeof m.builtAt === 'string' ? m.builtAt : null;
+  var version = typeof m.charterVersion === 'number' ? m.charterVersion : null;
+  var stories = m.userStories || null;
+  var storyCount   = stories ? stories.storyCount : null;
+  var frictionCount = stories && Array.isArray(stories.derivedFromFrictionIds)
+    ? stories.derivedFromFrictionIds.length
+    : null;
+
+  // ── Formatting helpers ────────────────────────────────────────
+  function fmtHash(h) {
+    if (!h) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value mono">' + h.slice(0, 12) + '…</span>';
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '<span class="bms-absent">—</span>';
+    // Take the date portion only (YYYY-MM-DD)
+    return '<span class="bms-value">' + iso.slice(0, 10) + '</span>';
+  }
+
+  function fmtVersion(v) {
+    if (v === null || v === undefined) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value">v' + v + '</span>';
+  }
+
+  function fmtCount(n) {
+    if (n === null || n === undefined) return '<span class="bms-value bms-absent">—</span>';
+    return '<span class="bms-value">' + n + '</span>';
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  var html = [
+    '<div class="bundle-metric-strip" role="region" aria-label="Bundle provenance metrics">',
+
+    // Cell 1 — canonical hash
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Bundle Hash</div>',
+    '    ' + fmtHash(hash),
+    '    <div class="bms-note">sha256 · drift anchor</div>',
+    '  </div>',
+
+    // Cell 2 — export date
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Exported</div>',
+    '    ' + fmtDate(builtAt),
+    '    <div class="bms-note">manifest.builtAt</div>',
+    '  </div>',
+
+    // Cell 3 — charter version
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Charter Version</div>',
+    '    ' + fmtVersion(version),
+    '    <div class="bms-note">charterVersion</div>',
+    '  </div>',
+
+    // Cell 4 — story count
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">User Stories</div>',
+    '    ' + fmtCount(storyCount),
+    '    <div class="bms-note">stories.jsonld</div>',
+    '  </div>',
+
+    // Cell 5 — friction-id count
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Friction IDs</div>',
+    '    ' + fmtCount(frictionCount),
+    '    <div class="bms-note">derivedFromFrictionIds</div>',
+    '  </div>',
+
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

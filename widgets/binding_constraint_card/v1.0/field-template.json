@@ -1,0 +1,90 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "binding_constraint_card",
+  "version": "v1.0",
+  "description": "Coral-bordered card surfacing the workshop's binding constraint — label, description, current/target metric delta, and strategic leverage statement. Deep-links into value_stream_heatmap via valueStreamStageRef (data-stage-ref attribute).",
+  "fieldDependencies": [
+    {
+      "path": "workshopContext.bindingConstraint.label",
+      "type": "string",
+      "required": true,
+      "displayAs": "Card headline — h3 text in coral card"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.description",
+      "type": "string",
+      "required": true,
+      "displayAs": "1–2 sentence subhead paragraph beneath the headline"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.valueStreamStageRef",
+      "type": "string",
+      "required": true,
+      "displayAs": "Placed as data-stage-ref attribute on widget root for deep-link targeting; also rendered as anchor chip"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.currentMetric.label",
+      "type": "string",
+      "required": true,
+      "displayAs": "Label above current metric value in left metric cell"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.currentMetric.value",
+      "type": "string",
+      "required": true,
+      "displayAs": "Current metric value — coral-accented, left metric cell"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.currentMetric.unit",
+      "type": "string",
+      "required": false,
+      "displayAs": "Optional unit suffix after current metric value (muted ink-3)"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.targetMetric.label",
+      "type": "string",
+      "required": true,
+      "displayAs": "Label above target metric value in right metric cell"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.targetMetric.value",
+      "type": "string",
+      "required": true,
+      "displayAs": "Target metric value — teal-accented, right metric cell"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.targetMetric.unit",
+      "type": "string",
+      "required": false,
+      "displayAs": "Optional unit suffix after target metric value (muted ink-3)"
+    },
+    {
+      "path": "workshopContext.bindingConstraint.strategicLeverage",
+      "type": "string",
+      "required": true,
+      "displayAs": "Footer paragraph beneath a 'Strategic leverage' label; explains business significance"
+    },
+    {
+      "path": "workshopContext.valueStream.stages",
+      "type": "object[]",
+      "required": false,
+      "displayAs": "Optional cross-reference — used with bindingStageIndex to resolve binding stage label for section head tail text and anchor chip"
+    },
+    {
+      "path": "workshopContext.valueStream.bindingStageIndex",
+      "type": "number",
+      "required": false,
+      "displayAs": "Optional cross-reference — index into stages[] to resolve binding stage label"
+    }
+  ],
+  "brandTokenSlots": [
+    "--bcc-bg-top",
+    "--bcc-bg-bottom",
+    "--bcc-border",
+    "--bcc-badge-bg",
+    "--bcc-badge-border"
+  ],
+  "auditAnchorTemplate": "vcc:widget:binding_constraint_card:v1.0:workshop-context-binding",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-137"]
+}

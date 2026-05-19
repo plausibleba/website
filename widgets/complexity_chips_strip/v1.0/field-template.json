@@ -1,0 +1,51 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "complexity_chips_strip",
+  "version": "v1.0",
+  "description": "Four-chip header strip summarising deployment complexity: binding constraint label, friction-observation count, regulatory-anchor count, and AES classification. Cross-substrate — reads workshopContext, manifest, and charter.",
+  "fieldDependencies": [
+    {
+      "path": "workshopContext.bindingConstraint.label",
+      "type": "string",
+      "required": false,
+      "displayAs": "Chip 1 — '1 · <label>' in teal accent. Shows '—' when absent."
+    },
+    {
+      "path": "manifest.userStories.derivedFromFrictionIds",
+      "type": "string[]",
+      "required": false,
+      "displayAs": "Chip 2 — '<n> observations' with count in teal accent. Shows '—' when absent.",
+      "note": "CANONICAL PATH. The D-137 spec listed charter.provenance.derivedFrom.derivedFromFrictionIds[] as the source primitive, but the actual FMT charter v1.3.1 (exports/fmt-credit-writeup-v1.3.1/charter.jsonld) does not have this field. provenance.derivedFrom contains 'decisions[]' and 'enrichmentEvidenceBasis[]' only. The correct runtime path is manifest.userStories.derivedFromFrictionIds[] — identical to bundle_metric_strip. Widget also checks charter.provenance.derivedFrom.derivedFromFrictionIds as a fallback for future substrates that may populate it."
+    },
+    {
+      "path": "charter.provenance.derivedFrom.derivedFromFrictionIds",
+      "type": "string[]",
+      "required": false,
+      "displayAs": "Chip 2 fallback path (spec-declared but absent in v1.3.1 charter). Used only if manifest path is absent.",
+      "note": "FALLBACK PATH ONLY. Not present in FMT charter v1.3.1. Retained for forward-compatibility if substrate is updated to populate this field."
+    },
+    {
+      "path": "charter.regulatoryAnchors",
+      "type": "object[]",
+      "required": false,
+      "displayAs": "Chip 3 — '<n> anchors' with count in teal accent. Reads array length. Shows '—' when absent."
+    },
+    {
+      "path": "charter.aesClassification",
+      "type": "string",
+      "required": false,
+      "displayAs": "Chip 4 — AES classification string in teal accent (e.g. 'hitl_assisted'). Top-level charter field confirmed in FMT charter v1.3.1. Shows '—' when absent.",
+      "note": "CONFIRMED PATH. charter.aesClassification is a top-level string field in the FMT charter v1.3.1 (value: 'hitl_assisted'). The spec listed it as 'charter.aesClassification' — this matches exactly."
+    }
+  ],
+  "brandTokenSlots": [
+    "--ccs-bg",
+    "--ccs-border",
+    "--ccs-label-color",
+    "--ccs-value-color",
+    "--ccs-accent"
+  ],
+  "auditAnchorTemplate": "vcc:widget:complexity_chips_strip:v1.0:complexity-summary",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-131", "D-134-v1.1", "D-137"]
+}

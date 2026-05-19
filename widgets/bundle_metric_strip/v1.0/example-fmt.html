@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>bundle_metric_strip — FMT (Driva) Example · REAL DATA v1.3.1</title>
+<!--
+  Self-contained example render for bundle_metric_strip v1.0.
+  Uses REAL FMT v1.3.1 data from:
+    exports/fmt-credit-writeup-v1.3.1/manifest.json
+
+  Production bundle: dispatched 2026-05-18 via in-app AgentforceExportButton.
+  Canonical hash: 05f336c6993fa746016470257a9f2a82a1740f79e995c1d6a335e295fb3264b3
+  This is the real v1.3.1 export hash that replaces v1.3 (70f7ca61…).
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject REAL FMT v1.3.1 manifest data from exports/fmt-credit-writeup-v1.3.1/manifest.json -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "05f336c6993fa746016470257a9f2a82a1740f79e995c1d6a335e295fb3264b3",
+    canonicalBundleHashAlgorithm: "sha256",
+    builtAt: "2026-05-18T23:19:44.285Z",
+    charterUrn: "urn:vcc:charter:chr_cap_prepare_credit_memo_1779146375252",
+    charterVersion: 1,
+    derivedProfiles: [
+      {
+        rootPath: "profiles/salesforce-agentforce",
+        target: {
+          urn: "urn:vendor:salesforce-agentforce",
+          displayName: "Salesforce Agentforce",
+          vendorUrl: "https://developer.salesforce.com/docs/einstein/genai/guide/agent-script-overview.html"
+        },
+        rendererVersion: "1.0.0",
+        warningCount: 9,
+        renderedAt: "2026-05-18T23:19:44.290Z"
+      }
+    ],
+    userStories: {
+      filePath: "stories.jsonld",
+      sha256: "2c659fe3867221f8d8ab4fce78c98ff3cb2e73356863b11072fffa7f4ac2f557",
+      collectionUrn: "urn:vcc:user-story-collection:chr_cap_prepare_credit_memo_1779146375252:v1",
+      storyCount: 9,
+      storyIds: [
+        "urn:vcc:user-story:story-1a5f9e3c",
+        "urn:vcc:user-story:story-2b7e3d91",
+        "urn:vcc:user-story:story-4e8a1c52",
+        "urn:vcc:user-story:story-6c9b8d3e",
+        "urn:vcc:user-story:story-7d4e2b9a",
+        "urn:vcc:user-story:story-9e3c1a48",
+        "urn:vcc:user-story:story-bf8e72c3",
+        "urn:vcc:user-story:story-d5a93f17",
+        "urn:vcc:user-story:story-e7c41b82"
+      ],
+      derivedFromFrictionIds: [
+        "fr_001_credit_writeup_manual_copy_to_salesforce",
+        "fr_002_salesforce_90pct_manual_data_entry",
+        "fr_003_bdm_offline_lead_qualification_no_pipeline_visibility",
+        "fr_005_collateral_record_creation_excessive_time",
+        "fr_006_no_consolidated_group_exposure_view",
+        "fr_014_credit_assessment_no_sla_enforcement_no_queue_visibility",
+        "fr_017_no_automated_sipo_lvr_validation_in_salesforce",
+        "fr_022_credit_memo_inconsistent_no_standard_template",
+        "fr_026_centrix_credit_reports_manual_retrieval_and_entry"
+      ],
+      generatedAt: "2026-05-18T23:19:44.285Z"
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · bundle_metric_strip v1.0 · FMT (Driva) — Prepare Credit Memo Agent · REAL DATA · dispatched 2026-05-18
+  </div>
+
+  <div id="widget-mount"></div>
+
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: exports/fmt-credit-writeup-v1.3.1/manifest.json · Hash: 05f336c6993fa746… · 9 stories · 9 friction IDs · charterVersion 1 · 9 warnings (all knowledge-retrieval-impl-required)
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.manifest) {
+    mount.innerHTML = '<div class="widget-error">bundle_metric_strip: window.widgetData.manifest is required.</div>';
+    return;
+  }
+
+  var m = data.manifest;
+  var hash    = typeof m.canonicalBundleHash === 'string' ? m.canonicalBundleHash : null;
+  var builtAt = typeof m.builtAt === 'string' ? m.builtAt : null;
+  var version = typeof m.charterVersion === 'number' ? m.charterVersion : null;
+  var stories = m.userStories || null;
+  var storyCount    = stories ? stories.storyCount : null;
+  var frictionCount = stories && Array.isArray(stories.derivedFromFrictionIds)
+    ? stories.derivedFromFrictionIds.length : null;
+
+  function fmtHash(h) {
+    if (!h) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value mono">' + h.slice(0, 12) + '…</span>';
+  }
+  function fmtDate(iso) {
+    if (!iso) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value">' + iso.slice(0, 10) + '</span>';
+  }
+  function fmtVersion(v) {
+    if (v === null || v === undefined) return '<span class="bms-absent">—</span>';
+    return '<span class="bms-value">v' + v + '</span>';
+  }
+  function fmtCount(n) {
+    if (n === null || n === undefined) return '<span class="bms-value bms-absent">—</span>';
+    return '<span class="bms-value">' + n + '</span>';
+  }
+
+  var html = [
+    '<div class="bundle-metric-strip" role="region" aria-label="Bundle provenance metrics">',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Bundle Hash</div>',
+    '    ' + fmtHash(hash),
+    '    <div class="bms-note">sha256 · drift anchor</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Exported</div>',
+    '    ' + fmtDate(builtAt),
+    '    <div class="bms-note">manifest.builtAt</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Charter Version</div>',
+    '    ' + fmtVersion(version),
+    '    <div class="bms-note">charterVersion</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">User Stories</div>',
+    '    ' + fmtCount(storyCount),
+    '    <div class="bms-note">stories.jsonld</div>',
+    '  </div>',
+    '  <div class="bms-cell">',
+    '    <div class="bms-label">Friction IDs</div>',
+    '    ' + fmtCount(frictionCount),
+    '    <div class="bms-note">derivedFromFrictionIds</div>',
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

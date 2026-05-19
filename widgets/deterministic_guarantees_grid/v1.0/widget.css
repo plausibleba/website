@@ -1,0 +1,151 @@
+/**
+ * deterministic_guarantees_grid — widget-scoped styles v1.0
+ *
+ * Imports tokens.css + base.css; adds widget-specific layout.
+ * STRAT renderer injects this CSS alongside index.html.
+ *
+ * Brand token slots (overridable per customer):
+ *   --dgg-cell-bg      → defaults to rgba(0, 0, 0, 0.25)  (inner cell fill)
+ *   --dgg-cell-border  → defaults to var(--line-2)
+ *   --dgg-panel-bg     → defaults to var(--card-2)
+ *   --dgg-panel-border → defaults to var(--line)
+ *   --dgg-accent       → defaults to var(--teal)
+ *   --dgg-label-color  → defaults to var(--ink-3)
+ *   --dgg-value-color  → defaults to var(--ink)
+ */
+
+/* ── Widget-level brand token defaults ─────────────────────── */
+:root {
+  --dgg-cell-bg:      rgba(0, 0, 0, 0.25);
+  --dgg-cell-border:  var(--line-2);
+  --dgg-panel-bg:     var(--card-2);
+  --dgg-panel-border: var(--line);
+  --dgg-accent:       var(--teal);
+  --dgg-label-color:  var(--ink-3);
+  --dgg-value-color:  var(--ink);
+}
+
+/* ── Outer panel ────────────────────────────────────────────── */
+.det-guarantees-panel {
+  background: var(--dgg-panel-bg);
+  border: 1px solid var(--dgg-panel-border);
+  border-radius: var(--r-2xl);
+  padding: var(--sp-8);
+}
+
+/* ── Panel heading row ──────────────────────────────────────── */
+.dgg-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--sp-7);
+  padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--dgg-cell-border);
+}
+
+.dgg-heading-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dgg-accent);
+}
+
+.dgg-heading-tail {
+  font-size: var(--text-sm);
+  color: var(--ink-4);
+}
+
+/* ── 4-cell grid ────────────────────────────────────────────── */
+.dgg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-5);
+}
+
+/* ── Individual cell ────────────────────────────────────────── */
+.dgg-cell {
+  background: var(--dgg-cell-bg);
+  border: 1px solid var(--dgg-cell-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6) var(--sp-6);
+}
+
+/* ── Primitive label (teal mono — matches FMT det-cell idiom) ── */
+.dgg-primitive {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--dgg-accent);
+  letter-spacing: 0.02em;
+  margin-bottom: var(--sp-2);
+}
+
+/* ── Category label (UPPERCASE muted) ──────────────────────── */
+.dgg-category {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--dgg-label-color);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  margin-bottom: var(--sp-4);
+}
+
+/* ── Big count ──────────────────────────────────────────────── */
+.dgg-count {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--dgg-value-color);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--sp-3);
+}
+
+.dgg-count-absent {
+  font-size: var(--text-xl);
+  color: var(--ink-4);
+  font-style: italic;
+}
+
+/* ── Sample items footnote ──────────────────────────────────── */
+.dgg-samples {
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.dgg-samples b {
+  color: var(--dgg-accent);
+  font-weight: 600;
+}
+
+/* ── Epsilon label chips ────────────────────────────────────── */
+.dgg-eps-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.dgg-eps-chip {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--ink-3);
+  padding: 3px var(--sp-3);
+  border-radius: var(--r-sm);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--dgg-cell-border);
+  white-space: nowrap;
+}
+
+/* ── Responsive: 2-col on narrow screens ───────────────────── */
+@media (max-width: 900px) {
+  .dgg-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .dgg-grid {
+    grid-template-columns: 1fr;
+  }
+}

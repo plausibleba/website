@@ -1,0 +1,12 @@
+{
+  "widgetId": "regulatory_anchors_strip",
+  "version": "v1.0",
+  "publishedAt": "2026-05-19T00:00:00.000Z",
+  "status": "current",
+  "supersededBy": null,
+  "url": "https://plausibleba.com/widgets/regulatory_anchors_strip/v1.0/",
+  "changeLog": [
+    "v1.0 — Initial publication. Horizontal pill strip of charter.regulatoryAnchors[]. Each pill shows regulator badge + reference text. Framework-specific border-colour accents for APRA, ASIC, RBNZ, NCCP, SIS. Confirmed field names: regulator + reference (not framework/name/versionPin)."
+  ],
+  "urlImmutabilityNote": "Per Dan Roach 2026-05-17: this URL stays live indefinitely. Patch releases overwrite this v1.0 directory; major bumps go to v2.0/. Older minors are marked superseded in index.json but remain resolvable for STRAT audit-anchor reproducibility."
+}

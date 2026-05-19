@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>operating_posture_card — Coastline Super Example</title>
+<!--
+  Self-contained example render for operating_posture_card v1.0.
+  Uses Coastline Super fixture data inlined as window.widgetData.
+  Opens directly in a browser — no server required.
+
+  Fixture source: fixtures/coastline-super/workshop-context.json
+  operatingPosture.statement + operatingPosture.framing
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject Coastline Super fixture data -->
+<script>
+window.widgetData = {
+  manifest: {
+    manifestVersion: 1,
+    canonicalBundleHash: "a4f9e2b1c83d7056f21e4a9b3c8d1f5e6a7b2c9d4e5f0a1b2c3d4e5f6a7b8c9",
+    builtAt: "2026-05-19T00:00:00.000Z",
+    charterVersion: 1
+  },
+  workshopContext: {
+    operatingPosture: {
+      statement: "Coastline Super operates as an RSE-licensed trustee with a fiduciary duty to its 415,000 members — a duty that attaches with particular force to death benefit claims, where SIS s101 places allocation authority irrevocably with the trustee delegate. The fund is operating under active ASIC remediation oversight for IDR breach and AFCA escalation rates that sit materially above industry benchmarks, making operational improvement a regulatory obligation as well as a member-trust imperative. Technology deployment is constrained to the existing Salesforce platform; no re-platforming is in scope.",
+      framing: "regulated, fiduciary, member-first, ASIC-remediation-accountable"
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · operating_posture_card v1.0 · Coastline Super — Death Benefit Claim Intake
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/workshop-context.json · operatingPosture · 4 framing tags
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.operatingPosture ||
+      !data.workshopContext.operatingPosture.statement) {
+    mount.innerHTML = '<div class="widget-error">operating_posture_card: window.widgetData.workshopContext.operatingPosture.statement is required.</div>';
+    return;
+  }
+
+  var posture   = data.workshopContext.operatingPosture;
+  var statement = posture.statement;
+  var framing   = posture.framing || '';
+
+  function buildFramingHtml(framingStr) {
+    if (!framingStr) return '';
+    var tags = framingStr.split(',').map(function (t) { return t.trim(); }).filter(Boolean);
+    if (!tags.length) return '';
+    var pills = tags.map(function (tag) {
+      return '<span class="opc-pill">' + tag + '</span>';
+    }).join('');
+    return [
+      '<div class="opc-framing-row">',
+      '  <span class="opc-framing-label">Framing</span>',
+      pills,
+      '</div>'
+    ].join('\n');
+  }
+
+  var html = [
+    '<div class="posture-card" role="region" aria-label="Operating posture">',
+    '  <p class="opc-statement">' + statement + '</p>',
+    buildFramingHtml(framing),
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

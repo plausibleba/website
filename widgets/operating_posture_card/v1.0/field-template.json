@@ -1,0 +1,31 @@
+{
+  "$schema": "https://plausibleba.com/widgets/field-template-schema/v1.0.json",
+  "widgetId": "operating_posture_card",
+  "version": "v1.0",
+  "description": "Single synthesis card rendering workshopContext.operatingPosture.statement as prose and operatingPosture.framing as pill tags. Pure workshop-context read.",
+  "fieldDependencies": [
+    {
+      "path": "workshopContext.operatingPosture.statement",
+      "type": "string",
+      "required": true,
+      "displayAs": "Card body — prose statement rendered at 17px ink-2; 1–3 sentences"
+    },
+    {
+      "path": "workshopContext.operatingPosture.framing",
+      "type": "string",
+      "required": false,
+      "displayAs": "Comma-separated framing qualifiers — each rendered as a purple pill (e.g. 'regulated, fiduciary, member-first')"
+    }
+  ],
+  "brandTokenSlots": [
+    "--opc-bg",
+    "--opc-border",
+    "--opc-text-color",
+    "--opc-pill-bg",
+    "--opc-pill-border",
+    "--opc-pill-color"
+  ],
+  "auditAnchorTemplate": "vcc:widget:operating_posture_card:v1.0:operating-posture-synthesis",
+  "sha256": "",
+  "supportedSubstrateVersions": ["D-137"]
+}

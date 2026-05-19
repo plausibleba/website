@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>value_stream_heatmap — Coastline Super Example</title>
+<!--
+  Self-contained example render for value_stream_heatmap v1.0.
+  Uses Coastline Super fixture data inlined as window.widgetData.
+  Opens directly in a browser — no server required.
+
+  Fixture source: fixtures/coastline-super/workshop-context.json
+  Value stream: vs_death_benefit_claim — 9 stages, binding at stageIndex 2 (Evidence Assembled)
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject Coastline Super fixture data -->
+<script>
+window.widgetData = {
+  workshopContext: {
+    collectionUrn: "urn:vcc:workshop-context:coastline-super-death-benefit-claim:v1",
+    synthesisedAt: "2026-05-19T00:00:00.000Z",
+    valueStream: {
+      valueStreamId: "vs_death_benefit_claim",
+      bindingStageIndex: 2,
+      stages: [
+        {
+          "stageId": "act_vs_001_s01_notification_received",
+          "stageIndex": 0,
+          "label": "Notification Received",
+          "frictionIntensity": 8,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s02_claim_registered",
+          "stageIndex": 1,
+          "label": "Claim Registered",
+          "frictionIntensity": 8,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s03_evidence_assembled",
+          "stageIndex": 2,
+          "label": "Evidence Assembled",
+          "frictionIntensity": 9,
+          "isBinding": true
+        },
+        {
+          "stageId": "act_vs_001_s04_insurance_resolved",
+          "stageIndex": 3,
+          "label": "Insurance Resolved",
+          "frictionIntensity": 6,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s05_beneficiary_determined",
+          "stageIndex": 4,
+          "label": "Beneficiary Determined",
+          "frictionIntensity": 8,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s06_decision_made",
+          "stageIndex": 5,
+          "label": "Decision Made",
+          "frictionIntensity": 2,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s07_objection_window_closed",
+          "stageIndex": 6,
+          "label": "Objection Window Closed",
+          "frictionIntensity": 5,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s08_payment_disbursed",
+          "stageIndex": 7,
+          "label": "Payment Disbursed",
+          "frictionIntensity": 2,
+          "isBinding": false
+        },
+        {
+          "stageId": "act_vs_001_s09_closure_confirmed",
+          "stageIndex": 8,
+          "label": "Closure Confirmed",
+          "frictionIntensity": 1,
+          "isBinding": false
+        }
+      ]
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · value_stream_heatmap v1.0 · Coastline Super — Death Benefit Claim · 2026-05-19
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/workshop-context.json · 9 stages · binding at stageIndex 2 (Evidence Assembled, intensity 9) · 187-day median TTP
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.valueStream) {
+    mount.innerHTML =
+      '<div class="widget-error">value_stream_heatmap: window.widgetData.workshopContext.valueStream is required.</div>';
+    return;
+  }
+
+  var vs = data.workshopContext.valueStream;
+  var stages = vs.stages;
+
+  if (!Array.isArray(stages) || stages.length === 0) {
+    mount.innerHTML =
+      '<div class="widget-error">value_stream_heatmap: workshopContext.valueStream.stages must be a non-empty array.</div>';
+    return;
+  }
+
+  var sorted = stages.slice().sort(function (a, b) {
+    return (a.stageIndex || 0) - (b.stageIndex || 0);
+  });
+
+  var stageCount = sorted.length;
+  var bindingStageIndex = typeof vs.bindingStageIndex === 'number' ? vs.bindingStageIndex : -1;
+  var valueStreamId = typeof vs.valueStreamId === 'string' ? vs.valueStreamId : '';
+
+  function heatClass(intensity) {
+    var n = Math.round(intensity || 0);
+    if (n <= 5)  return 'h-low';
+    if (n === 6)  return 'h6';
+    if (n === 7)  return 'h7';
+    if (n === 8)  return 'h8';
+    if (n === 9)  return 'h9';
+    return 'h10';
+  }
+
+  function padNum(n) {
+    return n < 10 ? '0' + n : '' + n;
+  }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function buildLegend(stages) {
+    var levels = {};
+    stages.forEach(function (s) {
+      var cls = heatClass(s.frictionIntensity);
+      if (cls !== 'h-low') levels[cls] = true;
+    });
+    var order = ['h6','h7','h8','h9','h10'];
+    var items = [];
+    order.forEach(function (cls) {
+      if (levels[cls]) {
+        items.push(
+          '<span><span class="vsh-legend-pip ' + cls + '"></span>' + cls.replace('h', '') + '</span>'
+        );
+      }
+    });
+    if (items.length === 0) return '';
+    return (
+      '<div class="vsh-legend" role="note" aria-label="Friction intensity legend">' +
+      'Friction intensity: ' + items.join('') +
+      '<span><span class="vsh-legend-pip h10"></span>10 · binding</span>' +
+      '</div>'
+    );
+  }
+
+  var stageCells = sorted.map(function (stage, idx) {
+    var isBinding = !!stage.isBinding;
+    var intensity = typeof stage.frictionIntensity === 'number' ? stage.frictionIntensity : 0;
+    var cls = heatClass(intensity);
+    var displayNum = padNum((stage.stageIndex || idx) + 1);
+    var label = esc(stage.label || 'Stage ' + displayNum);
+    var bindingAttr = isBinding
+      ? ' data-binding-stage-index="' + bindingStageIndex + '"'
+      : '';
+    var bindingPill = isBinding
+      ? '<span class="vsh-binding-pill">Binding</span>'
+      : '';
+
+    return [
+      '<div class="vsh-stage' + (isBinding ? ' binding' : '') + '"' + bindingAttr + '>',
+      '  <div class="vsh-stage-num">' + displayNum + '</div>',
+      '  <div class="vsh-stage-name">' + label + bindingPill + '</div>',
+      '  <span class="vsh-heat ' + cls + '" aria-label="Friction intensity ' + intensity + '">' + intensity + '</span>',
+      '</div>'
+    ].join('\n');
+  }).join('\n');
+
+  var caption = valueStreamId
+    ? '<div class="vsh-caption" aria-label="Value stream identifier">' + esc(valueStreamId) + ' · ' + stageCount + ' stages</div>'
+    : '';
+
+  var html = [
+    '<div class="vsh-widget" role="region" aria-label="Value stream friction heatmap">',
+    '  <div class="vsh-head">',
+    '    <span class="vsh-head-label">Focal Value Stream</span>',
+    '    <span class="vsh-head-tail">' + stageCount + ' stages · friction intensity heatmap</span>',
+    '  </div>',
+    '  <div class="vsh-stages" style="grid-template-columns: repeat(' + stageCount + ', 1fr);">',
+    stageCells,
+    '  </div>',
+    buildLegend(sorted),
+    caption,
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

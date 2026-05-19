@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>binding_constraint_card — VCC Widget v1.0</title>
+<!--
+  VCC Widget: binding_constraint_card v1.0
+  URL: https://plausibleba.com/widgets/binding_constraint_card/v1.0/
+  Consumer: STRAT renderer (Salesforce strategic-architecture pages)
+
+  Data injection:
+    STRAT renders this widget by injecting window.widgetData before loading
+    this document. The widget reads workshopContext.bindingConstraint and
+    cross-references workshopContext.valueStream.stages[bindingStageIndex]
+    for the binding stage label.
+
+  Field dependencies (from field-template.json):
+    workshopContext.bindingConstraint.label                — required
+    workshopContext.bindingConstraint.description          — required
+    workshopContext.bindingConstraint.valueStreamStageRef  — required (data-stage-ref deep-link)
+    workshopContext.bindingConstraint.currentMetric        — required
+    workshopContext.bindingConstraint.targetMetric         — required
+    workshopContext.bindingConstraint.strategicLeverage    — required
+    workshopContext.valueStream.stages (bindingStageIndex) — optional cross-reference
+
+  Constraints:
+    - No localStorage / sessionStorage
+    - No external network requests
+    - No frameworks — vanilla JS only
+    - All data comes from window.widgetData
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+<div class="widget-root">
+  <div id="widget-mount"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  // ── Data validation ────────────────────────────────────────────
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.bindingConstraint) {
+    mount.innerHTML =
+      '<div class="widget-error">binding_constraint_card: window.widgetData.workshopContext.bindingConstraint is required.</div>';
+    return;
+  }
+
+  var bc = data.workshopContext.bindingConstraint;
+  var vs = (data.workshopContext.valueStream) || null;
+
+  // Required fields check
+  if (!bc.label || !bc.description || !bc.currentMetric || !bc.targetMetric) {
+    mount.innerHTML =
+      '<div class="widget-error">binding_constraint_card: bindingConstraint requires label, description, currentMetric, and targetMetric.</div>';
+    return;
+  }
+
+  // ── Escape HTML ────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // ── Format metric value + unit ────────────────────────────────
+  function fmtMetric(m) {
+    if (!m) return '—';
+    var val = m.value !== undefined ? esc(String(m.value)) : '—';
+    var unit = m.unit ? ' <span style="font-size:var(--text-sm);font-weight:400;color:var(--ink-3);">' + esc(m.unit) + '</span>' : '';
+    return val + unit;
+  }
+
+  // ── Cross-reference: binding stage label from valueStream ─────
+  var bindingStageLabel = null;
+  if (vs && Array.isArray(vs.stages) && typeof vs.bindingStageIndex === 'number') {
+    var bindingStage = vs.stages.find(function (s) {
+      return s.stageIndex === vs.bindingStageIndex || s.isBinding === true;
+    });
+    if (bindingStage && bindingStage.label) {
+      bindingStageLabel = bindingStage.label;
+    }
+  }
+
+  // ── Stage ref deep-link attribute ────────────────────────────
+  var stageRef = typeof bc.valueStreamStageRef === 'string' ? bc.valueStreamStageRef : '';
+  var stageRefAttr = stageRef ? ' data-stage-ref="' + esc(stageRef) + '"' : '';
+
+  // ── Head tail — stage label or stageRef slug ─────────────────
+  var headTail = bindingStageLabel
+    ? 'stage: ' + esc(bindingStageLabel).toLowerCase()
+    : stageRef
+      ? esc(stageRef)
+      : 'binding constraint';
+
+  // ── Anchor chips ─────────────────────────────────────────────
+  var anchors = '';
+  if (stageRef) {
+    anchors = '<div class="bcc-anchors">';
+    anchors += '<span class="bcc-anchor">stage-ref: ' + esc(stageRef) + '</span>';
+    if (bindingStageLabel) {
+      anchors += '<span class="bcc-anchor">stage: ' + esc(bindingStageLabel) + '</span>';
+    }
+    anchors += '</div>';
+  }
+
+  // ── Strategic leverage section ────────────────────────────────
+  var leverageHtml = '';
+  if (bc.strategicLeverage) {
+    leverageHtml = [
+      '<div class="bcc-leverage">',
+      '  <div class="bcc-leverage-label">Strategic leverage</div>',
+      '  ' + esc(bc.strategicLeverage),
+      '</div>'
+    ].join('\n');
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  var html = [
+    '<div class="bcc-widget" role="region" aria-label="Binding constraint card"' + stageRefAttr + '>',
+
+    // Section head
+    '  <div class="bcc-head">',
+    '    <span class="bcc-head-label">The Binding Constraint</span>',
+    '    <span class="bcc-head-tail">' + headTail + '</span>',
+    '  </div>',
+
+    // Card
+    '  <div class="bcc-card">',
+
+    // Badge
+    '    <span class="bcc-badge">&#9889; Manifest binding constraint</span>',
+
+    // Headline
+    '    <h3 class="bcc-headline">' + esc(bc.label) + '</h3>',
+
+    // Description
+    '    <p class="bcc-description">' + esc(bc.description) + '</p>',
+
+    // Anchor chips
+    anchors,
+
+    // Metric comparison grid
+    '    <div class="bcc-metrics">',
+    '      <div class="bcc-metric current">',
+    '        <div class="bcc-metric-label">' + esc(bc.currentMetric.label || 'Current') + '</div>',
+    '        <div class="bcc-metric-value">' + fmtMetric(bc.currentMetric) + '</div>',
+    '      </div>',
+    '      <div class="bcc-metric target">',
+    '        <div class="bcc-metric-label">' + esc(bc.targetMetric.label || 'Target') + '</div>',
+    '        <div class="bcc-metric-value">' + fmtMetric(bc.targetMetric) + '</div>',
+    '      </div>',
+    '    </div>',
+
+    // Strategic leverage
+    leverageHtml,
+
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "widgetId": "value_stream_heatmap",
+  "version": "v1.0",
+  "publishedAt": "2026-05-19T00:00:00.000Z",
+  "status": "current",
+  "supersededBy": null,
+  "url": "https://plausibleba.com/widgets/value_stream_heatmap/v1.0/",
+  "changeLog": [
+    "v1.0 — Initial publication. Horizontal stage heatmap reading workshopContext.valueStream.stages[]. Heat scale 0–10 with 5 named colour classes matching tokens.css heat tokens. Binding stage coral border + BINDING pill. FMT visual idiom: heat badge top-right, stage number + label in cell body."
+  ],
+  "urlImmutabilityNote": "Per Dan Roach 2026-05-17: this URL stays live indefinitely. Patch releases overwrite this v1.0 directory; major bumps go to v2.0/. Older minors are marked superseded in index.json but remain resolvable for STRAT audit-anchor reproducibility."
+}

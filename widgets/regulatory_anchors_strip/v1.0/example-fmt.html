@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>regulatory_anchors_strip — FMT (Driva) Example</title>
+<!--
+  Self-contained example render for regulatory_anchors_strip v1.0.
+  Uses REAL FMT v1.3.1 charter data from:
+    exports/fmt-credit-writeup-v1.3.1/charter.jsonld
+
+  Charter: Prepare Credit Memo Agent (urn:vcc:charter:chr_cap_prepare_credit_memo_1779146375252)
+  Exported: 2026-05-18T23:19:44.285Z  Hash: 05f336c6993fa746…
+
+  Field name confirmation (from real charter.jsonld):
+    - charter.regulatoryAnchors[].regulator  → "APRA" | "FMT" | "NCCP"
+    - charter.regulatoryAnchors[].reference  → full regulation string
+    No "name", "title", "versionPin", or "framework" fields on regulatoryAnchors[].
+    Version is embedded in the reference string (e.g. "v3.2" inline).
+
+  6 anchors: 3 APRA · 2 FMT Internal Credit Policy · 1 NCCP
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<script>
+window.widgetData = {
+  charter: {
+    "@type": "vcc:AgentCharter",
+    "@id": "urn:vcc:charter:chr_cap_prepare_credit_memo_1779146375252",
+    "name": "Prepare Credit Memo Agent",
+    "version": 1,
+    "regulatoryAnchors": [
+      {
+        "@id": "urn:vcc:regulatory-anchor:regAnchor_cap_prepare_credit_memo_APRA_CPS_220",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "APRA CPS 220 — Risk Management (credit submission integrity)"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:regAnchor_cap_prepare_credit_memo_APRA_CPS_230_narratives",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "APRA CPS 230 — Operational Risk Management (AI-derived credit narratives)"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:regAnchor_cap_prepare_credit_memo_APRA_CPS_230_escalation",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "APRA",
+        "reference": "APRA CPS 230 — Operational Risk Management (escalation pathways must be deterministic)"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:regAnchor_cap_prepare_credit_memo_FMT_referral",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "FMT",
+        "reference": "FMT Internal Credit Policy v3.2 — credit committee referral criteria"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:regAnchor_cap_prepare_credit_memo_FMT_template",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "FMT",
+        "reference": "FMT Internal Credit Policy v3.2 — credit memo template + minimum evidence set"
+      },
+      {
+        "@id": "urn:vcc:regulatory-anchor:regAnchor_cap_prepare_credit_memo_NCCP",
+        "@type": "vcc:RegulatoryAnchor",
+        "regulator": "NCCP",
+        "reference": "NCCP Act — Responsible Lending Obligations (affordability evidence)"
+      }
+    ]
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · regulatory_anchors_strip v1.0 · FMT (Driva) — Prepare Credit Memo Agent · charter v1 · exported 2026-05-18
+  </div>
+
+  <div id="widget-mount"></div>
+
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: exports/fmt-credit-writeup-v1.3.1/charter.jsonld · 6 anchors (3 APRA · 2 FMT · 1 NCCP) · Field: regulator + reference (no versionPin on regulatoryAnchors)
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.charter) {
+    mount.innerHTML = '<div class="widget-error">regulatory_anchors_strip: window.widgetData.charter is required.</div>';
+    return;
+  }
+
+  var anchors = data.charter.regulatoryAnchors;
+  if (!Array.isArray(anchors)) {
+    mount.innerHTML = '<div class="widget-error">regulatory_anchors_strip: charter.regulatoryAnchors[] is required.</div>';
+    return;
+  }
+
+  function getRegulator(anchor) {
+    return anchor.regulator || anchor.framework || '';
+  }
+  function getReference(anchor) {
+    return anchor.reference || anchor.name || anchor.title || anchor['@id'] || '(unnamed anchor)';
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  var pillsHtml;
+  if (anchors.length === 0) {
+    pillsHtml = '<span class="ras-empty">No regulatory anchors declared on this charter.</span>';
+  } else {
+    pillsHtml = anchors.map(function (anchor) {
+      var regulator = getRegulator(anchor);
+      var reference = getReference(anchor);
+      var dataAttr  = regulator ? ' data-framework="' + esc(regulator) + '"' : '';
+      var badge     = regulator ? '<span class="ras-regulator-badge">' + esc(regulator) + '</span>' : '';
+      return '<span class="ras-pill"' + dataAttr + '>'
+        + badge
+        + '<span class="ras-reference">' + esc(reference) + '</span>'
+        + '</span>';
+    }).join('\n    ');
+  }
+
+  var countBadge = anchors.length > 0
+    ? '<span class="ras-count-badge">' + anchors.length + '</span>'
+    : '';
+
+  var html = [
+    '<div class="reg-anchors-panel" role="region" aria-label="Regulatory anchors">',
+    '  <div class="ras-heading">',
+    '    <span class="ras-heading-label">Regulatory anchors</span>',
+    '    ' + countBadge,
+    '  </div>',
+    '  <div class="ras-pill-strip">',
+    '    ' + pillsHtml,
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

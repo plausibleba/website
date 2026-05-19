@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>binding_constraint_card — Coastline Super Example</title>
+<!--
+  Self-contained example render for binding_constraint_card v1.0.
+  Uses Coastline Super fixture data inlined as window.widgetData.
+  Opens directly in a browser — no server required.
+
+  Fixture source: fixtures/coastline-super/workshop-context.json
+  Binding constraint: 187-day median TTP at act_vs_001_s03_evidence_assembled
+  Target: 90 days (Coastline's own 2024 internal target)
+  Strategic leverage: ASIC remediation + AFCA escalation + $50B FUM growth
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<!-- Inject Coastline Super fixture data -->
+<script>
+window.widgetData = {
+  workshopContext: {
+    collectionUrn: "urn:vcc:workshop-context:coastline-super-death-benefit-claim:v1",
+    synthesisedAt: "2026-05-19T00:00:00.000Z",
+    bindingConstraint: {
+      "label": "Death Claim Cycle Time — 187-Day Median",
+      "description": "The 187-day median time-to-payment is the aggregate expression of four compounding frictions: a 48-hour intake queue, three document-gathering cycles averaging one week each, a reactive comms model generating seven inbound family contacts per claim, and state scattered across eight systems. It is the number Coastline named in its 2024 internal review, the number AFCA sees, and the number the new chair has named publicly as a priority watch item.",
+      "valueStreamStageRef": "act_vs_001_s03_evidence_assembled",
+      "currentMetric": {
+        "label": "Median Time-to-Payment",
+        "value": 187,
+        "unit": "days"
+      },
+      "targetMetric": {
+        "label": "Target Median Time-to-Payment",
+        "value": 90,
+        "unit": "days"
+      },
+      "strategicLeverage": "Reducing cycle time from 187 days is simultaneously the primary lever on AFCA escalation rate (currently 8% vs ~3% industry — driven by comms gap and cycle time), the path to clearing the ASIC RG 271 IDR remediation overhang, and the operational proof-point the new trustee chair has committed to publicly. Moving this number moves the regulator relationship, member trust scores, and the $50B FUM growth ambition — because operational reputation is the differentiator available to a profit-for-members fund at Coastline's scale."
+    },
+    valueStream: {
+      "valueStreamId": "vs_death_benefit_claim",
+      "bindingStageIndex": 2,
+      "stages": [
+        { "stageId": "act_vs_001_s01_notification_received", "stageIndex": 0, "label": "Notification Received", "frictionIntensity": 8, "isBinding": false },
+        { "stageId": "act_vs_001_s02_claim_registered", "stageIndex": 1, "label": "Claim Registered", "frictionIntensity": 8, "isBinding": false },
+        { "stageId": "act_vs_001_s03_evidence_assembled", "stageIndex": 2, "label": "Evidence Assembled", "frictionIntensity": 9, "isBinding": true },
+        { "stageId": "act_vs_001_s04_insurance_resolved", "stageIndex": 3, "label": "Insurance Resolved", "frictionIntensity": 6, "isBinding": false },
+        { "stageId": "act_vs_001_s05_beneficiary_determined", "stageIndex": 4, "label": "Beneficiary Determined", "frictionIntensity": 8, "isBinding": false },
+        { "stageId": "act_vs_001_s06_decision_made", "stageIndex": 5, "label": "Decision Made", "frictionIntensity": 2, "isBinding": false },
+        { "stageId": "act_vs_001_s07_objection_window_closed", "stageIndex": 6, "label": "Objection Window Closed", "frictionIntensity": 5, "isBinding": false },
+        { "stageId": "act_vs_001_s08_payment_disbursed", "stageIndex": 7, "label": "Payment Disbursed", "frictionIntensity": 2, "isBinding": false },
+        { "stageId": "act_vs_001_s09_closure_confirmed", "stageIndex": 8, "label": "Closure Confirmed", "frictionIntensity": 1, "isBinding": false }
+      ]
+    }
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header — not part of the widget itself -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · binding_constraint_card v1.0 · Coastline Super — Death Benefit Claim · 2026-05-19
+  </div>
+
+  <!-- Widget mount point -->
+  <div id="widget-mount"></div>
+
+  <!-- Context note — not part of the widget -->
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: fixtures/coastline-super/workshop-context.json · binding stage: Evidence Assembled (stageIndex 2, intensity 9) · 187 → 90 days · ASIC remediation context
+  </div>
+
+</div>
+
+<!-- Widget script (identical to index.html — inlined for self-contained render) -->
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+
+  var data = window.widgetData;
+  if (!data || !data.workshopContext || !data.workshopContext.bindingConstraint) {
+    mount.innerHTML =
+      '<div class="widget-error">binding_constraint_card: window.widgetData.workshopContext.bindingConstraint is required.</div>';
+    return;
+  }
+
+  var bc = data.workshopContext.bindingConstraint;
+  var vs = (data.workshopContext.valueStream) || null;
+
+  if (!bc.label || !bc.description || !bc.currentMetric || !bc.targetMetric) {
+    mount.innerHTML =
+      '<div class="widget-error">binding_constraint_card: bindingConstraint requires label, description, currentMetric, and targetMetric.</div>';
+    return;
+  }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtMetric(m) {
+    if (!m) return '—';
+    var val = m.value !== undefined ? esc(String(m.value)) : '—';
+    var unit = m.unit ? ' <span style="font-size:var(--text-sm);font-weight:400;color:var(--ink-3);">' + esc(m.unit) + '</span>' : '';
+    return val + unit;
+  }
+
+  var bindingStageLabel = null;
+  if (vs && Array.isArray(vs.stages) && typeof vs.bindingStageIndex === 'number') {
+    var bindingStage = vs.stages.find(function (s) {
+      return s.stageIndex === vs.bindingStageIndex || s.isBinding === true;
+    });
+    if (bindingStage && bindingStage.label) {
+      bindingStageLabel = bindingStage.label;
+    }
+  }
+
+  var stageRef = typeof bc.valueStreamStageRef === 'string' ? bc.valueStreamStageRef : '';
+  var stageRefAttr = stageRef ? ' data-stage-ref="' + esc(stageRef) + '"' : '';
+
+  var headTail = bindingStageLabel
+    ? 'stage: ' + esc(bindingStageLabel).toLowerCase()
+    : stageRef
+      ? esc(stageRef)
+      : 'binding constraint';
+
+  var anchors = '';
+  if (stageRef) {
+    anchors = '<div class="bcc-anchors">';
+    anchors += '<span class="bcc-anchor">stage-ref: ' + esc(stageRef) + '</span>';
+    if (bindingStageLabel) {
+      anchors += '<span class="bcc-anchor">stage: ' + esc(bindingStageLabel) + '</span>';
+    }
+    anchors += '</div>';
+  }
+
+  var leverageHtml = '';
+  if (bc.strategicLeverage) {
+    leverageHtml = [
+      '<div class="bcc-leverage">',
+      '  <div class="bcc-leverage-label">Strategic leverage</div>',
+      '  ' + esc(bc.strategicLeverage),
+      '</div>'
+    ].join('\n');
+  }
+
+  var html = [
+    '<div class="bcc-widget" role="region" aria-label="Binding constraint card"' + stageRefAttr + '>',
+    '  <div class="bcc-head">',
+    '    <span class="bcc-head-label">The Binding Constraint</span>',
+    '    <span class="bcc-head-tail">' + headTail + '</span>',
+    '  </div>',
+    '  <div class="bcc-card">',
+    '    <span class="bcc-badge">&#9889; Manifest binding constraint</span>',
+    '    <h3 class="bcc-headline">' + esc(bc.label) + '</h3>',
+    '    <p class="bcc-description">' + esc(bc.description) + '</p>',
+    anchors,
+    '    <div class="bcc-metrics">',
+    '      <div class="bcc-metric current">',
+    '        <div class="bcc-metric-label">' + esc(bc.currentMetric.label || 'Current') + '</div>',
+    '        <div class="bcc-metric-value">' + fmtMetric(bc.currentMetric) + '</div>',
+    '      </div>',
+    '      <div class="bcc-metric target">',
+    '        <div class="bcc-metric-label">' + esc(bc.targetMetric.label || 'Target') + '</div>',
+    '        <div class="bcc-metric-value">' + fmtMetric(bc.targetMetric) + '</div>',
+    '      </div>',
+    '    </div>',
+    leverageHtml,
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>deterministic_guarantees_grid — FMT (Driva) Example</title>
+<!--
+  Self-contained example render for deterministic_guarantees_grid v1.0.
+  Uses REAL FMT v1.3.1 charter data from:
+    exports/fmt-credit-writeup-v1.3.1/charter.jsonld
+
+  Charter: Prepare Credit Memo Agent (urn:vcc:charter:chr_cap_prepare_credit_memo_1779146375252)
+  Exported: 2026-05-18T23:19:44.285Z  Hash: 05f336c6993fa746…
+
+  Data notes:
+  - decisions[]: 2 (Credit Memo Exception Routing + Credit Memo Composition Path)
+  - prohibitions[]: 6 total; enforcement field absent on all — widget falls back to full list
+  - escalationTriggers: ε1_ambiguity, ε3_threshold, ε4_novelty populated (ε2 absent = 3 triggers)
+  - knowledgeAnchors[]: 9 (6 regulatory + 3 data anchors)
+-->
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="../../base.css">
+<link rel="stylesheet" href="widget.css">
+</head>
+<body>
+
+<script>
+window.widgetData = {
+  charter: {
+    "@type": "vcc:AgentCharter",
+    "@id": "urn:vcc:charter:chr_cap_prepare_credit_memo_1779146375252",
+    "name": "Prepare Credit Memo Agent",
+    "version": 1,
+    "aesClassification": "hitl_assisted",
+    "decisionSurface": {
+      "@type": "vcc:DecisionSurface",
+      "decisions": [
+        {
+          "@id": "urn:vcc:decision:cap_prepare_credit_memo::act_assess_credit::exception",
+          "@type": "vcc:Decision",
+          "name": "Credit Memo Exception Routing",
+          "decisionLogic": "policy_governed",
+          "outcomeAuthorities": ["resolve-in-stage", "escalate-to-credit-manager", "halt-and-review-credit-committee"],
+          "regulatoryAnchors": [
+            "APRA CPS 230 — Operational Risk Management (escalation pathways must be deterministic)",
+            "FMT Internal Credit Policy v3.2 — credit committee referral criteria"
+          ]
+        },
+        {
+          "@id": "urn:vcc:decision:cap_prepare_credit_memo::act_assess_credit::primary",
+          "@type": "vcc:Decision",
+          "name": "Credit Memo Composition Path",
+          "decisionLogic": "mixed",
+          "outcomeAuthorities": ["proceed-draft-memo", "hold-pending-evidence", "escalate-novel-profile"],
+          "regulatoryAnchors": [
+            "APRA CPS 230 — Operational Risk Management (AI-derived credit narratives)",
+            "APRA CPS 220 — Risk Management (credit submission integrity)",
+            "NCCP Act — Responsible Lending Obligations (affordability evidence)",
+            "FMT Internal Credit Policy v3.2 — credit memo template + minimum evidence set"
+          ]
+        }
+      ]
+    },
+    "authorityScope": {
+      "@type": "vcc:AuthorityScope",
+      "prohibitions": [
+        {
+          "@id": "urn:vcc:norm:norm_cap_prepare_credit_memo_cap_prepare_credit_memo::act_assess_credit::primary_MUSTNOT_breach_APRA_CPS_230",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "approve",
+          "object": "Credit Memo Composition Path",
+          "rationale": "Regulatory anchor APRA CPS 230 applies — agent must not approve Credit Memo Composition Path if doing so would breach the named anchor."
+        },
+        {
+          "@id": "urn:vcc:norm:norm_cap_prepare_credit_memo_cap_prepare_credit_memo::act_assess_credit::primary_MUSTNOT_breach_APRA_CPS_220",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "approve",
+          "object": "Credit Memo Composition Path",
+          "rationale": "Regulatory anchor APRA CPS 220 applies — agent must not approve Credit Memo Composition Path if doing so would breach the named anchor."
+        },
+        {
+          "@id": "urn:vcc:norm:norm_cap_prepare_credit_memo_cap_prepare_credit_memo::act_assess_credit::primary_MUSTNOT_breach_NCCP",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "approve",
+          "object": "Credit Memo Composition Path",
+          "rationale": "Regulatory anchor NCCP Act applies — agent must not approve Credit Memo Composition Path if doing so would breach the named anchor."
+        },
+        {
+          "@id": "urn:vcc:norm:norm_cap_prepare_credit_memo_cap_prepare_credit_memo::act_assess_credit::primary_MUSTNOT_breach_FMT_template",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "approve",
+          "object": "Credit Memo Composition Path",
+          "rationale": "Regulatory anchor FMT Internal Credit Policy v3.2 applies — agent must not approve Credit Memo Composition Path."
+        },
+        {
+          "@id": "urn:vcc:norm:norm_cap_prepare_credit_memo_cap_prepare_credit_memo::act_assess_credit::exception_MUSTNOT_breach_APRA_CPS_230_escalation",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "approve",
+          "object": "Credit Memo Exception Routing",
+          "rationale": "Regulatory anchor APRA CPS 230 (escalation pathways must be deterministic) applies."
+        },
+        {
+          "@id": "urn:vcc:norm:norm_cap_prepare_credit_memo_cap_prepare_credit_memo::act_assess_credit::exception_MUSTNOT_breach_FMT_referral",
+          "@type": "vcc:DeonticNorm",
+          "modal": "MUSTNOT",
+          "action": "approve",
+          "object": "Credit Memo Exception Routing",
+          "rationale": "Regulatory anchor FMT Internal Credit Policy v3.2 (credit committee referral criteria) applies."
+        }
+      ]
+    },
+    "escalationTriggers": {
+      "@type": "vcc:EscalationTriggers",
+      "epsilon1_ambiguity": {
+        "@id": "urn:vcc:rule:rule_eps1_cap_prepare_credit_memo",
+        "@type": "vcc:EscalationRule",
+        "triggerCondition": "Input is ambiguous, malformed, or under-specified for the capability action.",
+        "escalateToRoleId": "role_credit_manager",
+        "handoffInstructions": "Hand off the case with the captured input, the agent's pre-action analysis, and the failing parse signal."
+      },
+      "epsilon3_threshold": {
+        "@id": "urn:vcc:rule:rule_eps3_cap_prepare_credit_memo",
+        "@type": "vcc:EscalationRule",
+        "triggerCondition": "Regulatory or hard-floor threshold reached (AES hard-floor: Legal mandate for human accountability).",
+        "escalateToRoleId": "role_credit_manager",
+        "handoffInstructions": "Halt before action. Provide the threshold reading and the regulatory anchor that fires."
+      },
+      "epsilon4_novelty": {
+        "@id": "urn:vcc:rule:rule_eps4_cap_prepare_credit_memo",
+        "@type": "vcc:EscalationRule",
+        "triggerCondition": "Case is unprecedented — no comparable prior or rule applies.",
+        "escalateToRoleId": "role_credit_manager",
+        "handoffInstructions": "Hand off as a novel case with similarity-search result and closest historical analogue."
+      }
+    },
+    "knowledgeAnchors": [
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_reg_APRA_CPS_220",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "APRA CPS 220 — Risk Management (credit submission integrity)",
+        "reference": "APRA CPS 220 — Risk Management (credit submission integrity)",
+        "versionPin": "latest",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_reg_APRA_CPS_230_narratives",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "APRA CPS 230 — Operational Risk Management (AI-derived credit narratives)",
+        "reference": "APRA CPS 230 — Operational Risk Management (AI-derived credit narratives)",
+        "versionPin": "latest",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_reg_APRA_CPS_230_escalation",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "APRA CPS 230 — Operational Risk Management (escalation pathways must be deterministic)",
+        "reference": "APRA CPS 230 — Operational Risk Management (escalation pathways must be deterministic)",
+        "versionPin": "latest",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_reg_FMT_referral",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "FMT Internal Credit Policy v3.2 — credit committee referral criteria",
+        "reference": "FMT Internal Credit Policy v3.2 — credit committee referral criteria",
+        "versionPin": "latest",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_reg_FMT_template",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "FMT Internal Credit Policy v3.2 — credit memo template + minimum evidence set",
+        "reference": "FMT Internal Credit Policy v3.2 — credit memo template + minimum evidence set",
+        "versionPin": "latest",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_reg_NCCP",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "NCCP Act — Responsible Lending Obligations (affordability evidence)",
+        "reference": "NCCP Act — Responsible Lending Obligations (affordability evidence)",
+        "versionPin": "latest",
+        "onUpdate": "review-required",
+        "contentType": "regulation"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_io_cdd_record",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "io_cdd_record",
+        "reference": "io_cdd_record",
+        "versionPin": "latest",
+        "onUpdate": "auto",
+        "contentType": "data"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_io_credit_memo",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "io_credit_memo",
+        "reference": "io_credit_memo",
+        "versionPin": "latest",
+        "onUpdate": "auto",
+        "contentType": "data"
+      },
+      {
+        "@id": "urn:vcc:knowledge-anchor:kanchor_cap_prepare_credit_memo_io_credit_report",
+        "@type": "vcc:KnowledgeAnchor",
+        "label": "io_credit_report",
+        "reference": "io_credit_report",
+        "versionPin": "latest",
+        "onUpdate": "auto",
+        "contentType": "data"
+      }
+    ]
+  }
+};
+</script>
+
+<div class="widget-root">
+
+  <!-- Example header -->
+  <div style="margin-bottom: 24px; font-size: 11px; color: var(--ink-4); font-family: var(--font-mono); letter-spacing: 0.04em;">
+    EXAMPLE RENDER · deterministic_guarantees_grid v1.0 · FMT (Driva) — Prepare Credit Memo Agent · charter v1 · exported 2026-05-18
+  </div>
+
+  <div id="widget-mount"></div>
+
+  <div style="margin-top: 20px; font-size: 11px; color: var(--ink-4); line-height: 1.6;">
+    Source: exports/fmt-credit-writeup-v1.3.1/charter.jsonld · 2 decisions · 6 prohibitions (enforcement field absent — full list shown) · 3 epsilon triggers (ε1, ε3, ε4) · 9 knowledge anchors
+  </div>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var mount = document.getElementById('widget-mount');
+  var data = window.widgetData;
+  if (!data || !data.charter) {
+    mount.innerHTML = '<div class="widget-error">deterministic_guarantees_grid: window.widgetData.charter is required.</div>';
+    return;
+  }
+
+  var c = data.charter;
+
+  var decisions = (c.decisionSurface && Array.isArray(c.decisionSurface.decisions))
+    ? c.decisionSurface.decisions : [];
+  var decisionCount = decisions.length;
+  var decisionSamples = decisions.slice(0, 2).map(function (d) { return d.name || d['@id'] || '(unnamed)'; });
+
+  var allProhibitions = (c.authorityScope && Array.isArray(c.authorityScope.prohibitions))
+    ? c.authorityScope.prohibitions : [];
+  var platformProhibitions = allProhibitions.filter(function (p) { return p.enforcement === 'platform'; });
+  var prohibitionList = platformProhibitions.length > 0 ? platformProhibitions : allProhibitions;
+  var prohibitionCount = prohibitionList.length;
+  var prohibitionSamples = prohibitionList.slice(0, 2).map(function (p) {
+    return p.action ? (p.modal || 'MUSTNOT') + ' ' + p.action : (p.object || '(prohibition)');
+  });
+
+  var eps = c.escalationTriggers || {};
+  var epsilonKeys = Object.keys(eps).filter(function (k) {
+    return k !== '@type' && k !== '@id' && eps[k] && typeof eps[k] === 'object';
+  });
+  var epsilonCount = epsilonKeys.length;
+  var epsilonLabels = epsilonKeys.map(function (k) {
+    var match = k.match(/epsilon(\d+)/i);
+    return match ? 'ε' + match[1] : k;
+  });
+
+  var anchors = Array.isArray(c.knowledgeAnchors) ? c.knowledgeAnchors : [];
+  var anchorCount = anchors.length;
+  var anchorSamples = anchors.slice(0, 2).map(function (a) { return a.label || a.reference || a['@id'] || '(anchor)'; });
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function renderCount(n) {
+    if (n === null || n === undefined) return '<span class="dgg-count-absent">—</span>';
+    return '<div class="dgg-count">' + n + '</div>';
+  }
+  function renderSamples(items) {
+    if (!items || items.length === 0) return '';
+    return '<div class="dgg-samples"><b>' + esc(items[0]) + '</b>' + (items[1] ? '<br>' + esc(items[1]) : '') + '</div>';
+  }
+  function renderEpsilonChips(labels) {
+    if (!labels || labels.length === 0) return '';
+    var chips = labels.map(function (l) { return '<span class="dgg-eps-chip">' + esc(l) + '</span>'; }).join('');
+    return '<div class="dgg-eps-list">' + chips + '</div>';
+  }
+
+  var html = [
+    '<div class="det-guarantees-panel" role="region" aria-label="Deterministic guarantees">',
+    '  <div class="dgg-heading">',
+    '    <span class="dgg-heading-label">Deterministic guarantees</span>',
+    '    <span class="dgg-heading-tail">4 primitives · VCC populates each</span>',
+    '  </div>',
+    '  <div class="dgg-grid">',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">conditional</div>',
+    '      <div class="dgg-category">Decision Surface</div>',
+    renderCount(decisionCount),
+    renderSamples(decisionSamples),
+    '    </div>',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">guard</div>',
+    '      <div class="dgg-category">Platform Prohibitions</div>',
+    renderCount(prohibitionCount),
+    renderSamples(prohibitionSamples),
+    '    </div>',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">transition</div>',
+    '      <div class="dgg-category">Escalation Triggers</div>',
+    renderCount(epsilonCount),
+    renderEpsilonChips(epsilonLabels),
+    '    </div>',
+    '    <div class="dgg-cell">',
+    '      <div class="dgg-primitive">retrieval</div>',
+    '      <div class="dgg-category">Knowledge Anchors</div>',
+    renderCount(anchorCount),
+    renderSamples(anchorSamples),
+    '    </div>',
+    '  </div>',
+    '</div>'
+  ].join('\n');
+
+  mount.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>

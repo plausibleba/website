@@ -1,0 +1,12 @@
+{
+  "widgetId": "complexity_chips_strip",
+  "version": "v1.0",
+  "publishedAt": "2026-05-19T00:00:00.000Z",
+  "status": "current",
+  "supersededBy": null,
+  "url": "https://plausibleba.com/widgets/complexity_chips_strip/v1.0/",
+  "changeLog": [
+    "v1.0 — Initial publication. Four-chip grid: (1) binding constraint label from workshopContext, (2) friction observation count from manifest.userStories.derivedFromFrictionIds, (3) regulatory anchor count from charter.regulatoryAnchors, (4) AES classification from charter.aesClassification. Cross-substrate widget spanning workshopContext (D-137), manifest (D-131+), and charter (D-134-v1.1+). Path discrepancy documented: spec listed charter.provenance.derivedFrom.derivedFromFrictionIds for chip 2 but that path is absent in FMT charter v1.3.1; manifest path used as canonical source with charter path retained as fallback."
+  ],
+  "urlImmutabilityNote": "Per Dan Roach 2026-05-17: this URL stays live indefinitely. Patch releases overwrite this v1.0 directory; major bumps go to v2.0/. Older minors are marked superseded in index.json but remain resolvable for STRAT audit-anchor reproducibility."
+}

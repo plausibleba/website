@@ -1,0 +1,199 @@
+/**
+ * value_stream_heatmap — widget-scoped styles v1.0
+ *
+ * Imports tokens.css + base.css; adds widget-specific layout.
+ * STRAT renderer injects this CSS alongside index.html.
+ *
+ * Visual idiom: matches 04.5a-fmt-diagnostic.html .vs-stages / .stage / .heat pattern.
+ * Horizontal sequence of stage cells, each heat-badged top-right.
+ * Binding stage gets coral border + coral fill.
+ *
+ * Brand token slots (overridable per customer):
+ *   --vsh-stage-bg        → defaults to rgba(0,0,0,0.30) (matching FMT page)
+ *   --vsh-stage-border    → defaults to var(--line-2)
+ *   --vsh-binding-bg      → defaults to rgba(232, 85, 63, 0.08)
+ *   --vsh-binding-border  → defaults to var(--card-coral-line)
+ *   --vsh-caption-color   → defaults to var(--ink-4)
+ */
+
+/* ── Widget-level brand token defaults ─────────────────────── */
+:root {
+  --vsh-stage-bg:       rgba(0, 0, 0, 0.30);
+  --vsh-stage-border:   var(--line-2);
+  --vsh-binding-bg:     rgba(232, 85, 63, 0.08);
+  --vsh-binding-border: var(--card-coral-line);
+  --vsh-caption-color:  var(--ink-4);
+}
+
+/* ── Widget container ───────────────────────────────────────── */
+.vsh-widget {
+  font-family: var(--font-sans);
+}
+
+/* ── Section heading row ────────────────────────────────────── */
+.vsh-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--sp-6);
+  padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--line-2);
+}
+
+.vsh-head-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin: 0;
+}
+
+.vsh-head-tail {
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+}
+
+/* ── Stage grid — auto-fills columns ───────────────────────── */
+.vsh-stages {
+  display: grid;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+/* ── Individual stage cell ──────────────────────────────────── */
+.vsh-stage {
+  background: var(--vsh-stage-bg);
+  border: 1px solid var(--vsh-stage-border);
+  border-radius: var(--r-md);
+  padding: var(--sp-4) var(--sp-3);
+  text-align: center;
+  position: relative;
+  transition: border-color 0.15s ease;
+}
+
+.vsh-stage.binding {
+  background: var(--vsh-binding-bg);
+  border-color: var(--vsh-binding-border);
+}
+
+/* ── Stage number ────────────────────────────────────────────── */
+.vsh-stage-num {
+  font-size: var(--text-xs);
+  color: var(--ink-4);
+  margin-bottom: var(--sp-1);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Stage name ─────────────────────────────────────────────── */
+.vsh-stage-name {
+  font-size: var(--text-xs);
+  color: var(--ink-2);
+  font-weight: 500;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.vsh-stage.binding .vsh-stage-name {
+  color: var(--ink);
+}
+
+/* ── BINDING pill beneath name ──────────────────────────────── */
+.vsh-binding-pill {
+  display: inline-block;
+  margin-top: var(--sp-1);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  background: rgba(232, 85, 63, 0.20);
+  border: 1px solid rgba(232, 85, 63, 0.45);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FCA5A5;
+}
+
+/* ── Heat badge (top-right, matching FMT page idiom) ─────────── */
+.vsh-heat {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-full);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Heat colour scale — matches tokens.css + FMT page exactly */
+/* Intensities 0–5: subdued, below named heat range */
+.vsh-heat.h-low {
+  background: rgba(160, 166, 196, 0.50);
+  color: var(--ink-3);
+  font-size: var(--text-xs);
+}
+
+/* h6 */
+.vsh-heat.h6  { background: #FCA5A5; color: #7F1D1D; }
+/* h7 */
+.vsh-heat.h7  { background: #F87171; }
+/* h8 */
+.vsh-heat.h8  { background: #EF4444; }
+/* h9 */
+.vsh-heat.h9  { background: #DC2626; }
+/* h10 */
+.vsh-heat.h10 { background: #991B1B; box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.30); }
+
+/* ── Legend row ─────────────────────────────────────────────── */
+.vsh-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  font-size: var(--text-sm);
+  color: var(--ink-3);
+  margin-top: var(--sp-2);
+}
+
+.vsh-legend-pip {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  margin-right: var(--sp-1);
+  vertical-align: middle;
+}
+
+.vsh-legend-pip.h6  { background: #FCA5A5; }
+.vsh-legend-pip.h7  { background: #F87171; }
+.vsh-legend-pip.h8  { background: #EF4444; }
+.vsh-legend-pip.h9  { background: #DC2626; }
+.vsh-legend-pip.h10 { background: #991B1B; }
+
+/* ── Caption / value stream ID ──────────────────────────────── */
+.vsh-caption {
+  font-size: var(--text-xs);
+  color: var(--vsh-caption-color);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  margin-top: var(--sp-4);
+}
+
+/* ── Responsive: wrap to fewer columns on narrow screens ─────── */
+@media (max-width: 900px) {
+  .vsh-stages {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .vsh-stages {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
