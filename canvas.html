@@ -1849,7 +1849,7 @@ async function callCanvasLLM(messages, maxTokens, onStatus) {
     email: _userData.email,
     firstName: _userData.firstName,
     lastName: _userData.lastName,
-    model: 'claude-sonnet-4-20250514',
+    // The model is pinned by /api/generate; a name here cannot be kept current.
     max_tokens: maxTokens,
     temperature: 0,
     messages: messages

@@ -6,10 +6,21 @@
 // Lead capture: fires webhook to Google Sheets on every generation.
 //
 // POST /api/generate
-// Body: { email, firstName, lastName, model, max_tokens, temperature, messages }
+// Body: { email, firstName, lastName, max_tokens, temperature, messages }
 // Returns: SSE stream from Anthropic API
+//
+// THE MODEL IS PINNED HERE, on the server, and a client-supplied `model` is
+// ignored. canvas.html used to name `claude-sonnet-4-20250514` and this proxy
+// forwarded whatever it was given: when Anthropic retired that model on
+// 2026-06-15 every free generation on the site failed with not_found_error,
+// silently, until a usage notice on 2026-09-04. A model name in a browser
+// bundle cannot be kept current, and a server key that runs whatever model the
+// caller names is a hole in its own right. Keep this in step with
+// vcc/packages/frontend/src/domain/pipeline/llm-client.ts DEFAULT_MODEL.
 
 export const config = { runtime: "edge" };
+
+const MODEL = "claude-sonnet-4-6";
 
 // ── In-memory fallback (dev / no KV configured) ────────────────────────────
 const memoryStore = new Map<string, { firstName: string; lastName: string; count: number; firstSeen: string; lastSeen: string }>();
@@ -107,7 +118,7 @@ export default async function handler(req: Request): Promise<Response> {
 
   try {
     const body = await req.json();
-    const { email, firstName, lastName, model, max_tokens, temperature, messages } = body;
+    const { email, firstName, lastName, max_tokens, temperature, messages } = body;
 
     // Validate required fields
     if (!email || !messages?.length) {
@@ -133,6 +144,30 @@ export default async function handler(req: Request): Promise<Response> {
     const lastSeen = existing?.lastSeen ? new Date(existing.lastSeen).getTime() : 0;
     const isNewSession = (Date.now() - lastSeen) > SESSION_WINDOW_MS;
 
+    // Forward to Anthropic FIRST. The generation is counted and the lead is
+    // logged only once Anthropic has accepted the request — while the retired
+    // model was failing every call, each failure still spent one of the
+    // visitor's three generations and put them on the leads sheet.
+    const anthropicBody = { model: MODEL, max_tokens, temperature, messages, stream: true };
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify(anthropicBody),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      return new Response(errBody, {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     const userData = {
       firstName: firstName ?? existing?.firstName ?? "",
       lastName: lastName ?? existing?.lastName ?? "",
@@ -151,27 +186,6 @@ export default async function handler(req: Request): Promise<Response> {
         generation: userData.count,
         source: "canvas",
       }).catch(() => {}); // swallow — never block generation
-    }
-
-    // Forward to Anthropic
-    const anthropicBody = { model, max_tokens, temperature, messages, stream: true };
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify(anthropicBody),
-    });
-
-    if (!response.ok) {
-      const errBody = await response.text();
-      return new Response(errBody, {
-        status: response.status,
-        headers: { "Content-Type": "application/json" },
-      });
     }
 
     // Proxy the SSE stream directly
