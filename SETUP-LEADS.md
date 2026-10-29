@@ -98,3 +98,45 @@ The redeploy will pick up the new env vars automatically.
 | `KV_REST_API_TOKEN` | Vercel KV auth token (auto-added by KV setup) |
 | `LEADS_API_KEY` | Protects the /api/leads endpoint |
 | `GSHEET_WEBHOOK_URL` | Google Apps Script web app URL |
+
+---
+
+# Expression of interest — /interest (added 30 Oct 2026)
+
+`plausibleba.com/interest` is the page behind the QR code at the end of a talk.
+It posts to `api/interest.ts`, which stores the latest response per person in
+the same Vercel KV under `eoi:<email>` (Canvas leads stay under `user:*` and
+are untouched). Each response is tagged with a source: `uts-2026-11-03` by
+default, or `?source=<name>` on the link for a later event.
+
+**Read the responses:** `https://www.plausibleba.com/api/interest?key=YOUR_LEADS_API_KEY`
+(same key as `/api/leads`).
+
+**Optional — copy them into the Google Sheet.** The Canvas webhook is not used,
+because its script writes Canvas columns. To get a sheet row per response:
+
+1. In the PlausibleBA Leads sheet, add a tab named `Interest`.
+2. In Extensions → Apps Script, replace `doPost` with:
+
+```javascript
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var book = SpreadsheetApp.getActiveSpreadsheet();
+  if (data.type === 'eoi') {
+    var tab = book.getSheetByName('Interest');
+    if (tab.getLastRow() === 0) tab.appendRow(['Timestamp','Email','Name','Organisation','Role','Describes','Could bring','Something else','Interest','Contact?','Source']);
+    tab.appendRow([data.timestamp, data.email, data.name, data.organisation, data.role, data.describes, data.bring, data.bringOther, data.interest, data.contact, data.source]);
+  } else {
+    book.getSheets()[0].appendRow([
+      data.timestamp || new Date().toISOString(), data.firstName || '', data.lastName || '',
+      data.email || '', data.generation || '', data.source || 'canvas'
+    ]);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ status: 'ok' })).setMimeType(ContentService.MimeType.JSON);
+}
+```
+
+3. Deploy → Manage deployments → edit the existing web app → New version → Deploy (the URL stays the same).
+4. In Vercel, add `GSHEET_EOI_WEBHOOK_URL` = the same web app URL as `GSHEET_WEBHOOK_URL`.
+
+Without step 4, responses are still stored in KV; only the sheet copy is skipped.

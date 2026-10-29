@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register your interest — PlausibleBA</title>
+<meta name="description" content="Register your interest in the Executable Twin work: trials, partnerships, research and development.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/site.css">
+<style>
+  .eoi-wrap { max-width: 640px; margin: 0 auto; }
+  .eoi-form { display: flex; flex-direction: column; gap: 1.75rem; }
+  .eoi-field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .eoi-label { font-size: 0.95rem; font-weight: 600; color: var(--ink-2); }
+  .eoi-hint { font-size: 0.85rem; color: var(--ink-4); margin-top: -0.2rem; }
+  .eoi-form input[type=text], .eoi-form input[type=email], .eoi-form textarea {
+    font-family: var(--sans); font-size: 16px; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--border-mid); border-radius: var(--radius); padding: 12px 14px; width: 100%;
+  }
+  .eoi-form textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+  .eoi-form input:focus, .eoi-form textarea:focus { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
+  .eoi-row { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+  @media (min-width: 640px) { .eoi-row { grid-template-columns: 1fr 1fr; } }
+  .eoi-choices { display: flex; flex-direction: column; gap: 0.5rem; }
+  .eoi-choice { display: flex; align-items: center; gap: 0.75rem; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: 0.95rem; color: var(--ink-2); line-height: 1.35; }
+  .eoi-choice input { width: 20px; height: 20px; flex: none; accent-color: var(--navy); }
+  .eoi-choice:has(input:checked) { border-color: var(--blue); background: var(--blue-dim); }
+  .eoi-inline { display: flex; gap: 0.5rem; }
+  .eoi-inline .eoi-choice { flex: 1; justify-content: center; }
+  .eoi-other { margin-top: 0.25rem; }
+  .eoi-hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .eoi-submit { align-self: stretch; font-size: 16px; padding: 14px 24px; }
+  @media (min-width: 640px) { .eoi-submit { align-self: flex-start; } }
+  .eoi-submit[disabled] { opacity: 0.6; cursor: wait; }
+  .eoi-error { color: #B42318; font-size: 0.9rem; min-height: 1.2em; }
+  .eoi-notice { font-size: 0.85rem; color: var(--ink-3); border-top: 1px solid var(--border); padding-top: 1.25rem; }
+  .eoi-done { display: none; }
+  .eoi-done.show { display: block; }
+  .req { color: var(--ink-4); font-weight: 400; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="/"><img src="/logo-icon-1x.png" alt="PlausibleBA" width="37" height="30" srcset="/logo-icon-2x.png 2x"><span class="nav-brand-text">PLAUSIBLE <span style="color:#6AC3EE">BA</span></span></a>
+  </div>
+</nav>
+
+<section class="hero" style="padding:3rem 1.25rem 2.5rem">
+  <div class="hero-inner eoi-wrap">
+    <div class="hero-eyebrow">The Executable Twin</div>
+    <h1 style="font-size:clamp(2rem,7vw,3rem)">Register your interest</h1>
+    <p class="hero-sub" style="margin-bottom:0">Tell us a little about yourself and how you might like to be involved. It takes about two minutes.</p>
+  </div>
+</section>
+
+<section class="section section-white" style="padding:2.5rem 1.25rem 3.5rem">
+  <div class="eoi-wrap">
+
+    <form class="eoi-form" id="eoi-form" novalidate>
+      <div class="eoi-row">
+        <div class="eoi-field"><label class="eoi-label" for="name">Your name</label><input type="text" id="name" name="name" autocomplete="name"></div>
+        <div class="eoi-field"><label class="eoi-label" for="organisation">Organisation</label><input type="text" id="organisation" name="organisation" autocomplete="organization"></div>
+      </div>
+      <div class="eoi-row">
+        <div class="eoi-field"><label class="eoi-label" for="role">Your role</label><input type="text" id="role" name="role" autocomplete="organization-title"></div>
+        <div class="eoi-field"><label class="eoi-label" for="email">Email <span class="req">(required)</span></label><input type="email" id="email" name="email" autocomplete="email" required></div>
+      </div>
+
+      <fieldset class="eoi-field" style="border:0">
+        <legend class="eoi-label">Which describes you?</legend>
+        <p class="eoi-hint">Tick any that apply.</p>
+        <div class="eoi-choices">
+          <label class="eoi-choice"><input type="checkbox" name="describes" value="use-case"> An organisation with a use case to trial</label>
+          <label class="eoi-choice"><input type="checkbox" name="describes" value="consulting-partner"> A consulting partner</label>
+          <label class="eoi-choice"><input type="checkbox" name="describes" value="researcher"> A researcher</label>
+          <label class="eoi-choice"><input type="checkbox" name="describes" value="developer"> A developer</label>
+          <label class="eoi-choice"><input type="checkbox" name="describes" value="other"> Other</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="eoi-field" style="border:0">
+        <legend class="eoi-label">What could you bring?</legend>
+        <p class="eoi-hint">Tick any that apply.</p>
+        <div class="eoi-choices">
+          <label class="eoi-choice"><input type="checkbox" name="bring" value="complex-use-case"> A complex use case</label>
+          <label class="eoi-choice"><input type="checkbox" name="bring" value="data-or-systems"> Access to data or systems</label>
+          <label class="eoi-choice"><input type="checkbox" name="bring" value="clients"> Clients</label>
+          <label class="eoi-choice"><input type="checkbox" name="bring" value="research-capacity"> Research capacity</label>
+          <label class="eoi-choice"><input type="checkbox" name="bring" value="development-time"> Development time</label>
+          <label class="eoi-choice"><input type="checkbox" name="bring" value="something-else" id="bring-else"> Something else</label>
+        </div>
+        <input type="text" class="eoi-other" id="bringOther" name="bringOther" placeholder="Please say what" aria-label="Something else: please say what">
+      </fieldset>
+
+      <div class="eoi-field">
+        <label class="eoi-label" for="interest">What caught your interest today?</label>
+        <textarea id="interest" name="interest"></textarea>
+      </div>
+
+      <fieldset class="eoi-field" style="border:0">
+        <legend class="eoi-label">May we contact you about something specific?</legend>
+        <div class="eoi-inline">
+          <label class="eoi-choice"><input type="radio" name="contact" value="yes"> Yes</label>
+          <label class="eoi-choice"><input type="radio" name="contact" value="no"> No</label>
+        </div>
+      </fieldset>
+
+      <div class="eoi-hp" aria-hidden="true"><label for="website">Leave this empty</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+
+      <p class="eoi-error" id="eoi-error" role="alert"></p>
+      <button type="submit" class="btn-primary eoi-submit" id="eoi-submit">Send</button>
+
+      <p class="eoi-notice">We'll use these details only to follow up on your interest in the Executable Twin work. We won't share them with anyone. To see, change or remove what you've sent, email <a href="mailto:terry.roach@plausibleba.com">terry.roach@plausibleba.com</a>. See also our <a href="/privacy">privacy policy</a>.</p>
+    </form>
+
+    <div class="eoi-done" id="eoi-done" role="status">
+      <h2 style="margin-bottom:0.75rem">Thank you</h2>
+      <p>We've got your details and will be in touch.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-bottom">
+    <p>© 2026 PlausibleBA</p>
+    <p><a href="/about">About</a> · <a href="/contact">Contact</a> · <a href="/privacy">Privacy</a></p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('eoi-form');
+  var err = document.getElementById('eoi-error');
+  var btn = document.getElementById('eoi-submit');
+  var done = document.getElementById('eoi-done');
+  var other = document.getElementById('bringOther');
+  var otherBox = document.getElementById('bring-else');
+  var source = new URLSearchParams(location.search).get('source') || '';
+
+  other.addEventListener('input', function () { if (other.value.trim()) otherBox.checked = true; });
+  document.getElementById('email').addEventListener('input', function () { err.textContent = ''; });
+
+  function v(id) { return document.getElementById(id).value; }
+  function values(name) {
+    return Array.prototype.map.call(form.querySelectorAll('input[name="' + name + '"]:checked'), function (i) { return i.value; });
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.textContent = '';
+    var email = v('email').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      err.textContent = 'Please enter a valid email address.';
+      document.getElementById('email').focus();
+      return;
+    }
+    var contact = form.querySelector('input[name="contact"]:checked');
+    var body = {
+      name: v('name'), organisation: v('organisation'), role: v('role'), email: email,
+      describes: values('describes'), bring: values('bring'), bringOther: other.value,
+      interest: v('interest'), contact: contact ? contact.value : null,
+      source: source, website: v('website')
+    };
+    btn.disabled = true; btn.textContent = 'Sending…';
+    fetch('/api/interest', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d && res.d.error || 'Something went wrong. Please try again.');
+        form.style.display = 'none';
+        done.classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(function (e2) {
+        err.textContent = e2.message || 'Something went wrong. Please try again.';
+        btn.disabled = false; btn.textContent = 'Send';
+      });
+  });
+})();
+</script>
+</body>
+</html>
